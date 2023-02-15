@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:recommend_restaurant/common/const/color_schemes.g.dart';
 import 'package:recommend_restaurant/common/view/root_tab.dart';
 import 'package:recommend_restaurant/firebase_options.dart';
+import 'package:recommend_restaurant/user/view/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,13 +27,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: lightColorScheme,
+        fontFamily: 'Paybooc',
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
         colorScheme: darkColorScheme,
+        fontFamily: 'Paybooc',
       ),
       themeMode: ThemeMode.system,
-      home: const RootTab(),
+      home: const LoginScreen(),
     );
   }
 }
