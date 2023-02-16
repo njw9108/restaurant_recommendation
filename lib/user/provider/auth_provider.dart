@@ -38,15 +38,15 @@ class AuthProvider with ChangeNotifier {
   });
 
   String? getUserFirebaseId() {
-    return prefs.getString(FirestoreConstants.id);
+    return prefs.getString(FirestoreUserConstants.id);
   }
 
   Future<void> checkLogin() async {
     _status = LoginStatus.uninitialized;
 
     bool isLoggedIn = await googleSignIn.isSignedIn();
-    final accessToken = prefs.getString(FirestoreConstants.accessToken);
-    final idToken = prefs.getString(FirestoreConstants.idToken);
+    final accessToken = prefs.getString(FirestoreUserConstants.accessToken);
+    final idToken = prefs.getString(FirestoreUserConstants.idToken);
 
     if (accessToken == null || idToken == null) {
       notifyListeners();
@@ -112,8 +112,8 @@ class AuthProvider with ChangeNotifier {
         (await firebaseAuth.signInWithCredential(credential)).user;
 
     if (firebaseUser != null) {
-      await prefs.setString(FirestoreConstants.accessToken, accessToken);
-      await prefs.setString(FirestoreConstants.idToken, idToken);
+      await prefs.setString(FirestoreUserConstants.accessToken, accessToken);
+      await prefs.setString(FirestoreUserConstants.idToken, idToken);
     }
 
     return firebaseUser;
@@ -121,16 +121,16 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> _saveUserToFirebaseStore(MyUserModel userModel) async {
     try {
-      firebaseFirestore
-          .collection(FirestoreConstants.pathUserCollection)
+      await firebaseFirestore
+          .collection(FirestoreUserConstants.pathUserCollection)
           .doc(userModel.id)
           .set(
         {
-          FirestoreConstants.id: userModel.id,
-          FirestoreConstants.nickname: userModel.nickname,
-          FirestoreConstants.email: userModel.email,
-          FirestoreConstants.photoUrl: userModel.photoUrl,
-          FirestoreConstants.createdAt:
+          FirestoreUserConstants.id: userModel.id,
+          FirestoreUserConstants.nickname: userModel.nickname,
+          FirestoreUserConstants.email: userModel.email,
+          FirestoreUserConstants.photoUrl: userModel.photoUrl,
+          FirestoreUserConstants.createdAt:
               DateTime.now().millisecondsSinceEpoch.toString(),
         },
       );
@@ -141,10 +141,10 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> _saveUserToLocal(MyUserModel userModel) async {
     try {
-      await prefs.setString(FirestoreConstants.id, userModel.id);
-      await prefs.setString(FirestoreConstants.nickname, userModel.nickname);
-      await prefs.setString(FirestoreConstants.email, userModel.email);
-      await prefs.setString(FirestoreConstants.photoUrl, userModel.photoUrl);
+      await prefs.setString(FirestoreUserConstants.id, userModel.id);
+      await prefs.setString(FirestoreUserConstants.nickname, userModel.nickname);
+      await prefs.setString(FirestoreUserConstants.email, userModel.email);
+      await prefs.setString(FirestoreUserConstants.photoUrl, userModel.photoUrl);
     } catch (e) {
       rethrow;
     }
@@ -153,8 +153,8 @@ class AuthProvider with ChangeNotifier {
   Future<bool> _getMyUserModelFromFirebaseStore(User firebaseUser) async {
     try {
       final QuerySnapshot result = await firebaseFirestore
-          .collection(FirestoreConstants.pathUserCollection)
-          .where(FirestoreConstants.id, isEqualTo: firebaseUser.uid)
+          .collection(FirestoreUserConstants.pathUserCollection)
+          .where(FirestoreUserConstants.id, isEqualTo: firebaseUser.uid)
           .get();
       final List<DocumentSnapshot> documents = result.docs;
       if (documents.isEmpty) {
@@ -185,8 +185,8 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> signOut() async {
     _status = LoginStatus.uninitialized;
-    await prefs.remove(FirestoreConstants.accessToken);
-    await prefs.remove(FirestoreConstants.idToken);
+    await prefs.remove(FirestoreUserConstants.accessToken);
+    await prefs.remove(FirestoreUserConstants.idToken);
 
     await firebaseAuth.signOut();
     await googleSignIn.disconnect();

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:recommend_restaurant/common/provider/go_router_provider.dart';
 import 'package:recommend_restaurant/firebase_options.dart';
+import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -52,6 +53,14 @@ class MyApp extends StatelessWidget {
             } else {
               return previous;
             }
+          },
+        ),
+        Provider(
+          create: (_) {
+            return RestaurantProvider(
+              prefs: prefs,
+              firebaseFirestore: firebaseFirestore,
+            );
           },
         ),
       ],
