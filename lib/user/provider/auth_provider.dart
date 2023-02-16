@@ -1,35 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
 import 'package:recommend_restaurant/user/model/my_user_model.dart';
+import 'package:recommend_restaurant/user/provider/user_login_status_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum Status {
-  uninitialized,
-  authenticated,
-  authenticating,
-  authenticateError,
-  authenticateException,
-  authenticateCanceled,
-}
-
-class AuthProvider extends ChangeNotifier {
+class AuthProvider {
   final GoogleSignIn googleSignIn;
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firebaseFirestore;
   final SharedPreferences prefs;
-
-  Status _status = Status.uninitialized;
-
-  Status get status => _status;
+  final UserLoginStatusProvider userStatus;
 
   AuthProvider({
     required this.firebaseAuth,
     required this.googleSignIn,
     required this.prefs,
     required this.firebaseFirestore,
+    required this.userStatus,
   });
 
   String? getUserFirebaseId() {
@@ -47,8 +36,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> signIn() async {
-    _status = Status.authenticating;
-    notifyListeners();
+    userStatus.status = Status.authenticating;
 
     GoogleSignInAccount? googleUser = await googleSignIn.signIn();
     if (googleUser != null) {
@@ -103,23 +91,21 @@ class AuthProvider extends ChangeNotifier {
           await prefs.setString(
               FirestoreConstants.photoUrl, userModel.photoUrl);
         }
-        _status = Status.authenticated;
-        notifyListeners();
+        userStatus.status = Status.authenticated;
+
         return true;
       } else {
-        _status = Status.authenticateError;
-        notifyListeners();
+        userStatus.status = Status.authenticateError;
         return false;
       }
     } else {
-      _status = Status.authenticateCanceled;
-      notifyListeners();
+      userStatus.status = Status.authenticateCanceled;
       return false;
     }
   }
 
   Future<void> signOut() async {
-    _status = Status.uninitialized;
+    userStatus.status = Status.uninitialized;
     await firebaseAuth.signOut();
     await googleSignIn.disconnect();
     await googleSignIn.signOut();
