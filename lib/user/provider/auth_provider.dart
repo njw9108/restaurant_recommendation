@@ -53,18 +53,20 @@ class AuthProvider with ChangeNotifier {
       return;
     }
 
-    final firebaseUser = await _getFirebaseUser(
-      accessToken: accessToken,
-      idToken: idToken,
-    );
+    try {
+      final firebaseUser = await _getFirebaseUser(
+        accessToken: accessToken,
+        idToken: idToken,
+      );
 
-    if (isLoggedIn && firebaseUser != null) {
-      final getUserModel = await _getMyUserModelFromFirebaseStore(firebaseUser);
-      if (getUserModel) {
-        _status = LoginStatus.authenticated;
+      if (isLoggedIn && firebaseUser != null) {
+        final getUserModel =
+            await _getMyUserModelFromFirebaseStore(firebaseUser);
+        if (getUserModel) {
+          _status = LoginStatus.authenticated;
+        }
       }
-    }
-
+    } catch (e) {}
     notifyListeners();
   }
 

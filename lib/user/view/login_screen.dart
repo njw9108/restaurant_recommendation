@@ -10,6 +10,7 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
     return DefaultLayout(
       child: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -28,9 +29,11 @@ class LoginScreen extends StatelessWidget {
                   height: 40,
                 ),
                 ElevatedButton(
-                  onPressed: () async {
-                    await context.read<AuthProvider>().signIn();
-                  },
+                  onPressed: authProvider.status != LoginStatus.authenticating
+                      ? () async {
+                          await context.read<AuthProvider>().signIn();
+                        }
+                      : null,
                   child: const Text('Sign in with Google'),
                 ),
               ],
