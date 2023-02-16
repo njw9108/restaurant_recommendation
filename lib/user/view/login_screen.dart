@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
-import 'package:recommend_restaurant/common/view/root_tab.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 
 class LoginScreen extends StatelessWidget {

@@ -7,6 +7,7 @@ import 'package:recommend_restaurant/user/model/my_user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum LoginStatus {
+  notInit,
   uninitialized,
   authenticated,
   authenticating,
@@ -21,7 +22,7 @@ class AuthProvider with ChangeNotifier {
   final FirebaseFirestore firebaseFirestore;
   final SharedPreferences prefs;
 
-  LoginStatus _status = LoginStatus.uninitialized;
+  LoginStatus _status = LoginStatus.notInit;
 
   LoginStatus get status => _status;
 
@@ -41,11 +42,14 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> checkLogin() async {
+    _status = LoginStatus.uninitialized;
+
     bool isLoggedIn = await googleSignIn.isSignedIn();
     final accessToken = prefs.getString(FirestoreConstants.accessToken);
     final idToken = prefs.getString(FirestoreConstants.idToken);
 
     if (accessToken == null || idToken == null) {
+      notifyListeners();
       return;
     }
 
@@ -58,9 +62,10 @@ class AuthProvider with ChangeNotifier {
       final getUserModel = await _getMyUserModelFromFirebaseStore(firebaseUser);
       if (getUserModel) {
         _status = LoginStatus.authenticated;
-        notifyListeners();
       }
     }
+
+    notifyListeners();
   }
 
   Future<void> signIn() async {
@@ -178,6 +183,9 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> signOut() async {
     _status = LoginStatus.uninitialized;
+    await prefs.remove(FirestoreConstants.accessToken);
+    await prefs.remove(FirestoreConstants.idToken);
+
     await firebaseAuth.signOut();
     await googleSignIn.disconnect();
     await googleSignIn.signOut();

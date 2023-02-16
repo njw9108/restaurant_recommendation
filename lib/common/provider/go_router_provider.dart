@@ -46,8 +46,7 @@ class GoRouterProvider {
 
     //유저 정보가 없는데 로그인 중이라면 그대로 로그인 페이지에 두고
     //만약 로그인 중이 아니라면 로그인 페이지로 이동
-    if (provider.status == LoginStatus.uninitialized &&
-        state.location != '/splash') {
+    if (provider.status == LoginStatus.uninitialized) {
       return loggingIn ? null : '/login';
     }
 
