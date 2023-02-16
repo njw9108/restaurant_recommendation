@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
+import 'package:recommend_restaurant/common/widget/overlay_loader.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -11,6 +12,8 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    // if (authProvider.status == LoginStatus.authenticating) {}
+
     return DefaultLayout(
       child: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -31,7 +34,9 @@ class LoginScreen extends StatelessWidget {
                 ElevatedButton(
                   onPressed: authProvider.status != LoginStatus.authenticating
                       ? () async {
+                          OverlayLoader.showLoading(context);
                           await context.read<AuthProvider>().signIn();
+                          OverlayLoader.removeLoading();
                         }
                       : null,
                   child: const Text('Sign in with Google'),
