@@ -1,4 +1,6 @@
 class FirestoreConstants {
+  static const accessToken = "access_token";
+  static const idToken = "id_token";
   static const pathUserCollection = "users";
   static const id = "id";
   static const nickname = "nickname";

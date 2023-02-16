@@ -3,11 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:recommend_restaurant/common/provider/go_router_provider.dart';
 import 'package:recommend_restaurant/common/view/splash_screen.dart';
 import 'package:recommend_restaurant/firebase_options.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:recommend_restaurant/user/provider/user_login_status_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -34,33 +34,40 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<UserLoginStatusProvider>(
+        ChangeNotifierProvider<AuthProvider>(
           create: (_) {
-            return UserLoginStatusProvider();
+            return AuthProvider(
+              firebaseAuth: FirebaseAuth.instance,
+              googleSignIn: GoogleSignIn(),
+              prefs: prefs,
+              firebaseFirestore: firebaseFirestore,
+            );
           },
         ),
-        ProxyProvider<UserLoginStatusProvider, AuthProvider>(
-          update: (_, userStatus, prev) {
-            if (prev == null) {
-              return AuthProvider(
-                firebaseAuth: FirebaseAuth.instance,
-                googleSignIn: GoogleSignIn(),
-                prefs: prefs,
-                firebaseFirestore: firebaseFirestore,
-                userStatus: userStatus,
+        ProxyProvider<AuthProvider, GoRouterProvider>(
+          update: (BuildContext context, auth, GoRouterProvider? previous) {
+            if (previous == null) {
+              return GoRouterProvider(
+                provider: auth,
               );
             } else {
-              return prev;
+              return previous;
             }
           },
         ),
       ],
-      child: MaterialApp(
-        title: 'recommend restaurants',
-        theme: ThemeData(
-          fontFamily: 'Paybooc',
-        ),
-        home: const SplashScreen(),
+      child: Builder(
+        builder: (context) {
+          final goRouter = context.watch<GoRouterProvider>().router;
+
+          return MaterialApp.router(
+            title: 'recommend restaurants',
+            theme: ThemeData(
+              fontFamily: 'Paybooc',
+            ),
+            routerConfig: goRouter,
+          );
+        },
       ),
     );
   }

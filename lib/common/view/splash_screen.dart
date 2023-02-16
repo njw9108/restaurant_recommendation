@@ -7,6 +7,8 @@ import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:recommend_restaurant/user/view/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
+  static String routeName = 'splash';
+
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
@@ -19,26 +21,9 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(seconds: 1), () {
-        // just delay for showing this slash page clearer because it too fast
-        checkSignedIn();
+        context.read<AuthProvider>().checkLogin();
       });
     });
-  }
-
-  void checkSignedIn() async {
-    AuthProvider authProvider = context.read<AuthProvider>();
-    bool isLoggedIn = await authProvider.isLoggedIn();
-    if (isLoggedIn) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const RootTab()),
-      );
-      return;
-    }
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
   }
 
   @override

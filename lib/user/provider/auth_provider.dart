@@ -1,113 +1,186 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
 import 'package:recommend_restaurant/user/model/my_user_model.dart';
-import 'package:recommend_restaurant/user/provider/user_login_status_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthProvider {
+enum LoginStatus {
+  uninitialized,
+  authenticated,
+  authenticating,
+  authenticateError,
+  authenticateException,
+  authenticateCanceled,
+}
+
+class AuthProvider with ChangeNotifier {
   final GoogleSignIn googleSignIn;
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firebaseFirestore;
   final SharedPreferences prefs;
-  final UserLoginStatusProvider userStatus;
+
+  LoginStatus _status = LoginStatus.uninitialized;
+
+  LoginStatus get status => _status;
+
+  MyUserModel? _userModel;
+
+  MyUserModel? get userModel => _userModel;
 
   AuthProvider({
     required this.firebaseAuth,
     required this.googleSignIn,
     required this.prefs,
     required this.firebaseFirestore,
-    required this.userStatus,
   });
 
   String? getUserFirebaseId() {
     return prefs.getString(FirestoreConstants.id);
   }
 
-  Future<bool> isLoggedIn() async {
+  Future<void> checkLogin() async {
     bool isLoggedIn = await googleSignIn.isSignedIn();
-    if (isLoggedIn &&
-        prefs.getString(FirestoreConstants.id)?.isNotEmpty == true) {
-      return true;
-    } else {
-      return false;
+    final accessToken = prefs.getString(FirestoreConstants.accessToken);
+    final idToken = prefs.getString(FirestoreConstants.idToken);
+
+    if (accessToken == null || idToken == null) {
+      return;
+    }
+
+    final firebaseUser = await _getFirebaseUser(
+      accessToken: accessToken,
+      idToken: idToken,
+    );
+
+    if (isLoggedIn && firebaseUser != null) {
+      final getUserModel = await _getMyUserModelFromFirebaseStore(firebaseUser);
+      if (getUserModel) {
+        _status = LoginStatus.authenticated;
+        notifyListeners();
+      }
     }
   }
 
-  Future<bool> signIn() async {
-    userStatus.status = Status.authenticating;
+  Future<void> signIn() async {
+    _status = LoginStatus.authenticating;
+    notifyListeners();
 
     GoogleSignInAccount? googleUser = await googleSignIn.signIn();
     if (googleUser != null) {
       GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
+      final firebaseUser = await _getFirebaseUser(
+        accessToken: googleAuth.accessToken ?? '',
+        idToken: googleAuth.idToken ?? '',
       );
 
-      User? firebaseUser =
-          (await firebaseAuth.signInWithCredential(credential)).user;
-
       if (firebaseUser != null) {
-        final QuerySnapshot result = await firebaseFirestore
-            .collection(FirestoreConstants.pathUserCollection)
-            .where(FirestoreConstants.id, isEqualTo: firebaseUser.uid)
-            .get();
-        final List<DocumentSnapshot> documents = result.docs;
-        if (documents.isEmpty) {
-          // Writing data to server because here is a new user
-          firebaseFirestore
-              .collection(FirestoreConstants.pathUserCollection)
-              .doc(firebaseUser.uid)
-              .set({
-            FirestoreConstants.id: firebaseUser.uid,
-            FirestoreConstants.nickname: firebaseUser.displayName,
-            FirestoreConstants.email: firebaseUser.email,
-            FirestoreConstants.photoUrl: firebaseUser.photoURL,
-            FirestoreConstants.createdAt:
-                DateTime.now().millisecondsSinceEpoch.toString(),
-          });
-
-          // Write data to local storage
-          User? currentUser = firebaseUser;
-          await prefs.setString(FirestoreConstants.id, currentUser.uid);
-          await prefs.setString(
-              FirestoreConstants.nickname, currentUser.displayName ?? "");
-          await prefs.setString(
-              FirestoreConstants.email, currentUser.email ?? "");
-          await prefs.setString(
-              FirestoreConstants.photoUrl, currentUser.photoURL ?? "");
-        } else {
-          // Already sign up, just get data from firestore
-          DocumentSnapshot documentSnapshot = documents.first;
-          final Map<String, dynamic> json =
-              documentSnapshot.data() as Map<String, dynamic>;
-          MyUserModel userModel = MyUserModel.fromJson(json);
-          // Write data to local
-          await prefs.setString(FirestoreConstants.id, userModel.id);
-          await prefs.setString(
-              FirestoreConstants.nickname, userModel.nickname);
-          await prefs.setString(
-              FirestoreConstants.photoUrl, userModel.photoUrl);
+        final getUserModel =
+            await _getMyUserModelFromFirebaseStore(firebaseUser);
+        if (getUserModel) {
+          _status = LoginStatus.authenticated;
+          notifyListeners();
         }
-        userStatus.status = Status.authenticated;
-
-        return true;
       } else {
-        userStatus.status = Status.authenticateError;
-        return false;
+        _status = LoginStatus.authenticateError;
+        notifyListeners();
       }
     } else {
-      userStatus.status = Status.authenticateCanceled;
+      _status = LoginStatus.authenticateCanceled;
+      notifyListeners();
+    }
+  }
+
+  Future<User?> _getFirebaseUser({
+    required String accessToken,
+    required String idToken,
+  }) async {
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: accessToken,
+      idToken: idToken,
+    );
+
+    User? firebaseUser =
+        (await firebaseAuth.signInWithCredential(credential)).user;
+
+    if (firebaseUser != null) {
+      await prefs.setString(FirestoreConstants.accessToken, accessToken);
+      await prefs.setString(FirestoreConstants.idToken, idToken);
+    }
+
+    return firebaseUser;
+  }
+
+  Future<void> _saveUserToFirebaseStore(MyUserModel userModel) async {
+    try {
+      firebaseFirestore
+          .collection(FirestoreConstants.pathUserCollection)
+          .doc(userModel.id)
+          .set(
+        {
+          FirestoreConstants.id: userModel.id,
+          FirestoreConstants.nickname: userModel.nickname,
+          FirestoreConstants.email: userModel.email,
+          FirestoreConstants.photoUrl: userModel.photoUrl,
+          FirestoreConstants.createdAt:
+              DateTime.now().millisecondsSinceEpoch.toString(),
+        },
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _saveUserToLocal(MyUserModel userModel) async {
+    try {
+      await prefs.setString(FirestoreConstants.id, userModel.id);
+      await prefs.setString(FirestoreConstants.nickname, userModel.nickname);
+      await prefs.setString(FirestoreConstants.email, userModel.email);
+      await prefs.setString(FirestoreConstants.photoUrl, userModel.photoUrl);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> _getMyUserModelFromFirebaseStore(User firebaseUser) async {
+    try {
+      final QuerySnapshot result = await firebaseFirestore
+          .collection(FirestoreConstants.pathUserCollection)
+          .where(FirestoreConstants.id, isEqualTo: firebaseUser.uid)
+          .get();
+      final List<DocumentSnapshot> documents = result.docs;
+      if (documents.isEmpty) {
+        _userModel = MyUserModel(
+          id: firebaseUser.uid,
+          photoUrl: firebaseUser.photoURL ?? '',
+          nickname: firebaseUser.displayName ?? '',
+          email: firebaseUser.email ?? '',
+        );
+
+        await Future.wait([
+          _saveUserToFirebaseStore(_userModel!),
+          _saveUserToLocal(_userModel!),
+        ]);
+      } else {
+        DocumentSnapshot documentSnapshot = documents.first;
+        final Map<String, dynamic> json =
+            documentSnapshot.data() as Map<String, dynamic>;
+        _userModel = MyUserModel.fromJson(json);
+
+        await _saveUserToLocal(_userModel!);
+      }
+      return true;
+    } catch (e) {
       return false;
     }
   }
 
   Future<void> signOut() async {
-    userStatus.status = Status.uninitialized;
+    _status = LoginStatus.uninitialized;
     await firebaseAuth.signOut();
     await googleSignIn.disconnect();
     await googleSignIn.signOut();
+    notifyListeners();
   }
 }

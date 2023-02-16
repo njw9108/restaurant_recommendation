@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 
 class RootTab extends StatefulWidget {
+  static String routeName = 'home';
+
   const RootTab({Key? key}) : super(key: key);
 
   @override

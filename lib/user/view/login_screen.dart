@@ -5,6 +5,8 @@ import 'package:recommend_restaurant/common/view/root_tab.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 
 class LoginScreen extends StatelessWidget {
+  static String routeName = 'login';
+
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
@@ -28,15 +30,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    final isSuccess =
-                        await context.read<AuthProvider>().signIn();
-                    if (isSuccess) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RootTab()),
-                      );
-                    }
+                    await context.read<AuthProvider>().signIn();
                   },
                   child: const Text('Sign in with Google'),
                 ),
