@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:recommend_restaurant/common/const/color_schemes.g.dart';
+import 'package:recommend_restaurant/common/const/color.dart';
+import 'package:recommend_restaurant/common/view/splash_screen.dart';
 import 'package:recommend_restaurant/firebase_options.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:recommend_restaurant/user/view/login_screen.dart';
@@ -47,17 +48,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'recommend restaurants',
         theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: lightColorScheme,
           fontFamily: 'Paybooc',
         ),
-        darkTheme: ThemeData(
-          useMaterial3: true,
-          colorScheme: darkColorScheme,
-          fontFamily: 'Paybooc',
-        ),
-        themeMode: ThemeMode.system,
-        home: const LoginScreen(),
+        home: const SplashScreen(),
       ),
     );
   }
