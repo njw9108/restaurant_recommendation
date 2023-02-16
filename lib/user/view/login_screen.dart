@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
+import 'package:recommend_restaurant/common/view/root_tab.dart';
+import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -24,7 +27,17 @@ class LoginScreen extends StatelessWidget {
                   height: 40,
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    final isSuccess =
+                        await context.read<AuthProvider>().signIn();
+                    if (isSuccess) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RootTab()),
+                      );
+                    }
+                  },
                   child: const Text('Sign in with Google'),
                 ),
               ],
@@ -35,7 +48,6 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
-
 
 class _Title extends StatelessWidget {
   const _Title({Key? key}) : super(key: key);
@@ -53,4 +65,3 @@ class _Title extends StatelessWidget {
     );
   }
 }
-

@@ -1,9 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:recommend_restaurant/common/const/color_schemes.g.dart';
-import 'package:recommend_restaurant/common/view/root_tab.dart';
 import 'package:recommend_restaurant/firebase_options.dart';
+import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:recommend_restaurant/user/view/login_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,30 +18,47 @@ void main() async {
     name: 'restaurant_recommendation',
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  runApp(const MyApp());
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  runApp(MyApp(prefs: prefs));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final SharedPreferences prefs;
+  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
+
+  MyApp({super.key, required this.prefs});
+
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'recommend restaurants',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: lightColorScheme,
-        fontFamily: 'Paybooc',
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthProvider>(
+          create: (_) => AuthProvider(
+            firebaseAuth: FirebaseAuth.instance,
+            googleSignIn: GoogleSignIn(),
+            prefs: prefs,
+            firebaseFirestore: firebaseFirestore,
+          ),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'recommend restaurants',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: lightColorScheme,
+          fontFamily: 'Paybooc',
+        ),
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          colorScheme: darkColorScheme,
+          fontFamily: 'Paybooc',
+        ),
+        themeMode: ThemeMode.system,
+        home: const LoginScreen(),
       ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        colorScheme: darkColorScheme,
-        fontFamily: 'Paybooc',
-      ),
-      themeMode: ThemeMode.system,
-      home: const LoginScreen(),
     );
   }
 }
