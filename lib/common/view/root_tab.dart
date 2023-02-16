@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
+import 'package:recommend_restaurant/restaurant/view/restaurant_screen.dart';
 import 'package:recommend_restaurant/user/view/profile_screen.dart';
 
 class RootTab extends StatefulWidget {
@@ -16,7 +17,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
 
   List<Widget> screenList = [
     const Center(child: Text('홈')),
-    const Center(child: Text('식당')),
+    const RestaurantScreen(),
     const ProfileScreen(),
   ];
 
