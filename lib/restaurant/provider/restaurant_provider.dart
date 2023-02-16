@@ -31,7 +31,7 @@ class RestaurantProvider {
           FirestoreRestaurantConstants.categories: model.categories,
           FirestoreRestaurantConstants.address: model.address,
           FirestoreRestaurantConstants.createdAt:
-              DateTime.now().millisecondsSinceEpoch.toString(),
+              DateTime.now().millisecondsSinceEpoch,
         },
       );
     } catch (e) {
