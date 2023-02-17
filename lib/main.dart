@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
             }
           },
         ),
-        Provider(
+        Provider<RestaurantProvider>(
           create: (_) {
             return RestaurantProvider(
               prefs: prefs,

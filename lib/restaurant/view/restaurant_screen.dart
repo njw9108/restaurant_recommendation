@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:recommend_restaurant/common/const/firestore_constants.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
+import 'package:recommend_restaurant/restaurant/view/restaurant_add_screen.dart';
 import 'package:recommend_restaurant/restaurant/widget/restaurant_card.dart';
 
 class RestaurantScreen extends StatefulWidget {
@@ -50,20 +51,21 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     return DefaultLayout(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final model = RestaurantModel(
-            name: '백반집',
-            thumbnail: '',
-            restaurantType: '타입',
-            rating: 4.5,
-            comment: '아주 맛있었다. 담에 또가야지',
-            images: [],
-            categories: ['한식', '갈비탕'],
-            address: '서울 강남구',
-          );
-
-          context
-              .read<RestaurantProvider>()
-              .saveRestaurantModelToFirebase(model);
+          context.goNamed(RestaurantAddScreen.routeName);
+          // final model = RestaurantModel(
+          //   name: '백반집',
+          //   thumbnail: '',
+          //   restaurantType: '타입',
+          //   rating: 4.5,
+          //   comment: '아주 맛있었다. 담에 또가야지',
+          //   images: [],
+          //   categories: ['한식', '갈비탕'],
+          //   address: '서울 강남구',
+          // );
+          //
+          // context
+          //     .read<RestaurantProvider>()
+          //     .saveRestaurantModelToFirebase(model);
         },
         child: const Icon(Icons.add),
       ),
@@ -86,8 +88,8 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                         DocumentSnapshot doc =
                             snapshot.data?.docs[index] as DocumentSnapshot;
 
-                        final date = DateTime.fromMillisecondsSinceEpoch(
-                            doc.get(FirestoreRestaurantConstants.createdAt));
+                        // final date = DateTime.fromMillisecondsSinceEpoch(
+                        //     doc.get(FirestoreRestaurantConstants.createdAt));
 
                         if (snapshot.data?.docs[index] != null) {
                           final model = RestaurantModel.fromDocument(doc);
