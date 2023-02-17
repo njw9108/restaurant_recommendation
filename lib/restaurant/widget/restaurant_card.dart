@@ -47,7 +47,7 @@ class RestaurantCard extends StatelessWidget {
                     const SizedBox(
                       width: 8,
                     ),
-                    _RatingStar(
+                    _StarRating(
                       rating: restaurantModel.rating,
                     ),
                   ],
@@ -100,45 +100,6 @@ class _Thumbnail extends StatelessWidget {
   }
 }
 
-class _RatingStar extends StatelessWidget {
-  final double rating;
-
-  const _RatingStar({
-    Key? key,
-    required this.rating,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    int star = rating.floor();
-    bool isHalfStar = rating - rating > 0;
-
-    return Row(
-      children: [
-        ...List.generate(
-          star,
-          (index) => const Icon(
-            Icons.star,
-            color: PRIMARY_COLOR,
-          ),
-        ),
-        if (isHalfStar)
-          const Icon(
-            Icons.star_half_outlined,
-            color: PRIMARY_COLOR,
-          ),
-        ...List.generate(
-          isHalfStar ? 4 - star : 5 - star,
-          (index) => const Icon(
-            Icons.star_border_outlined,
-            color: PRIMARY_COLOR,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _Category extends StatelessWidget {
   final String category;
 
@@ -170,6 +131,46 @@ class _Category extends StatelessWidget {
     );
   }
 }
+
+class _StarRating extends StatelessWidget {
+  final double rating;
+
+  const _StarRating({
+    Key? key,
+    required this.rating,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    int star = rating.floor();
+    bool isHalfStar = rating - star > 0;
+
+    return Row(
+      children: [
+        ...List.generate(
+          star,
+              (index) => Icon(
+            Icons.star,
+            color: PRIMARY_COLOR,
+          ),
+        ),
+        if (isHalfStar)
+          Icon(
+            Icons.star_half_outlined,
+            color: PRIMARY_COLOR,
+          ),
+        ...List.generate(
+          isHalfStar ? 4 - star : 5 - star,
+              (index) => Icon(
+            Icons.star_border_outlined,
+            color: PRIMARY_COLOR,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 
 class _Categories extends StatelessWidget {
   final List<String> categories;
