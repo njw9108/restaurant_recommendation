@@ -5,6 +5,7 @@ import 'package:recommend_restaurant/common/const/firestore_constants.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
+import 'package:recommend_restaurant/restaurant/widget/restaurant_card.dart';
 
 class RestaurantScreen extends StatefulWidget {
   const RestaurantScreen({Key? key}) : super(key: key);
@@ -82,21 +83,21 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.all(10),
                       itemBuilder: (_, index) {
+                        DocumentSnapshot doc =
+                            snapshot.data?.docs[index] as DocumentSnapshot;
+
                         final date = DateTime.fromMillisecondsSinceEpoch(
-                            snapshot.data?.docs[index]
-                                .get(FirestoreRestaurantConstants.createdAt));
-                        return Column(
-                          children: [
-                            Text(
-                                '${date.month}/${date.day} - ${date.hour}:${date.minute}:${date.second}'),
-                            Text(snapshot.data?.docs[index]
-                                .get(FirestoreRestaurantConstants.name)),
-                            Text(snapshot.data?.docs[index].get(
-                                FirestoreRestaurantConstants.restaurantType)),
-                            Text(snapshot.data?.docs[index]
-                                .get(FirestoreRestaurantConstants.comment)),
-                          ],
-                        );
+                            doc.get(FirestoreRestaurantConstants.createdAt));
+
+                        if (snapshot.data?.docs[index] != null) {
+                          final model = RestaurantModel.fromDocument(doc);
+
+                          return RestaurantCard(
+                            restaurantModel: model,
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
                       },
                       separatorBuilder: (_, index) {
                         return const SizedBox(
