@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/common/widget/custom_text_field.dart';
+import 'package:recommend_restaurant/common/widget/overlay_loader.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
 import 'package:recommend_restaurant/restaurant/widget/bottom_sheet_widget.dart';
 import 'package:recommend_restaurant/restaurant/widget/list_select_menu_widget.dart';
@@ -173,65 +174,74 @@ class _RestaurantAddScreenBuilderState
               );
             }
 
-            return Stack(
-              clipBehavior: Clip.none,
-              children: [
-                SizedBox(
-                  width: 70,
-                  height: 70,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.file(
-                      images[index - 1],
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: -7,
-                  top: -7,
-                  child: GestureDetector(
-                    onTap: () {
-                      if (index - 1 >= 0) {
-                        onRemove(index - 1);
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(1),
-                      decoration: BoxDecoration(
-                          color: PRIMARY_COLOR,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: const Icon(
-                        Icons.close,
-                        size: 20,
+            return GestureDetector(
+              onTap: () {
+                final overlayLoader = OverlayLoader(
+                  photos: images,
+                  photoIndex: index-1,
+                );
+                overlayLoader.showFullPhoto(context);
+              },
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  SizedBox(
+                    width: 70,
+                    height: 70,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(
+                        images[index - 1],
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                ),
-                if (index - 1 == 0)
                   Positioned(
-                    bottom: 0,
-                    child: Container(
-                      width: 70,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 5, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.8),
-                        borderRadius: const BorderRadius.only(
-                            bottomRight: Radius.circular(10),
-                            bottomLeft: Radius.circular(10)),
-                      ),
-                      child: const Text(
-                        '대표 사진',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.white,
+                    right: -7,
+                    top: -7,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (index - 1 >= 0) {
+                          onRemove(index - 1);
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(1),
+                        decoration: BoxDecoration(
+                            color: PRIMARY_COLOR,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: const Icon(
+                          Icons.close,
+                          size: 20,
                         ),
                       ),
                     ),
                   ),
-              ],
+                  if (index - 1 == 0)
+                    Positioned(
+                      bottom: 0,
+                      child: Container(
+                        width: 70,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.8),
+                          borderRadius: const BorderRadius.only(
+                              bottomRight: Radius.circular(10),
+                              bottomLeft: Radius.circular(10)),
+                        ),
+                        child: const Text(
+                          '대표 사진',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             );
           },
           separatorBuilder: (_, index) {

@@ -34,9 +34,11 @@ class LoginScreen extends StatelessWidget {
                 ElevatedButton(
                   onPressed: authProvider.status != LoginStatus.authenticating
                       ? () async {
-                          OverlayLoader.showLoading(context);
+                          final overlayLoader = OverlayLoader();
+
+                          overlayLoader.showLoading(context);
                           await context.read<AuthProvider>().signIn();
-                          OverlayLoader.removeLoading();
+                          overlayLoader.removeLoading();
                         }
                       : null,
                   child: const Text('Sign in with Google'),
