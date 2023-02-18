@@ -9,6 +9,15 @@ import 'package:recommend_restaurant/common/const/color.dart';
 
 class RestaurantAddProvider with ChangeNotifier {
   File? thumbNail;
+  String? _category;
+
+  String? get category => _category;
+
+  set category(String? value) {
+    _category = value;
+    notifyListeners();
+  }
+
   final _imagePicker = ImagePicker();
 
   Future<void> pickImage({required ImageSource source}) async {

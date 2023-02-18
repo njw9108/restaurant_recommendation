@@ -8,6 +8,7 @@ class CustomTextFormField extends StatelessWidget {
   final bool autofocus;
   final ValueChanged<String>? onChanged;
   final TextInputType? keyboardType;
+  final bool readOnly;
 
   const CustomTextFormField({
     Key? key,
@@ -17,6 +18,7 @@ class CustomTextFormField extends StatelessWidget {
     this.hintText,
     this.errorText,
     this.keyboardType,
+    this.readOnly = false,
   }) : super(key: key);
 
   @override
@@ -34,6 +36,7 @@ class CustomTextFormField extends StatelessWidget {
       obscureText: obscureText,
       onChanged: onChanged,
       keyboardType: keyboardType,
+      readOnly: readOnly,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
         hintText: hintText,
