@@ -8,13 +8,21 @@ import 'package:path_provider/path_provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 
 class RestaurantAddProvider with ChangeNotifier {
-  File? thumbNail;
+  File? _thumbNail;
+  File? get thumbNail => _thumbNail;
+
   String? _category;
-
   String? get category => _category;
-
   set category(String? value) {
     _category = value;
+    notifyListeners();
+  }
+
+  String maxTagsCount = '5';
+  List<String> _tags = [];
+  List<String> get tags => _tags;
+  set tags(List<String> value) {
+    _tags = value;
     notifyListeners();
   }
 
@@ -27,7 +35,7 @@ class RestaurantAddProvider with ChangeNotifier {
       File picked = File(pickedFile.path);
       final cropped = await _cropImage(picked);
       if (cropped != null) {
-        thumbNail = File(cropped.path);
+        _thumbNail = File(cropped.path);
         notifyListeners();
       }
     }
@@ -77,7 +85,7 @@ class RestaurantAddProvider with ChangeNotifier {
   }
 
   void clearImage() {
-    thumbNail = null;
+    _thumbNail = null;
     notifyListeners();
   }
 }

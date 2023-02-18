@@ -5,6 +5,8 @@ import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/common/widget/custom_text_field.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
+import 'package:recommend_restaurant/restaurant/widget/bottom_sheet_widget.dart';
+import 'package:recommend_restaurant/restaurant/widget/list_select_menu_widget.dart';
 
 class RestaurantAddScreen extends StatelessWidget {
   static String get routeName => 'restaurantAdd';
@@ -121,137 +123,58 @@ class _RestaurantAddScreenBuilderState
                       const SizedBox(
                         height: 16,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('평점'),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            RatingBar.builder(
-                              initialRating: 1,
-                              minRating: 1,
-                              direction: Axis.horizontal,
-                              allowHalfRating: true,
-                              itemCount: 5,
-                              itemPadding:
-                                  const EdgeInsets.symmetric(horizontal: 4.0),
-                              itemBuilder: (context, _) => const Icon(
-                                Icons.star,
-                                color: PRIMARY_COLOR,
-                              ),
-                              onRatingUpdate: (rating) {},
-                            ),
-                          ],
-                        ),
-                      ),
+                      _buildName(),
                       const SizedBox(
                         height: 16,
                       ),
-
+                      _buildAddress(),
+                      const SizedBox(
+                        height: 16,
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: CustomTextFormField(
-                          hintText: '가게 이름',
+                          hintText: '코멘트',
+                          maxLine: 6,
                           onChanged: (String value) {},
                         ),
                       ),
                       const SizedBox(
                         height: 16,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                        ),
-                        child: CustomTextFormField(
-                          hintText: '주소',
-                          onChanged: (String value) {},
-                        ),
+                      _buildCategory(
+                        category: restaurantAddProvider.category,
+                        onBottomSheetTap: (value) {
+                          restaurantAddProvider.category = value;
+                          Navigator.pop(context);
+                        },
                       ),
                       const SizedBox(
                         height: 16,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 5.0),
-                              child: Text(
-                                '카테고리',
-                                style: TextStyle(
-                                  color: BODY_TEXT_COLOR,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: BODY_TEXT_COLOR,
-                                  ),
-                                ),
-                              ),
-                              child: ListTile(
-                                onTap: () {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                  showModalBottomSheet(
-                                    context: context,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    ),
-                                    builder: (context) {
-                                      return _CategoryBottomSheet(
-                                        onTap: (value) {
-                                          restaurantAddProvider.category =
-                                              value;
-                                          Navigator.pop(context);
-                                        },
-                                      );
-                                    },
-                                  );
-                                },
-                                contentPadding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                title: restaurantAddProvider.category == null
-                                    ? const Text(
-                                        '카테고리를 선택해 주세요.',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: BODY_TEXT_COLOR,
-                                        ),
-                                      )
-                                    : Text(
-                                        restaurantAddProvider.category!,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                trailing: const Icon(
-                                    Icons.keyboard_arrow_right_sharp),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 5.0),
-                              child: Text(
-                                '태그',
-                                style: TextStyle(
-                                  color: BODY_TEXT_COLOR,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                      _buildTags(
+                        tags: restaurantAddProvider.tags,
+                        onBottomSheetTap: (value) {
+                          if (restaurantAddProvider.tags.contains(value)) {
+                            restaurantAddProvider.tags.remove(value);
+                            restaurantAddProvider.tags =
+                                List.from(restaurantAddProvider.tags);
+                          } else {
+                            if (restaurantAddProvider.tags.length <
+                                int.parse(restaurantAddProvider.maxTagsCount)) {
+                              restaurantAddProvider.tags.add(value);
+                              restaurantAddProvider.tags =
+                                  List.from(restaurantAddProvider.tags);
+                            }
+                          }
+                        },
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      _buildRating(),
+                      const SizedBox(
+                        height: 16,
                       ),
                     ],
                   ),
@@ -263,89 +186,92 @@ class _RestaurantAddScreenBuilderState
       ),
     );
   }
-}
 
-class _CategoryBottomSheet extends StatelessWidget {
-  final Function(String) onTap;
-
-  const _CategoryBottomSheet({
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Padding _buildRating() {
     return Padding(
-      padding: const EdgeInsets.all(25.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            '카테고리를 선택해주세요.',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-          ),
+          const Text('평점'),
           const SizedBox(
             height: 8,
           ),
-          SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                _BottomSheetItemWidget(
-                  title: '집근처',
-                  onTap: onTap,
-                ),
-                _BottomSheetItemWidget(
-                  title: '회사근처',
-                  onTap: onTap,
-                ),
-                _BottomSheetItemWidget(
-                  title: '데이트',
-                  onTap: onTap,
-                ),
-                _BottomSheetItemWidget(
-                  title: '친구',
-                  onTap: onTap,
-                ),
-                _BottomSheetItemWidget(
-                  title: '기타',
-                  onTap: onTap,
-                ),
-              ],
+          RatingBar.builder(
+            initialRating: 1,
+            minRating: 1,
+            direction: Axis.horizontal,
+            allowHalfRating: true,
+            itemCount: 5,
+            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+            itemBuilder: (context, _) => const Icon(
+              Icons.star,
+              color: PRIMARY_COLOR,
             ),
+            onRatingUpdate: (rating) {},
           ),
         ],
       ),
     );
   }
-}
 
-class _BottomSheetItemWidget extends StatelessWidget {
-  final String title;
-  final Function(String) onTap;
+  Padding _buildName() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: CustomTextFormField(
+        hintText: '가게 이름',
+        onChanged: (String value) {},
+      ),
+    );
+  }
 
-  const _BottomSheetItemWidget({
-    required this.title,
-    required this.onTap,
-  });
+  Padding _buildAddress() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+      ),
+      child: CustomTextFormField(
+        hintText: '주소',
+        onChanged: (String value) {},
+      ),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          onTap: () {
-            onTap(title);
-          },
-          title: Text(
-            title,
-          ),
-          contentPadding: EdgeInsets.zero,
-          minVerticalPadding: 0,
+  Padding _buildCategory({
+    required String? category,
+    required Function(String) onBottomSheetTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+      ),
+      child: ListSelectMenuWidget(
+        title: '카테고리',
+        content: category,
+        emptyText: '카테고리를 선택해주세요.',
+        bottomSheetWidget: CategoryBottomSheet(
+          onTap: onBottomSheetTap,
         ),
-        const Divider(
-          height: 1,
+      ),
+    );
+  }
+
+  Padding _buildTags({
+    required List<String> tags,
+    required Function(String) onBottomSheetTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+      ),
+      child: ListSelectMenuWidget(
+        title: '태그',
+        content: tags.isEmpty ? null : tags.join(', '),
+        emptyText: '태그를 선택해주세요.',
+        bottomSheetWidget: TagBottomSheet(
+          onTap: onBottomSheetTap,
         ),
-      ],
+      ),
     );
   }
 }
