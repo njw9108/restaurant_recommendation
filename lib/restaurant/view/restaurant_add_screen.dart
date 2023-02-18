@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
@@ -69,57 +72,24 @@ class _RestaurantAddScreenBuilderState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // InkWell(
-                      //   onTap: restaurantAddProvider.thumbNail != null
-                      //       ? () {
-                      //           showDialog(
-                      //             context: context,
-                      //             barrierDismissible: true,
-                      //             builder: (_) {
-                      //               return AlertDialog(
-                      //                 content: const Text('이미지를 삭제할까요?'),
-                      //                 actions: [
-                      //                   ElevatedButton(
-                      //                     onPressed: () {
-                      //                       restaurantAddProvider.clearImage();
-                      //                       Navigator.of(context).pop();
-                      //                     },
-                      //                     child: const Text('예'),
-                      //                   ),
-                      //                   ElevatedButton(
-                      //                     onPressed: () {
-                      //                       Navigator.of(context).pop();
-                      //                     },
-                      //                     child: const Text('아니오'),
-                      //                   ),
-                      //                 ],
-                      //               );
-                      //             },
-                      //           );
-                      //         }
-                      //       : () async {
-                      //           await restaurantAddProvider.pickImage(
-                      //               source: ImageSource.gallery);
-                      //         },
-                      //   child: Container(
-                      //     height: 250,
-                      //     decoration:
-                      //         BoxDecoration(color: Colors.grey.withOpacity(0.5)),
-                      //     alignment: Alignment.center,
-                      //     child: restaurantAddProvider.thumbNail != null
-                      //         ? Image.file(
-                      //             restaurantAddProvider.thumbNail!,
-                      //             fit: BoxFit.fill,
-                      //           )
-                      //         : Row(
-                      //             mainAxisAlignment: MainAxisAlignment.center,
-                      //             children: const [
-                      //               Icon(Icons.camera_alt_outlined),
-                      //               Text('대표 이미지를 추가해주세요'),
-                      //             ],
-                      //           ),
-                      //   ),
-                      // ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      _buildImages(
+                        images: restaurantAddProvider.images,
+                        maxImages:
+                            int.parse(restaurantAddProvider.maxImagesCount),
+                        onTap: () async {
+                          if (restaurantAddProvider.images.length <
+                              int.parse(restaurantAddProvider.maxImagesCount)) {
+                            await restaurantAddProvider.pickImage(
+                                source: ImageSource.gallery);
+                          }
+                        },
+                        onRemove: (index) {
+                          restaurantAddProvider.removeImage(index);
+                        },
+                      ),
                       const SizedBox(
                         height: 16,
                       ),
@@ -131,14 +101,7 @@ class _RestaurantAddScreenBuilderState
                       const SizedBox(
                         height: 16,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: CustomTextFormField(
-                          hintText: '코멘트',
-                          maxLine: 6,
-                          onChanged: (String value) {},
-                        ),
-                      ),
+                      _buildComment(),
                       const SizedBox(
                         height: 16,
                       ),
@@ -183,6 +146,112 @@ class _RestaurantAddScreenBuilderState
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  SizedBox _buildImages({
+    required VoidCallback onTap,
+    required Function(int) onRemove,
+    required int maxImages,
+    required List<File> images,
+  }) {
+    return SizedBox(
+      height: 70,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (_, index) {
+            if (index == 0) {
+              return GestureDetector(
+                onTap: onTap,
+                child: _CameraIconWidget(
+                  imageLength: images.length,
+                  maxImagesCount: maxImages,
+                ),
+              );
+            }
+
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                SizedBox(
+                  width: 70,
+                  height: 70,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      images[index - 1],
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: -7,
+                  top: -7,
+                  child: GestureDetector(
+                    onTap: () {
+                      if (index - 1 >= 0) {
+                        onRemove(index - 1);
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                          color: PRIMARY_COLOR,
+                          borderRadius: BorderRadius.circular(20)),
+                      child: const Icon(
+                        Icons.close,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+                if (index - 1 == 0)
+                  Positioned(
+                    bottom: 0,
+                    child: Container(
+                      width: 70,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.8),
+                        borderRadius: const BorderRadius.only(
+                            bottomRight: Radius.circular(10),
+                            bottomLeft: Radius.circular(10)),
+                      ),
+                      child: const Text(
+                        '대표 사진',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+          separatorBuilder: (_, index) {
+            return const SizedBox(
+              width: 16,
+            );
+          },
+          itemCount: images.length + 1,
+        ),
+      ),
+    );
+  }
+
+  Padding _buildComment() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: CustomTextFormField(
+        hintText: '코멘트',
+        maxLine: 6,
+        onChanged: (String value) {},
       ),
     );
   }
@@ -271,6 +340,42 @@ class _RestaurantAddScreenBuilderState
         bottomSheetWidget: TagBottomSheet(
           onTap: onBottomSheetTap,
         ),
+      ),
+    );
+  }
+}
+
+class _CameraIconWidget extends StatelessWidget {
+  final int imageLength;
+  final int maxImagesCount;
+
+  const _CameraIconWidget({
+    required this.imageLength,
+    required this.maxImagesCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 70,
+      height: 70,
+      decoration: BoxDecoration(
+          border: Border.all(
+            color: BODY_TEXT_COLOR,
+          ),
+          borderRadius: BorderRadius.circular(10)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.camera_alt,
+            color: BODY_TEXT_COLOR,
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Text('$imageLength/$maxImagesCount'),
+        ],
       ),
     );
   }

@@ -8,11 +8,20 @@ import 'package:path_provider/path_provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 
 class RestaurantAddProvider with ChangeNotifier {
-  File? _thumbNail;
-  File? get thumbNail => _thumbNail;
+  String maxImagesCount = '3';
+  List<File> _images = [];
+
+  List<File> get images => _images;
+
+  set images(List<File> value) {
+    _images = value;
+    notifyListeners();
+  }
 
   String? _category;
+
   String? get category => _category;
+
   set category(String? value) {
     _category = value;
     notifyListeners();
@@ -20,7 +29,9 @@ class RestaurantAddProvider with ChangeNotifier {
 
   String maxTagsCount = '5';
   List<String> _tags = [];
+
   List<String> get tags => _tags;
+
   set tags(List<String> value) {
     _tags = value;
     notifyListeners();
@@ -35,8 +46,8 @@ class RestaurantAddProvider with ChangeNotifier {
       File picked = File(pickedFile.path);
       final cropped = await _cropImage(picked);
       if (cropped != null) {
-        _thumbNail = File(cropped.path);
-        notifyListeners();
+        images.add(File(cropped.path));
+        images = List.from(images);
       }
     }
   }
@@ -50,13 +61,13 @@ class RestaurantAddProvider with ChangeNotifier {
     if (kb > 200) {
       cropImage = await FlutterImageCompress.compressAndGetFile(
         file.path,
-        '${directory.path}/restaurant_thumbnail.jpg',
+        '${directory.path}/restaurant_img.jpg',
         quality: 20,
       );
     } else {
       cropImage = await FlutterImageCompress.compressAndGetFile(
         file.path,
-        '${directory.path}/restaurant_thumbnail.jpg',
+        '${directory.path}/restaurant_img.jpg',
         quality: 100,
       );
     }
@@ -85,7 +96,11 @@ class RestaurantAddProvider with ChangeNotifier {
   }
 
   void clearImage() {
-    _thumbNail = null;
-    notifyListeners();
+    images.clear();
+  }
+
+  void removeImage(int index) {
+    images.removeAt(index);
+    images = List.from(images);
   }
 }
