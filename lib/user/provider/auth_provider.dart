@@ -153,12 +153,16 @@ class AuthProvider with ChangeNotifier {
 
   Future<bool> _getMyUserModelFromFirebaseStore(User firebaseUser) async {
     try {
-      final QuerySnapshot result = await firebaseFirestore
+      final result = await firebaseFirestore
           .collection(FirestoreUserConstants.pathUserCollection)
-          .where(FirestoreUserConstants.id, isEqualTo: firebaseUser.uid)
+          .doc(firebaseUser.uid)
           .get();
-      final List<DocumentSnapshot> documents = result.docs;
-      if (documents.isEmpty) {
+
+      final Map<String, dynamic>? userData = result.data();
+
+      if (userData == null ||
+          userData[FirestoreUserConstants.id] == null ||
+          userData[FirestoreUserConstants.id] != firebaseUser.uid) {
         _userModel = MyUserModel(
           id: firebaseUser.uid,
           photoUrl: firebaseUser.photoURL ?? '',
@@ -171,10 +175,7 @@ class AuthProvider with ChangeNotifier {
           _saveUserToLocal(_userModel!),
         ]);
       } else {
-        DocumentSnapshot documentSnapshot = documents.first;
-        final Map<String, dynamic> json =
-            documentSnapshot.data() as Map<String, dynamic>;
-        _userModel = MyUserModel.fromJson(json);
+        _userModel = MyUserModel.fromJson(userData);
 
         await _saveUserToLocal(_userModel!);
       }

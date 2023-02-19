@@ -66,7 +66,6 @@ class RestaurantAddProvider with ChangeNotifier {
 
         final url = await uploadTask.ref.getDownloadURL();
         imageUrls.add(url);
-        print(url);
       }
     } catch (e) {
       print(e);
@@ -124,7 +123,7 @@ class RestaurantAddProvider with ChangeNotifier {
 
   Future<void> pickImage({required ImageSource source}) async {
     final pickedFile =
-        await _imagePicker.pickImage(source: source, imageQuality: 20);
+        await _imagePicker.pickImage(source: source, imageQuality: 5);
     if (pickedFile != null) {
       File picked = File(pickedFile.path);
       final cropped = await _cropImage(picked);
@@ -145,7 +144,7 @@ class RestaurantAddProvider with ChangeNotifier {
       cropImage = await FlutterImageCompress.compressAndGetFile(
         file.path,
         '${directory.path}/restaurant_img.jpg',
-        quality: 20,
+        quality: 5,
       );
     } else {
       cropImage = await FlutterImageCompress.compressAndGetFile(

@@ -29,28 +29,25 @@ class RestaurantCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: 100,
-                      ),
-                      child: Text(
-                        restaurantModel.name,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 100,
+                  ),
+                  child: Text(
+                    restaurantModel.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
                     ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    _StarRating(
-                      rating: restaurantModel.rating,
-                    ),
-                  ],
+                  ),
+                ),
+
+                _StarRating(
+                  rating: restaurantModel.rating,
+                ),
+                const SizedBox(
+                  height: 8,
                 ),
                 Text(
                   restaurantModel.address,
@@ -82,11 +79,51 @@ class _Thumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (thumbnail.isNotEmpty) {
-      return Image.network(thumbnail);
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          thumbnail,
+          width: 95,
+          height: 95,
+          fit: BoxFit.cover,
+          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+            if (loadingProgress == null) {
+              return child;
+            }
+            return Container(
+              width: 95,
+              height: 95,
+              decoration: BoxDecoration(
+                color: PRIMARY_COLOR,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Icon(
+                Icons.restaurant_menu,
+                size: 25,
+              ),
+            );
+          },
+          errorBuilder: (context, object, stackTrace) {
+            return Container(
+              width: 95,
+              height: 95,
+              decoration: BoxDecoration(
+                color: PRIMARY_COLOR,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Icon(
+                Icons.restaurant_menu,
+                size: 25,
+              ),
+            );
+          },
+
+        ),
+      );
     } else {
       return Container(
-        width: 85,
-        height: 85,
+        width: 95,
+        height: 95,
         decoration: BoxDecoration(
           color: PRIMARY_COLOR,
           borderRadius: BorderRadius.circular(20),
@@ -134,6 +171,7 @@ class _Category extends StatelessWidget {
 
 class _StarRating extends StatelessWidget {
   final double rating;
+  final double iconSize = 15;
 
   const _StarRating({
     Key? key,
@@ -152,18 +190,21 @@ class _StarRating extends StatelessWidget {
           (index) => Icon(
             Icons.star,
             color: PRIMARY_COLOR,
+            size: iconSize,
           ),
         ),
         if (isHalfStar)
           Icon(
             Icons.star_half_outlined,
             color: PRIMARY_COLOR,
+            size: iconSize,
           ),
         ...List.generate(
           isHalfStar ? 4 - star : 5 - star,
           (index) => Icon(
             Icons.star_border_outlined,
             color: PRIMARY_COLOR,
+            size: iconSize,
           ),
         ),
       ],

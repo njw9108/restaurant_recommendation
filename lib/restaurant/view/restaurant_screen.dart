@@ -52,20 +52,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.goNamed(RestaurantAddScreen.routeName);
-          // final model = RestaurantModel(
-          //   name: '백반집',
-          //   thumbnail: '',
-          //   restaurantType: '타입',
-          //   rating: 4.5,
-          //   comment: '아주 맛있었다. 담에 또가야지',
-          //   images: [],
-          //   categories: ['한식', '갈비탕'],
-          //   address: '서울 강남구',
-          // );
-          //
-          // context
-          //     .read<RestaurantProvider>()
-          //     .saveRestaurantModelToFirebase(model);
         },
         child: const Icon(Icons.add),
       ),
@@ -87,9 +73,6 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                       itemBuilder: (_, index) {
                         DocumentSnapshot doc =
                             snapshot.data?.docs[index] as DocumentSnapshot;
-
-                        // final date = DateTime.fromMillisecondsSinceEpoch(
-                        //     doc.get(FirestoreRestaurantConstants.createdAt));
 
                         if (snapshot.data?.docs[index] != null) {
                           final model = RestaurantModel.fromDocument(doc);
