@@ -17,9 +17,9 @@ enum LoginStatus {
 }
 
 class AuthProvider with ChangeNotifier {
+  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final GoogleSignIn googleSignIn;
   final FirebaseAuth firebaseAuth;
-  final FirebaseFirestore firebaseFirestore;
   final SharedPreferences prefs;
 
   LoginStatus _status = LoginStatus.notInit;
@@ -34,7 +34,6 @@ class AuthProvider with ChangeNotifier {
     required this.firebaseAuth,
     required this.googleSignIn,
     required this.prefs,
-    required this.firebaseFirestore,
   });
 
   String? getUserFirebaseId() {
@@ -142,9 +141,11 @@ class AuthProvider with ChangeNotifier {
   Future<void> _saveUserToLocal(MyUserModel userModel) async {
     try {
       await prefs.setString(FirestoreUserConstants.id, userModel.id);
-      await prefs.setString(FirestoreUserConstants.nickname, userModel.nickname);
+      await prefs.setString(
+          FirestoreUserConstants.nickname, userModel.nickname);
       await prefs.setString(FirestoreUserConstants.email, userModel.email);
-      await prefs.setString(FirestoreUserConstants.photoUrl, userModel.photoUrl);
+      await prefs.setString(
+          FirestoreUserConstants.photoUrl, userModel.photoUrl);
     } catch (e) {
       rethrow;
     }

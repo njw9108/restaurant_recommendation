@@ -1,13 +1,26 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
+import 'package:recommend_restaurant/common/const/firestore_constants.dart';
+import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class RestaurantAddProvider with ChangeNotifier {
+  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  final SharedPreferences prefs;
+
+  RestaurantAddProvider({
+    required this.prefs,
+  });
+
   String maxImagesCount = '3';
   List<File> _images = [];
 
@@ -38,6 +51,76 @@ class RestaurantAddProvider with ChangeNotifier {
   }
 
   final _imagePicker = ImagePicker();
+
+  Future<List<String>> uploadImages(String restaurantId) async {
+    final uid = prefs.getString(FirestoreUserConstants.id);
+    String path;
+    List<String> imageUrls = [];
+
+    try {
+      for (int i = 0; i < _images.length; i++) {
+        path = 'restaurant/$uid/$restaurantId/image$i';
+        final storageReference = FirebaseStorage.instance.ref().child(path);
+        final uploadTask = await storageReference.putFile(
+            images[i], SettableMetadata(contentType: 'image/jpg'));
+
+        final url = await uploadTask.ref.getDownloadURL();
+        imageUrls.add(url);
+        print(url);
+      }
+    } catch (e) {
+      print(e);
+    }
+    return imageUrls;
+  }
+
+  Future<void> uploadRestaurantData(RestaurantModel model) async {
+    const uuid = Uuid();
+    final String restaurantId = uuid.v4();
+
+    final imageUrls = await uploadImages(restaurantId);
+
+    model = model.copyWith(
+      id: restaurantId,
+      thumbnail: imageUrls.isNotEmpty ? imageUrls.first : '',
+      images: imageUrls,
+    );
+
+    await saveRestaurantModelToFirebase(model);
+
+    for (int i = 0; i < _images.length; i++) {
+      _images[i].delete();
+    }
+    _images.clear();
+  }
+
+  Future<void> saveRestaurantModelToFirebase(RestaurantModel model) async {
+    try {
+      final uid = prefs.getString(FirestoreUserConstants.id);
+      await firebaseFirestore
+          .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+          .doc(uid)
+          .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
+          .doc(model.id)
+          .set(
+        {
+          FirestoreRestaurantConstants.restaurantId: model.id,
+          FirestoreRestaurantConstants.name: model.name,
+          FirestoreRestaurantConstants.thumbnail: model.thumbnail,
+          FirestoreRestaurantConstants.tags: model.tags,
+          FirestoreRestaurantConstants.rating: model.rating,
+          FirestoreRestaurantConstants.comment: model.comment,
+          FirestoreRestaurantConstants.images: model.images,
+          FirestoreRestaurantConstants.category: model.category,
+          FirestoreRestaurantConstants.address: model.address,
+          FirestoreRestaurantConstants.createdAt:
+              DateTime.now().millisecondsSinceEpoch,
+        },
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   Future<void> pickImage({required ImageSource source}) async {
     final pickedFile =

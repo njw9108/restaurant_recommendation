@@ -12,13 +12,14 @@ class FirestoreUserConstants {
 class FirestoreRestaurantConstants {
   static const pathRestaurantCollection = "restaurant";
   static const pathRestaurantListCollection = "restaurant_list";
+  static const restaurantId = "restaurantId";
   static const name = "name";
   static const thumbnail = "thumbnail";
-  static const restaurantType = "restaurantType";
+  static const tags = "tags";
   static const rating = "rating";
   static const comment = "comment";
   static const images = "images";
-  static const categories = "categories";
+  static const category = "category";
   static const address = "address";
   static const createdAt = "createdAt";
 }

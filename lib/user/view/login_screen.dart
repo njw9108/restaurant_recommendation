@@ -35,7 +35,6 @@ class LoginScreen extends StatelessWidget {
                   onPressed: authProvider.status != LoginStatus.authenticating
                       ? () async {
                           final overlayLoader = OverlayLoader();
-
                           overlayLoader.showLoading(context);
                           await context.read<AuthProvider>().signIn();
                           overlayLoader.removeLoading();

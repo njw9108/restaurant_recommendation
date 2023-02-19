@@ -2,13 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/common/widget/custom_text_field.dart';
 import 'package:recommend_restaurant/common/widget/overlay_loader.dart';
+import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
+import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 import 'package:recommend_restaurant/restaurant/widget/bottom_sheet_widget.dart';
 import 'package:recommend_restaurant/restaurant/widget/list_select_menu_widget.dart';
 
@@ -24,7 +27,11 @@ class RestaurantAddScreen extends StatelessWidget {
         return MultiProvider(
           providers: [
             ChangeNotifierProvider<RestaurantAddProvider>(
-              create: (_) => RestaurantAddProvider(),
+              create: (_) {
+                return RestaurantAddProvider(
+                  prefs: context.read<RestaurantProvider>().prefs,
+                );
+              },
             ),
           ],
           child: const RestaurantAddScreenBuilder(),
@@ -44,6 +51,21 @@ class RestaurantAddScreenBuilder extends StatefulWidget {
 
 class _RestaurantAddScreenBuilderState
     extends State<RestaurantAddScreenBuilder> {
+  String name = '';
+  String address = '';
+  String comment = '';
+  double rating = 1;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final restaurantAddProvider = context.watch<RestaurantAddProvider>();
@@ -56,7 +78,20 @@ class _RestaurantAddScreenBuilderState
         title: '식당 추가',
         appbarActions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              RestaurantModel model = RestaurantModel(
+                name: name,
+                thumbnail: '',
+                rating: rating,
+                comment: comment,
+                images: [],
+                address: address,
+                tags: restaurantAddProvider.tags,
+                category: restaurantAddProvider.category ?? '',
+              );
+              await restaurantAddProvider.uploadRestaurantData(model);
+              context.pop();
+            },
             icon: const Icon(
               Icons.done,
             ),
@@ -94,15 +129,27 @@ class _RestaurantAddScreenBuilderState
                       const SizedBox(
                         height: 16,
                       ),
-                      _buildName(),
+                      _buildName(
+                        onChanged: (value) {
+                          name = value;
+                        },
+                      ),
                       const SizedBox(
                         height: 16,
                       ),
-                      _buildAddress(),
+                      _buildAddress(
+                        onChanged: (value) {
+                          address = value;
+                        },
+                      ),
                       const SizedBox(
                         height: 16,
                       ),
-                      _buildComment(),
+                      _buildComment(
+                        onChanged: (value) {
+                          comment = value;
+                        },
+                      ),
                       const SizedBox(
                         height: 16,
                       ),
@@ -178,7 +225,7 @@ class _RestaurantAddScreenBuilderState
               onTap: () {
                 final overlayLoader = OverlayLoader(
                   photos: images,
-                  photoIndex: index-1,
+                  photoIndex: index - 1,
                 );
                 overlayLoader.showFullPhoto(context);
               },
@@ -255,13 +302,15 @@ class _RestaurantAddScreenBuilderState
     );
   }
 
-  Padding _buildComment() {
+  Padding _buildComment({
+    required ValueChanged<String>? onChanged,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: CustomTextFormField(
         hintText: '코멘트',
         maxLine: 6,
-        onChanged: (String value) {},
+        onChanged: onChanged,
       ),
     );
   }
@@ -281,37 +330,44 @@ class _RestaurantAddScreenBuilderState
             minRating: 1,
             direction: Axis.horizontal,
             allowHalfRating: true,
+            glowColor: Colors.limeAccent,
             itemCount: 5,
             itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
             itemBuilder: (context, _) => const Icon(
               Icons.star,
               color: PRIMARY_COLOR,
             ),
-            onRatingUpdate: (rating) {},
+            onRatingUpdate: (value) {
+              rating = value;
+            },
           ),
         ],
       ),
     );
   }
 
-  Padding _buildName() {
+  Padding _buildName({
+    required ValueChanged<String>? onChanged,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: CustomTextFormField(
         hintText: '가게 이름',
-        onChanged: (String value) {},
+        onChanged: onChanged,
       ),
     );
   }
 
-  Padding _buildAddress() {
+  Padding _buildAddress({
+    required ValueChanged<String>? onChanged,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
       ),
       child: CustomTextFormField(
         hintText: '주소',
-        onChanged: (String value) {},
+        onChanged: onChanged,
       ),
     );
   }

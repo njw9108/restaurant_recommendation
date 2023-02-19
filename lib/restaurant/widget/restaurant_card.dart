@@ -62,8 +62,8 @@ class RestaurantCard extends StatelessWidget {
                 const SizedBox(
                   height: 5,
                 ),
-                _Categories(
-                  categories: restaurantModel.categories,
+                _Tags(
+                  tags: restaurantModel.tags,
                 ),
               ],
             ),
@@ -149,7 +149,7 @@ class _StarRating extends StatelessWidget {
       children: [
         ...List.generate(
           star,
-              (index) => Icon(
+          (index) => Icon(
             Icons.star,
             color: PRIMARY_COLOR,
           ),
@@ -161,7 +161,7 @@ class _StarRating extends StatelessWidget {
           ),
         ...List.generate(
           isHalfStar ? 4 - star : 5 - star,
-              (index) => Icon(
+          (index) => Icon(
             Icons.star_border_outlined,
             color: PRIMARY_COLOR,
           ),
@@ -171,25 +171,24 @@ class _StarRating extends StatelessWidget {
   }
 }
 
-
-class _Categories extends StatelessWidget {
-  final List<String> categories;
+class _Tags extends StatelessWidget {
+  final List<String> tags;
   final int _maxCategoryCount = 3;
 
-  const _Categories({
+  const _Tags({
     Key? key,
-    required this.categories,
+    required this.tags,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        ...categories.mapIndexed(
+        ...tags.mapIndexed(
           (index, e) {
             if (index < _maxCategoryCount) {
               return Padding(
-                padding: index == categories.length - 1
+                padding: index == tags.length - 1
                     ? EdgeInsets.zero
                     : const EdgeInsets.only(right: 8.0),
                 child: _Category(
@@ -201,7 +200,7 @@ class _Categories extends StatelessWidget {
             }
           },
         ).toList(),
-        if (categories.length > _maxCategoryCount)
+        if (tags.length > _maxCategoryCount)
           const Text(
             '···',
             style: TextStyle(

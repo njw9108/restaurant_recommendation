@@ -24,8 +24,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final SharedPreferences prefs;
-  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 
   MyApp({super.key, required this.prefs});
 
@@ -40,7 +38,6 @@ class MyApp extends StatelessWidget {
               firebaseAuth: FirebaseAuth.instance,
               googleSignIn: GoogleSignIn(),
               prefs: prefs,
-              firebaseFirestore: firebaseFirestore,
             );
           },
         ),
@@ -59,7 +56,6 @@ class MyApp extends StatelessWidget {
           create: (_) {
             return RestaurantProvider(
               prefs: prefs,
-              firebaseFirestore: firebaseFirestore,
             );
           },
         ),
