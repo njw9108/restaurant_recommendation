@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
+import 'package:recommend_restaurant/common/widget/star_rating.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:collection/collection.dart';
 
@@ -43,7 +44,7 @@ class RestaurantCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                _StarRating(
+                StarRating(
                   rating: restaurantModel.rating,
                 ),
                 const SizedBox(
@@ -161,48 +162,6 @@ class _Category extends StatelessWidget {
   }
 }
 
-class _StarRating extends StatelessWidget {
-  final double rating;
-  final double iconSize = 15;
-
-  const _StarRating({
-    Key? key,
-    required this.rating,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    int star = rating.floor();
-    bool isHalfStar = rating - star > 0;
-
-    return Row(
-      children: [
-        ...List.generate(
-          star,
-          (index) => Icon(
-            Icons.star,
-            color: PRIMARY_COLOR,
-            size: iconSize,
-          ),
-        ),
-        if (isHalfStar)
-          Icon(
-            Icons.star_half_outlined,
-            color: PRIMARY_COLOR,
-            size: iconSize,
-          ),
-        ...List.generate(
-          isHalfStar ? 4 - star : 5 - star,
-          (index) => Icon(
-            Icons.star_border_outlined,
-            color: PRIMARY_COLOR,
-            size: iconSize,
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class _Tags extends StatelessWidget {
   final List<String> tags;

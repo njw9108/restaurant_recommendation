@@ -39,14 +39,17 @@ class RestaurantProvider {
     for (int i = 0; i < restaurantList.length; i++) {
       DocumentSnapshot doc = restaurantList[i];
 
-      CachedNetworkImageProvider imageProvider = CachedNetworkImageProvider(
-        doc.get(FirestoreRestaurantConstants.thumbnail),
-      );
+      final String? thumbnail = doc.get(FirestoreRestaurantConstants.thumbnail);
+      if (thumbnail != null && thumbnail.isNotEmpty) {
+        CachedNetworkImageProvider imageProvider = CachedNetworkImageProvider(
+          thumbnail,
+        );
 
-      precacheImage(
-        imageProvider,
-        context,
-      );
+        precacheImage(
+          imageProvider,
+          context,
+        );
+      }
     }
   }
 }

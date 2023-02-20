@@ -7,6 +7,7 @@ import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 import 'package:recommend_restaurant/restaurant/view/restaurant_add_screen.dart';
+import 'package:recommend_restaurant/restaurant/view/restaurant_detail_screen.dart';
 import 'package:recommend_restaurant/restaurant/widget/restaurant_card.dart';
 
 class RestaurantScreen extends StatefulWidget {
@@ -78,8 +79,16 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                         if (snapshot.data?.docs[index] != null) {
                           final model = RestaurantModel.fromDocument(doc);
 
-                          return RestaurantCard(
-                            restaurantModel: model,
+                          return GestureDetector(
+                            onTap: () {
+                              context.goNamed(
+                                RestaurantDetailScreen.routeName,
+                                extra: model,
+                              );
+                            },
+                            child: RestaurantCard(
+                              restaurantModel: model,
+                            ),
                           );
                         } else {
                           return const SizedBox.shrink();

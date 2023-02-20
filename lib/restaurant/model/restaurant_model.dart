@@ -7,6 +7,7 @@ part 'restaurant_model.g.dart';
 @JsonSerializable()
 class RestaurantModel {
   final String? id;
+  final int? createdAt;
   final String name;
   final String thumbnail;
   final List<String> tags;
@@ -18,6 +19,7 @@ class RestaurantModel {
 
   RestaurantModel({
     this.id,
+    this.createdAt,
     required this.name,
     required this.thumbnail,
     required this.tags,
@@ -33,6 +35,7 @@ class RestaurantModel {
 
   factory RestaurantModel.fromDocument(DocumentSnapshot doc) {
     String id = doc.get(FirestoreRestaurantConstants.restaurantId);
+    int createdAt = doc.get(FirestoreRestaurantConstants.createdAt);
     String name = doc.get(FirestoreRestaurantConstants.name);
     String thumbnail = doc.get(FirestoreRestaurantConstants.thumbnail);
     List<String> tags =
@@ -47,6 +50,7 @@ class RestaurantModel {
 
     return RestaurantModel(
       id: id,
+      createdAt: createdAt,
       name: name,
       thumbnail: thumbnail,
       rating: rating,
@@ -62,6 +66,7 @@ class RestaurantModel {
 
   RestaurantModel copyWith({
     String? id,
+    int? createdAt,
     String? name,
     String? thumbnail,
     List<String>? tags,
@@ -72,7 +77,8 @@ class RestaurantModel {
     String? address,
   }) {
     return RestaurantModel(
-      id: id ?? id,
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
       name: name ?? this.name,
       thumbnail: thumbnail ?? this.thumbnail,
       tags: tags ?? this.tags,

@@ -9,6 +9,7 @@ part of 'restaurant_model.dart';
 RestaurantModel _$RestaurantModelFromJson(Map<String, dynamic> json) =>
     RestaurantModel(
       id: json['id'] as String?,
+      createdAt: json['createdAt'] as int?,
       name: json['name'] as String,
       thumbnail: json['thumbnail'] as String,
       tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
@@ -23,6 +24,7 @@ RestaurantModel _$RestaurantModelFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$RestaurantModelToJson(RestaurantModel instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'createdAt': instance.createdAt,
       'name': instance.name,
       'thumbnail': instance.thumbnail,
       'tags': instance.tags,
