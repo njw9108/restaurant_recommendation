@@ -6,6 +6,7 @@ class DefaultLayout extends StatelessWidget {
   final String? title;
   final Widget? bottomNavigationBar;
   final Widget? floatingActionButton;
+  final List<Widget>? appbarActions;
 
   const DefaultLayout({
     Key? key,
@@ -14,6 +15,7 @@ class DefaultLayout extends StatelessWidget {
     this.title,
     this.bottomNavigationBar,
     this.floatingActionButton,
+    this.appbarActions,
   }) : super(key: key);
 
   @override
@@ -41,6 +43,7 @@ class DefaultLayout extends StatelessWidget {
             fontFamily: 'Paybooc',
           ),
         ),
+        actions: appbarActions,
       );
     }
   }

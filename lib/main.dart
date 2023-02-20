@@ -4,8 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:recommend_restaurant/common/provider/go_router_provider.dart';
-import 'package:recommend_restaurant/common/view/splash_screen.dart';
 import 'package:recommend_restaurant/firebase_options.dart';
+import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,8 +24,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final SharedPreferences prefs;
-  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 
   MyApp({super.key, required this.prefs});
 
@@ -40,7 +38,6 @@ class MyApp extends StatelessWidget {
               firebaseAuth: FirebaseAuth.instance,
               googleSignIn: GoogleSignIn(),
               prefs: prefs,
-              firebaseFirestore: firebaseFirestore,
             );
           },
         ),
@@ -53,6 +50,13 @@ class MyApp extends StatelessWidget {
             } else {
               return previous;
             }
+          },
+        ),
+        Provider<RestaurantProvider>(
+          create: (_) {
+            return RestaurantProvider(
+              prefs: prefs,
+            );
           },
         ),
       ],
