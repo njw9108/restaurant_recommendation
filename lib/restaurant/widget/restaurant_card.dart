@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
@@ -42,7 +43,6 @@ class RestaurantCard extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 _StarRating(
                   rating: restaurantModel.rating,
                 ),
@@ -81,43 +81,35 @@ class _Thumbnail extends StatelessWidget {
     if (thumbnail.isNotEmpty) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: Image.network(
-          thumbnail,
+        child: CachedNetworkImage(
           width: 95,
           height: 95,
           fit: BoxFit.cover,
-          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-            if (loadingProgress == null) {
-              return child;
-            }
-            return Container(
-              width: 95,
-              height: 95,
-              decoration: BoxDecoration(
-                color: PRIMARY_COLOR,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(
-                Icons.restaurant_menu,
-                size: 25,
-              ),
-            );
-          },
-          errorBuilder: (context, object, stackTrace) {
-            return Container(
-              width: 95,
-              height: 95,
-              decoration: BoxDecoration(
-                color: PRIMARY_COLOR,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(
-                Icons.restaurant_menu,
-                size: 25,
-              ),
-            );
-          },
-
+          imageUrl: thumbnail,
+          placeholder: (context, url) => Container(
+            width: 95,
+            height: 95,
+            decoration: BoxDecoration(
+              color: PRIMARY_COLOR,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Icon(
+              Icons.restaurant_menu,
+              size: 25,
+            ),
+          ),
+          errorWidget: (context, url, error) => Container(
+            width: 95,
+            height: 95,
+            decoration: BoxDecoration(
+              color: PRIMARY_COLOR,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Icon(
+              Icons.restaurant_menu,
+              size: 25,
+            ),
+          ),
         ),
       );
     } else {

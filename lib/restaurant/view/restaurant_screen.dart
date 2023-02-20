@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:recommend_restaurant/common/const/const_data.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
@@ -17,7 +18,7 @@ class RestaurantScreen extends StatefulWidget {
 
 class _RestaurantScreenState extends State<RestaurantScreen> {
   final ScrollController controller = ScrollController();
-  int _limit = 20;
+  int _limit = firestoreDataLimit;
   final int _limitIncrement = 20;
   List<QueryDocumentSnapshot> restaurantList = [];
 

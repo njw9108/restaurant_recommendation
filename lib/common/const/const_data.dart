@@ -1,0 +1,1 @@
+int firestoreDataLimit = 20;

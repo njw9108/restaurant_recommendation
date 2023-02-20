@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
+import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 import 'package:recommend_restaurant/restaurant/view/restaurant_screen.dart';
 import 'package:recommend_restaurant/user/view/profile_screen.dart';
 
@@ -26,6 +28,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    context.read<RestaurantProvider>().precacheFireStoreImage(context);
     controller = TabController(length: screenList.length, vsync: this);
 
     controller.addListener(tabListener);

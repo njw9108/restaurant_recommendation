@@ -122,8 +122,12 @@ class RestaurantAddProvider with ChangeNotifier {
   }
 
   Future<void> pickImage({required ImageSource source}) async {
-    final pickedFile =
-        await _imagePicker.pickImage(source: source, imageQuality: 5);
+    final pickedFile = await _imagePicker.pickImage(
+      source: source,
+      imageQuality: 20,
+      maxWidth: 350,
+      maxHeight: 500,
+    );
     if (pickedFile != null) {
       File picked = File(pickedFile.path);
       final cropped = await _cropImage(picked);
@@ -144,7 +148,7 @@ class RestaurantAddProvider with ChangeNotifier {
       cropImage = await FlutterImageCompress.compressAndGetFile(
         file.path,
         '${directory.path}/restaurant_img.jpg',
-        quality: 5,
+        quality: 20,
       );
     } else {
       cropImage = await FlutterImageCompress.compressAndGetFile(
