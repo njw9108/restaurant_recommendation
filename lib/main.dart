@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:recommend_restaurant/common/const/const_data.dart';
 import 'package:recommend_restaurant/common/provider/go_router_provider.dart';
 import 'package:recommend_restaurant/firebase_options.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
@@ -27,7 +25,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   final SharedPreferences prefs;
 
-  MyApp({super.key, required this.prefs});
+  const MyApp({super.key, required this.prefs});
 
   // This widget is the root of your application.
   @override
