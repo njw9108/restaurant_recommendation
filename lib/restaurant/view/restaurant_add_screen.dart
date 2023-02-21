@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
+import 'package:recommend_restaurant/common/widget/bottom_sheet_wrap.dart';
 import 'package:recommend_restaurant/common/widget/custom_text_field.dart';
 import 'package:recommend_restaurant/common/widget/overlay_loader.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
@@ -79,6 +80,7 @@ class _RestaurantAddScreenBuilderState
 
   @override
   Widget build(BuildContext context) {
+    print('build');
     final restaurantAddProvider = context.watch<RestaurantAddProvider>();
 
     return GestureDetector(
@@ -119,11 +121,6 @@ class _RestaurantAddScreenBuilderState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ElevatedButton(
-                          onPressed: () {
-                            restaurantAddProvider.getAddress('김밥');
-                          },
-                          child: Text('test')),
                       const SizedBox(
                         height: 16,
                       ),
@@ -144,17 +141,15 @@ class _RestaurantAddScreenBuilderState
                       const SizedBox(
                         height: 16,
                       ),
-                      _buildName(
-                        onChanged: (value) {
-                          name = value;
-                        },
-                      ),
                       const SizedBox(
                         height: 16,
                       ),
-                      _buildAddress(
-                        onChanged: (value) {
+                      _NameAddressWidget(
+                        onAddressChanged: (value) {
                           address = value;
+                        },
+                        onNameChanged: (value) {
+                          name = value;
                         },
                       ),
                       const SizedBox(
@@ -421,6 +416,277 @@ class _RestaurantAddScreenBuilderState
         bottomSheetWidget: TagBottomSheet(
           onTap: onBottomSheetTap,
         ),
+      ),
+    );
+  }
+}
+
+class _NameAddressWidget extends StatefulWidget {
+  final ValueChanged<String>? onAddressChanged;
+  final ValueChanged<String>? onNameChanged;
+
+  const _NameAddressWidget({
+    Key? key,
+    required this.onAddressChanged,
+    required this.onNameChanged,
+  }) : super(key: key);
+
+  @override
+  State<_NameAddressWidget> createState() => _NameAddressWidgetState();
+}
+
+class _NameAddressWidgetState extends State<_NameAddressWidget> {
+  bool isInput = false;
+  final focusNode = FocusNode();
+  final textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final restaurantAddProvider = context.watch<RestaurantAddProvider>();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Flexible(
+                flex: 3,
+                child: ElevatedButton(
+                  onPressed: isInput == true
+                      ? null
+                      : () {
+                          showModalBottomSheet(
+                            context: context,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                              ),
+                            ),
+                            builder: (context) {
+                              return GestureDetector(
+                                onTap: () {
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                },
+                                child: BottomSheetWrap(
+                                  title: '가게 검색',
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: SizedBox(
+                                              height: 60,
+                                              child: TextField(
+                                                controller: textController,
+                                                decoration: InputDecoration(
+                                                  filled: true,
+                                                  fillColor:
+                                                      const Color(0xfffcf4e4),
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                    borderSide: BorderSide.none,
+                                                  ),
+                                                  hintText: '장소, 주소 검색',
+                                                  prefixIcon:
+                                                      const Icon(Icons.search),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 20,
+                                          ),
+                                          SizedBox(
+                                            height: 40,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                FocusManager
+                                                    .instance.primaryFocus
+                                                    ?.unfocus();
+                                                final String place =
+                                                    textController.text;
+                                                if (place.isNotEmpty) {
+                                                  restaurantAddProvider
+                                                      .getAddress(place);
+                                                }
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: PRIMARY_COLOR,
+                                              ),
+                                              child: const Text('검색'),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 32,
+                                      ),
+                                      if (restaurantAddProvider
+                                          .searchResultList.isEmpty)
+                                        const Center(
+                                          child: Text('가게를 검색해주세요.'),
+                                        ),
+                                      ListView.separated(
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemBuilder: (_, index) {
+                                          return GestureDetector(
+                                            onTap: (){},
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.stretch,
+                                              children: [
+                                                Wrap(
+                                                  crossAxisAlignment:
+                                                      WrapCrossAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      restaurantAddProvider
+                                                              .searchResultList[
+                                                                  index]
+                                                              .place ??
+                                                          '',
+                                                      style: const TextStyle(
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                              FontWeight.w700),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    Text(
+                                                      restaurantAddProvider
+                                                              .searchResultList[
+                                                                  index]
+                                                              .categoryName ??
+                                                          '',
+                                                      style: const TextStyle(
+                                                        fontSize: 15,
+                                                        color: BODY_TEXT_COLOR,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(
+                                                  restaurantAddProvider
+                                                          .searchResultList[index]
+                                                          .roadAddressName ??
+                                                      '',
+                                                  style: const TextStyle(
+                                                    fontSize: 15,
+                                                    color: BODY_TEXT_COLOR,
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(
+                                                  "(지번) ${restaurantAddProvider.searchResultList[index].address ?? ''}",
+                                                  style: const TextStyle(
+                                                    fontSize: 15,
+                                                    color: BODY_TEXT_COLOR,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                        itemCount: restaurantAddProvider
+                                            .searchResultList.length,
+                                        separatorBuilder: (_, index) {
+                                          return const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 16.0),
+                                            child: Divider(
+                                              color: BODY_TEXT_COLOR,
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: PRIMARY_COLOR,
+                  ),
+                  child: const Text('가게 검색'),
+                ),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              const Text(
+                '직접입력',
+                textAlign: TextAlign.end,
+                style: TextStyle(fontSize: 13),
+              ),
+              Checkbox(
+                value: isInput,
+                activeColor: PRIMARY_COLOR,
+                onChanged: (value) {
+                  setState(() {
+                    isInput = value!;
+                    if (isInput) {
+                      focusNode.requestFocus();
+                    } else {
+                      focusNode.unfocus();
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          CustomTextFormField(
+            hintText: '가게 이름',
+            focusNode: focusNode,
+            readOnly: !isInput,
+            onChanged: widget.onNameChanged,
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          CustomTextFormField(
+            hintText: '주소',
+            maxLine: 2,
+            readOnly: !isInput,
+            onChanged: widget.onAddressChanged,
+          ),
+        ],
       ),
     );
   }

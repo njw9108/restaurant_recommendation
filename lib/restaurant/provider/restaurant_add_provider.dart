@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
+import 'package:recommend_restaurant/restaurant/model/address_model.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/repository/kakao_address_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,6 +52,8 @@ class RestaurantAddProvider with ChangeNotifier {
     _tags = value;
     notifyListeners();
   }
+
+  List<AddressModel> searchResultList = [];
 
   final _imagePicker = ImagePicker();
 
@@ -193,6 +196,8 @@ class RestaurantAddProvider with ChangeNotifier {
   }
 
   Future<void> getAddress(String place) async {
-    final result = await addressRepository.getAddress(place: place);
+    searchResultList = await addressRepository.getAddress(place: place);
+
+    notifyListeners();
   }
 }

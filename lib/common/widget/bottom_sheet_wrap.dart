@@ -27,9 +27,9 @@ class BottomSheetWrap extends StatelessWidget {
           const SizedBox(
             height: 8,
           ),
-          SizedBox(
-            height: 300,
+          Expanded(
             child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               physics: const AlwaysScrollableScrollPhysics(),
               child: child,
             ),

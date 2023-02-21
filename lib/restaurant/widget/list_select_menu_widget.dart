@@ -45,8 +45,11 @@ class ListSelectMenuWidget extends StatelessWidget {
               FocusManager.instance.primaryFocus?.unfocus();
               showModalBottomSheet(
                 context: context,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
                 ),
                 builder: (_) {
                   return ChangeNotifierProvider.value(
@@ -62,18 +65,18 @@ class ListSelectMenuWidget extends StatelessWidget {
             contentPadding: const EdgeInsets.symmetric(horizontal: 5),
             title: content == null
                 ? Text(
-              emptyText,
-              style: const TextStyle(
-                fontSize: 16,
-                color: BODY_TEXT_COLOR,
-              ),
-            )
+                    emptyText,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: BODY_TEXT_COLOR,
+                    ),
+                  )
                 : Text(
-              content!,
-              style: const TextStyle(
-                fontSize: 16,
-              ),
-            ),
+                    content!,
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
             trailing: const Icon(Icons.keyboard_arrow_right_sharp),
           ),
         ),
