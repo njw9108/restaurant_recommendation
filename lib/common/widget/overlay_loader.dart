@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 
 class OverlayLoader {
   final List<File>? photos;
+  final List<CachedNetworkImage>? networkImages;
   final int photoIndex;
 
   final OverlayEntry _overlayLoading =
@@ -14,12 +16,21 @@ class OverlayLoader {
 
   OverlayLoader({
     this.photos,
+    this.networkImages,
     this.photoIndex = 0,
   }) {
     if (photos != null) {
       _overlayFullPhoto = OverlayEntry(
         builder: (_) => FullPhotoOverlayWidget(
-          images: photos!,
+          files: photos!,
+          onRemove: removeFullPhoto,
+          photoIndex: photoIndex,
+        ),
+      );
+    } else if (networkImages != null) {
+      _overlayFullPhoto = OverlayEntry(
+        builder: (_) => FullPhotoOverlayWidget(
+          networkImages: networkImages,
           onRemove: removeFullPhoto,
           photoIndex: photoIndex,
         ),
@@ -58,13 +69,15 @@ class LoadingOverlayWidget extends StatelessWidget {
 }
 
 class FullPhotoOverlayWidget extends StatefulWidget {
-  final List<File> images;
+  final List<File>? files;
+  final List<CachedNetworkImage>? networkImages;
   final Function onRemove;
   final int photoIndex;
 
   const FullPhotoOverlayWidget({
     Key? key,
-    required this.images,
+    this.files,
+    this.networkImages,
     required this.onRemove,
     required this.photoIndex,
   }) : super(key: key);
@@ -116,16 +129,8 @@ class _FullPhotoOverlayWidgetState extends State<FullPhotoOverlayWidget> {
             PageView(
               physics: const AlwaysScrollableScrollPhysics(),
               controller: pageController,
-              children: [
-                ...widget.images
-                    .map(
-                      (e) => Image.file(
-                        e,
-                        fit: BoxFit.fitWidth,
-                      ),
-                    )
-                    .toList(),
-              ],
+              children:
+                  _buildImages(isNetworkImages: widget.networkImages != null),
             ),
             Positioned(
               right: 20,
@@ -152,7 +157,7 @@ class _FullPhotoOverlayWidgetState extends State<FullPhotoOverlayWidget> {
                 child: Material(
                   color: Colors.transparent,
                   child: Text(
-                    '${curPage + 1}/${widget.images.length}',
+                    '${curPage + 1}/${widget.networkImages != null ? widget.networkImages!.length : widget.files!.length}',
                     style: const TextStyle(
                       fontSize: 24,
                       color: Colors.white,
@@ -165,5 +170,22 @@ class _FullPhotoOverlayWidgetState extends State<FullPhotoOverlayWidget> {
         ),
       ),
     );
+  }
+
+  List<Widget> _buildImages({
+    required bool isNetworkImages,
+  }) {
+    if (isNetworkImages) {
+      return widget.networkImages!;
+    } else {
+      return widget.files!
+          .map(
+            (e) => Image.file(
+              e,
+              fit: BoxFit.fitWidth,
+            ),
+          )
+          .toList();
+    }
   }
 }
