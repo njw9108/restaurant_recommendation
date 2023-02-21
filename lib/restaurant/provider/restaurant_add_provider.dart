@@ -10,18 +10,20 @@ import 'package:path_provider/path_provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
+import 'package:recommend_restaurant/restaurant/repository/kakao_address_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 class RestaurantAddProvider with ChangeNotifier {
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final SharedPreferences prefs;
+  final KakaoAddressRepository addressRepository;
 
   RestaurantAddProvider({
     required this.prefs,
+    required this.addressRepository,
   });
 
-  String maxImagesCount = '3';
   List<File> _images = [];
 
   List<File> get images => _images;
@@ -188,5 +190,9 @@ class RestaurantAddProvider with ChangeNotifier {
   void removeImage(int index) {
     images.removeAt(index);
     images = List.from(images);
+  }
+
+  Future<void> getAddress(String place) async {
+    final result = await addressRepository.getAddress(place: place);
   }
 }

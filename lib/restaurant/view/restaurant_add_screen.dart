@@ -12,8 +12,11 @@ import 'package:recommend_restaurant/common/widget/overlay_loader.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
+import 'package:recommend_restaurant/restaurant/repository/kakao_address_repository.dart';
 import 'package:recommend_restaurant/restaurant/widget/bottom_sheet_widget.dart';
 import 'package:recommend_restaurant/restaurant/widget/list_select_menu_widget.dart';
+
+import '../../common/const/const_data.dart';
 
 class RestaurantAddScreen extends StatelessWidget {
   static String get routeName => 'restaurantAdd';
@@ -26,11 +29,19 @@ class RestaurantAddScreen extends StatelessWidget {
       builder: (context) {
         return MultiProvider(
           providers: [
-            ChangeNotifierProvider<RestaurantAddProvider>(
-              create: (_) {
-                return RestaurantAddProvider(
-                  prefs: context.read<RestaurantProvider>().prefs,
-                );
+            ChangeNotifierProxyProvider<KakaoAddressRepository,
+                RestaurantAddProvider?>(
+              create: (_) => null,
+              update: (context, repository, previous) {
+                if (previous == null) {
+                  final provider = RestaurantAddProvider(
+                    prefs: context.read<RestaurantProvider>().prefs,
+                    addressRepository: repository,
+                  );
+                  return provider;
+                } else {
+                  return previous;
+                }
               },
             ),
           ],
@@ -108,16 +119,20 @@ class _RestaurantAddScreenBuilderState
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      ElevatedButton(
+                          onPressed: () {
+                            restaurantAddProvider.getAddress('김밥');
+                          },
+                          child: Text('test')),
                       const SizedBox(
                         height: 16,
                       ),
                       _buildImages(
                         images: restaurantAddProvider.images,
-                        maxImages:
-                            int.parse(restaurantAddProvider.maxImagesCount),
+                        maxImages: int.parse(maxImagesCount),
                         onTap: () async {
                           if (restaurantAddProvider.images.length <
-                              int.parse(restaurantAddProvider.maxImagesCount)) {
+                              int.parse(maxImagesCount)) {
                             await restaurantAddProvider.pickImage(
                                 source: ImageSource.gallery);
                           }

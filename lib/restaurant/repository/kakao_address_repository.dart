@@ -11,7 +11,7 @@ class KakaoAddressRepository {
     required this.dio,
   });
 
-  Future<AddressModel?> getAddress({
+  Future<List<AddressModel>> getAddress({
     required String place,
     int page = 1,
     int size = 15,
@@ -24,12 +24,20 @@ class KakaoAddressRepository {
           'page': page,
           'size': size,
         },
+        options: Options(
+          headers: {
+            'accessToken': 'true',
+          },
+        ),
       );
-      final AddressModel model = AddressModel.fromJson(resp.data);
-      return model;
+      final Iterable iterable = resp.data['documents'];
+      final List<AddressModel> result =
+          iterable.map((e) => AddressModel.fromJson(e)).toList();
+
+      return result;
     } catch (e) {
       print(e);
-      return null;
+      return [];
     }
   }
 }

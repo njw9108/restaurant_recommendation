@@ -1,11 +1,14 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:recommend_restaurant/common/dio/custom_interceptor.dart';
 import 'package:recommend_restaurant/common/provider/go_router_provider.dart';
 import 'package:recommend_restaurant/firebase_options.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
+import 'package:recommend_restaurant/restaurant/repository/kakao_address_repository.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,6 +35,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<Dio>(
+          create: (context) {
+            final dio = Dio();
+            dio.interceptors.add(
+              CustomInterceptor(),
+            );
+            return dio;
+          },
+        ),
         ChangeNotifierProvider<AuthProvider>(
           create: (_) {
             return AuthProvider(
@@ -57,6 +69,18 @@ class MyApp extends StatelessWidget {
             return RestaurantProvider(
               prefs: prefs,
             );
+          },
+        ),
+        ProxyProvider<Dio, KakaoAddressRepository>(
+          update: (context, dio, previous) {
+            if (previous == null) {
+              final repository = KakaoAddressRepository(
+                dio: dio,
+              );
+              return repository;
+            } else {
+              return previous;
+            }
           },
         ),
       ],

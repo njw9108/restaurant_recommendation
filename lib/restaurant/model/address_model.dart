@@ -5,11 +5,11 @@ part 'address_model.g.dart';
 @JsonSerializable()
 class AddressModel {
   @JsonKey(name: 'address_name')
-  final String address;
+  final String? address;
   @JsonKey(name: 'road_address_name')
-  final String roadAddressName;
+  final String? roadAddressName;
   @JsonKey(name: 'place_url')
-  final String url;
+  final String? url;
 
   AddressModel({
     required this.address,
