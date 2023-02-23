@@ -108,7 +108,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp.router(
             title: 'recommend restaurants',
             theme: ThemeData(
-              fontFamily: 'Paybooc',
+              fontFamily: 'NanumGothic',
             ),
             routerConfig: goRouter,
           );
