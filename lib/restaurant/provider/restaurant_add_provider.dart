@@ -37,6 +37,8 @@ class RestaurantAddProvider
   AddressModel? _curAddressModel;
   String query = '';
 
+  final List<String> _deletedNetworkImageList = [];
+  List<ImageIdUrlData> _networkImage = [];
   List<File> _images = [];
   String _category = '';
   List<String> _tags = [];
@@ -80,6 +82,13 @@ class RestaurantAddProvider
     notifyListeners();
   }
 
+  List<ImageIdUrlData> get networkImage => _networkImage;
+
+  set networkImage(List<ImageIdUrlData> value) {
+    _networkImage = value;
+    notifyListeners();
+  }
+
   String get category => _category;
 
   set category(String value) {
@@ -88,6 +97,11 @@ class RestaurantAddProvider
   }
 
   List<String> get tags => _tags;
+
+  set tags(List<String> value) {
+    _tags = value;
+    notifyListeners();
+  }
 
   set curAddressModel(AddressModel? value) {
     if (value != null) {
@@ -102,8 +116,10 @@ class RestaurantAddProvider
 
   void clearAllData() {
     _images.clear();
+    _networkImage.clear();
     _category = '';
     _tags.clear();
+    _deletedNetworkImageList.clear();
     _name = '';
     _rating = 1;
     _comment = '';
@@ -113,40 +129,52 @@ class RestaurantAddProvider
     _curAddressModel = null;
   }
 
-  set tags(List<String> value) {
-    _tags = value;
+  void setModelForUpdate(RestaurantModel model) {
+    _tags = model.tags;
+    _category = model.category;
+    _rating = model.rating;
+    _networkImage = model.images;
+    _name = model.name;
+    _comment = model.comment;
+    _address = model.address;
+
     notifyListeners();
   }
 
   final _imagePicker = ImagePicker();
 
-  Future<List<String>> uploadImages(String restaurantId) async {
+  Future<List<ImageIdUrlData>> uploadImages(String restaurantId) async {
     final uid = prefs.getString(FirestoreUserConstants.id);
-    String path;
-    List<String> imageUrls = [];
+    List<ImageIdUrlData> imageUrls = [];
+
+    const uuid = Uuid();
 
     try {
       for (int i = 0; i < _images.length; i++) {
-        path = 'restaurant/$uid/$restaurantId/image$i';
+        final String imageId = uuid.v4();
+        final path = 'restaurant/$uid/$restaurantId/$imageId';
         final storageReference = FirebaseStorage.instance.ref().child(path);
         final uploadTask = await storageReference.putFile(
             images[i], SettableMetadata(contentType: 'image/jpg'));
 
         final url = await uploadTask.ref.getDownloadURL();
-        imageUrls.add(url);
+        imageUrls.add(ImageIdUrlData(
+          id: imageId,
+          url: url,
+        ));
       }
     } catch (e) {
-      print(e);
+      rethrow;
     }
     return imageUrls;
   }
 
   RestaurantModel _makeRestaurantModel(
-      {required List<String> imageUrls, required String id}) {
+      {required List<ImageIdUrlData> imageUrls, required String id}) {
     return RestaurantModel(
       id: id,
       name: _name,
-      thumbnail: imageUrls.isNotEmpty ? imageUrls.first : '',
+      thumbnail: imageUrls.isNotEmpty ? imageUrls.first.url : '',
       rating: _rating,
       comment: _comment,
       images: imageUrls,
@@ -160,11 +188,11 @@ class RestaurantAddProvider
     const uuid = Uuid();
     final String restaurantId = uuid.v4();
 
-    final imageUrls = await uploadImages(restaurantId);
+    final imageIdUrls = await uploadImages(restaurantId);
 
     final model = _makeRestaurantModel(
       id: restaurantId,
-      imageUrls: imageUrls,
+      imageUrls: imageIdUrls,
     );
 
     await saveRestaurantModelToFirebase(model);
@@ -191,7 +219,8 @@ class RestaurantAddProvider
           FirestoreRestaurantConstants.tags: model.tags,
           FirestoreRestaurantConstants.rating: model.rating,
           FirestoreRestaurantConstants.comment: model.comment,
-          FirestoreRestaurantConstants.images: model.images,
+          FirestoreRestaurantConstants.images:
+              model.images.map((e) => e.toJson()).toList(),
           FirestoreRestaurantConstants.category:
               model.category.isEmpty ? '기타' : model.category,
           FirestoreRestaurantConstants.address: model.address,
@@ -201,6 +230,63 @@ class RestaurantAddProvider
       );
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<void> updateRestaurantModelToFirebase(String restaurantId) async {
+    try {
+        final uid = prefs.getString(FirestoreUserConstants.id);
+
+      //delete Image from firebase storage
+      await deleteImageFromFirebaseStorage(restaurantId);
+
+      //upload image from local
+      final imageUrls = await uploadImages(restaurantId);
+
+      String thumbnail = '';
+      if (_networkImage.isNotEmpty) {
+        thumbnail = _networkImage.first.url;
+      } else if (imageUrls.isNotEmpty) {
+        thumbnail = imageUrls.first.url;
+      }
+
+      await firebaseFirestore
+          .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+          .doc(uid)
+          .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
+          .doc(restaurantId)
+          .update(
+        {
+          FirestoreRestaurantConstants.restaurantId: restaurantId,
+          FirestoreRestaurantConstants.name: _name,
+          FirestoreRestaurantConstants.thumbnail: thumbnail,
+          FirestoreRestaurantConstants.tags: _tags,
+          FirestoreRestaurantConstants.rating: _rating,
+          FirestoreRestaurantConstants.comment: _comment,
+          FirestoreRestaurantConstants.images: [
+            ..._networkImage.map((e) => e.toJson()).toList(),
+            ...imageUrls.map((e) => e.toJson()).toList(),
+          ],
+          FirestoreRestaurantConstants.category:
+              _category.isEmpty ? '기타' : _category,
+          FirestoreRestaurantConstants.address: _address,
+          FirestoreRestaurantConstants.createdAt:
+              DateTime.now().millisecondsSinceEpoch,
+        },
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> deleteImageFromFirebaseStorage(String restaurantId) async {
+    final uid = prefs.getString(FirestoreUserConstants.id);
+
+    for (int i = 0; i < _deletedNetworkImageList.length; i++) {
+      final path =
+          'restaurant/$uid/$restaurantId/${_deletedNetworkImageList[i]}';
+      final storageReference = FirebaseStorage.instance.ref().child(path);
+      await storageReference.delete();
     }
   }
 
@@ -215,8 +301,8 @@ class RestaurantAddProvider
       File picked = File(pickedFile.path);
       final cropped = await _cropImage(picked);
       if (cropped != null) {
-        images.add(File(cropped.path));
-        images = List.from(images);
+        _images.add(File(cropped.path));
+        images = List.from(_images);
       }
     }
   }
@@ -264,8 +350,14 @@ class RestaurantAddProvider
     }
   }
 
+  void removeNetworkImage(int index) async {
+    _deletedNetworkImageList.add(_networkImage[index].id);
+    _networkImage.removeAt(index);
+    networkImage = List.from(_networkImage);
+  }
+
   void removeImage(int index) {
-    images.removeAt(index);
+    _images.removeAt(index);
     images = List.from(images);
   }
 }

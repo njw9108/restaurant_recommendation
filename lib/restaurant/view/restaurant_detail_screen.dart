@@ -9,6 +9,8 @@ import 'package:recommend_restaurant/common/widget/star_rating.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:intl/intl.dart';
 
+import 'restaurant_add_screen.dart';
+
 class RestaurantDetailScreen extends StatefulWidget {
   static String get routeName => 'restaurantDetail';
 
@@ -32,7 +34,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   void initState() {
     super.initState();
     cacheImage = _makeImageList(
-      urls: widget.model.images,
+      urls: widget.model.images.map((e) => e.url).toList(),
       fit: BoxFit.cover,
     );
   }
@@ -62,7 +64,12 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
             padding: const EdgeInsets.only(
                 left: 20.0, right: 20, bottom: 25, top: 5),
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                context.goNamed(
+                  RestaurantAddScreen.routeName,
+                  extra: widget.model,
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: PRIMARY_COLOR,
               ),
@@ -92,7 +99,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     child: GestureDetector(
                       onTap: () {
                         final newImages = _makeImageList(
-                          urls: widget.model.images,
+                          urls: widget.model.images.map((e) => e.url).toList(),
                           fit: BoxFit.fitWidth,
                         );
 

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/layout/default_layout.dart';
+import '../model/restaurant_model.dart';
 import '../provider/restaurant_add_provider.dart';
 import '../widget/restaurant_add/restaurant_category_widget.dart';
 import '../widget/restaurant_add/restaurant_comment_widget.dart';
@@ -14,7 +15,12 @@ import '../widget/restaurant_add/restaurant_tag_widget.dart';
 class RestaurantAddScreen extends StatefulWidget {
   static String get routeName => 'restaurantAdd';
 
-  const RestaurantAddScreen({Key? key}) : super(key: key);
+  final RestaurantModel? model;
+
+  const RestaurantAddScreen({
+    Key? key,
+    this.model,
+  }) : super(key: key);
 
   @override
   State<RestaurantAddScreen> createState() => _RestaurantAddScreenState();
@@ -26,6 +32,16 @@ class _RestaurantAddScreenState extends State<RestaurantAddScreen> {
   @override
   void initState() {
     context.read<RestaurantAddProvider>().clearAllData();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        if (widget.model != null) {
+          context
+              .read<RestaurantAddProvider>()
+              .setModelForUpdate(widget.model!);
+        }
+      },
+    );
+
     super.initState();
   }
 
@@ -45,9 +61,22 @@ class _RestaurantAddScreenState extends State<RestaurantAddScreen> {
                 IconButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      await context
-                          .read<RestaurantAddProvider>()
-                          .uploadRestaurantData();
+                      if (widget.model != null) {
+                        //update
+                        if (widget.model!.id == null) {
+                          print('id null');
+                          context.pop();
+                          return;
+                        }
+                        await context
+                            .read<RestaurantAddProvider>()
+                            .updateRestaurantModelToFirebase(widget.model!.id!);
+                      } else {
+                        //create
+                        await context
+                            .read<RestaurantAddProvider>()
+                            .uploadRestaurantData();
+                      }
                       context.pop();
                     }
                   },
@@ -62,14 +91,21 @@ class _RestaurantAddScreenState extends State<RestaurantAddScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    RestaurantImageWidget(),
-                    RestaurantNameAddressWidget(),
-                    RestaurantCommentWidget(),
-                    RestaurantCategoryWidget(),
-                    RestaurantTagWidget(),
-                    RestaurantRatingWidget(),
-                    SizedBox(height: 50),
+                  children: [
+                    const RestaurantImageWidget(),
+                    RestaurantNameAddressWidget(
+                      name: widget.model?.name,
+                      address: widget.model?.address,
+                    ),
+                    RestaurantCommentWidget(
+                      comment: widget.model?.comment,
+                    ),
+                    const RestaurantCategoryWidget(),
+                    const RestaurantTagWidget(),
+                    RestaurantRatingWidget(
+                      initRating: widget.model?.rating ?? 1,
+                    ),
+                    const SizedBox(height: 50),
                   ],
                 ),
               ),

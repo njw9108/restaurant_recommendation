@@ -6,7 +6,9 @@ import 'common/restaurant_select_item_widget.dart';
 import 'modal_bottom_sheet/category_modal/restaurant_category_modal.dart';
 
 class RestaurantCategoryWidget extends StatelessWidget {
-  const RestaurantCategoryWidget({Key? key}) : super(key: key);
+  const RestaurantCategoryWidget({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

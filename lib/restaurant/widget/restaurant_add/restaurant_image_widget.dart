@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
@@ -13,6 +14,7 @@ class RestaurantImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<RestaurantAddProvider>();
+    final totalLength = provider.networkImage.length + provider.images.length;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 18.0),
@@ -26,12 +28,12 @@ class RestaurantImageWidget extends StatelessWidget {
               if (index == 0) {
                 return GestureDetector(
                   onTap: () async {
-                    if (provider.images.length < maxImagesCount) {
+                    if (totalLength < maxImagesCount) {
                       await provider.pickImage();
                     }
                   },
                   child: _CameraIconWidget(
-                    imageLength: provider.images.length,
+                    imageLength: totalLength,
                   ),
                 );
               }
@@ -47,24 +49,67 @@ class RestaurantImageWidget extends StatelessWidget {
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    SizedBox(
-                      width: 70,
-                      height: 70,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.file(
-                          provider.images[index - 1],
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
+                    provider.networkImage.length > index - 1
+                        ? SizedBox(
+                            width: 70,
+                            height: 70,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: CachedNetworkImage(
+                                imageUrl: provider.networkImage[index - 1].url,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Container(
+                                  width: 95,
+                                  height: 95,
+                                  decoration: BoxDecoration(
+                                    color: PRIMARY_COLOR,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Icon(
+                                    Icons.restaurant_menu,
+                                    size: 25,
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  width: 95,
+                                  height: 95,
+                                  decoration: BoxDecoration(
+                                    color: PRIMARY_COLOR,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Icon(
+                                    Icons.restaurant_menu,
+                                    size: 25,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : SizedBox(
+                            width: 70,
+                            height: 70,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.file(
+                                provider.images[
+                                    index - provider.networkImage.length - 1],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
                     Positioned(
                       right: -7,
                       top: -7,
                       child: GestureDetector(
                         onTap: () {
-                          if (index - 1 >= 0) {
-                            provider.removeImage(index - 1);
+                          if (index == 0) {
+                            return;
+                          }
+                          if (provider.networkImage.length > index - 1) {
+                            provider.removeNetworkImage(index - 1);
+                          } else {
+                            provider.removeImage(
+                                index - provider.networkImage.length - 1);
                           }
                         },
                         child: Container(
@@ -111,7 +156,7 @@ class RestaurantImageWidget extends StatelessWidget {
                 width: 16,
               );
             },
-            itemCount: provider.images.length + 1,
+            itemCount: totalLength + 1,
           ),
         ),
       ),

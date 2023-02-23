@@ -6,7 +6,12 @@ import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider
 import '../../../common/const/color.dart';
 
 class RestaurantRatingWidget extends StatelessWidget {
-  const RestaurantRatingWidget({Key? key}) : super(key: key);
+  final double initRating;
+
+  const RestaurantRatingWidget({
+    Key? key,
+    this.initRating = 1,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +25,7 @@ class RestaurantRatingWidget extends StatelessWidget {
             height: 8,
           ),
           RatingBar.builder(
-            initialRating: 1,
+            initialRating: initRating,
             minRating: 1,
             direction: Axis.horizontal,
             allowHalfRating: true,

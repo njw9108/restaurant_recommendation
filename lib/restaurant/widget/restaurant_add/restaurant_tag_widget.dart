@@ -6,7 +6,9 @@ import 'package:recommend_restaurant/restaurant/widget/restaurant_add/common/res
 import 'modal_bottom_sheet/tags_modal/restaurant_tags_modal_bottom_sheet.dart';
 
 class RestaurantTagWidget extends StatelessWidget {
-  const RestaurantTagWidget({Key? key}) : super(key: key);
+  const RestaurantTagWidget({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

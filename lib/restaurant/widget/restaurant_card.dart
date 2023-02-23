@@ -42,6 +42,9 @@ class RestaurantCard extends StatelessWidget {
                       res = true;
                       Navigator.pop(context);
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: PRIMARY_COLOR,
+                    ),
                     child: const Text('삭제'),
                   ),
                   const SizedBox(
@@ -51,6 +54,9 @@ class RestaurantCard extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(context);
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey,
+                    ),
                     child: const Text('취소'),
                   ),
                 ],
@@ -114,6 +120,13 @@ class RestaurantCard extends StatelessWidget {
                 ],
               ),
             ),
+            const Align(
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.drag_indicator,
+              ),
+            ),
+            const SizedBox(width: 5,)
           ],
         ),
       ),

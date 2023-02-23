@@ -9,8 +9,13 @@ import '../../provider/restaurant_add_provider.dart';
 import 'modal_bottom_sheet/search_modal/restaurant_search_modal_bottom_sheet.dart';
 
 class RestaurantNameAddressWidget extends StatefulWidget {
+  final String? name;
+  final String? address;
+
   const RestaurantNameAddressWidget({
     Key? key,
+    this.name,
+    this.address,
   }) : super(key: key);
 
   @override
@@ -28,13 +33,17 @@ class _RestaurantNameAddressWidgetState
 
   @override
   void initState() {
-    subscription = context
-        .read<RestaurantAddProvider>()
-        .addressModelStream
-        .listen((value) {
-      nameController.text = value.place ?? '';
-      addressController.text = "${value.roadAddressName}\n(지번)${value.address}";
-    });
+    subscription =
+        context.read<RestaurantAddProvider>().addressModelStream.listen(
+      (value) {
+        nameController.text = value.place ?? '';
+        addressController.text =
+            "${value.roadAddressName}\n(지번)${value.address}";
+      },
+    );
+
+    nameController.text = widget.name ?? '';
+    addressController.text = widget.address ?? '';
 
     super.initState();
   }
