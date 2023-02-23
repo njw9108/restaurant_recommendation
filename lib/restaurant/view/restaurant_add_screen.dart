@@ -21,6 +21,8 @@ class RestaurantAddScreen extends StatefulWidget {
 }
 
 class _RestaurantAddScreenState extends State<RestaurantAddScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     context.read<RestaurantAddProvider>().clearAllData();
@@ -35,35 +37,41 @@ class _RestaurantAddScreenState extends State<RestaurantAddScreen> {
           onTap: () {
             FocusManager.instance.primaryFocus?.unfocus();
           },
-          child: DefaultLayout(
-            title: '식당 추가',
-            appbarActions: [
-              IconButton(
-                onPressed: () async {
-                  await context
-                      .read<RestaurantAddProvider>()
-                      .uploadRestaurantData();
-                  context.pop();
-                },
-                icon: const Icon(
-                  Icons.done,
+          child: Form(
+            key: _formKey,
+            child: DefaultLayout(
+              title: '식당 추가',
+              appbarActions: [
+                IconButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await context
+                          .read<RestaurantAddProvider>()
+                          .uploadRestaurantData();
+                      context.pop();
+                    }
+                  },
+                  icon: const Icon(
+                    Icons.done,
+                  ),
                 ),
-              ),
-            ],
-            child: SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  RestaurantImageWidget(),
-                  RestaurantNameAddressWidget(),
-                  RestaurantCommentWidget(),
-                  RestaurantCategoryWidget(),
-                  RestaurantTagWidget(),
-                  RestaurantRatingWidget(),
-                  SizedBox(height: 50),
-                ],
+              ],
+              child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    RestaurantImageWidget(),
+                    RestaurantNameAddressWidget(),
+                    RestaurantCommentWidget(),
+                    RestaurantCategoryWidget(),
+                    RestaurantTagWidget(),
+                    RestaurantRatingWidget(),
+                    SizedBox(height: 50),
+                  ],
+                ),
               ),
             ),
           ),

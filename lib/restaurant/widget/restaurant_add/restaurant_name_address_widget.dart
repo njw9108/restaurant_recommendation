@@ -100,6 +100,12 @@ class _RestaurantNameAddressWidgetState
             onChanged: (value) {
               context.read<RestaurantAddProvider>().name = value;
             },
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return '식당 이름을 입력해주세요.';
+              }
+              return null;
+            },
           ),
           const SizedBox(
             height: 16,

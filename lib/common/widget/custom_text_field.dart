@@ -13,6 +13,7 @@ class CustomTextFormField extends StatelessWidget {
   final FocusNode? focusNode;
   final TextEditingController? controller;
   final double verticalPadding;
+  final FormFieldValidator<String>? validator;
 
   const CustomTextFormField({
     Key? key,
@@ -27,6 +28,7 @@ class CustomTextFormField extends StatelessWidget {
     this.focusNode,
     this.controller,
     this.verticalPadding = 8,
+    this.validator,
   }) : super(key: key);
 
   @override
@@ -48,6 +50,7 @@ class CustomTextFormField extends StatelessWidget {
       readOnly: readOnly,
       maxLines: maxLine,
       focusNode: focusNode,
+      validator: validator,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(vertical: verticalPadding, horizontal: 5),
         alignLabelWithHint: true,
