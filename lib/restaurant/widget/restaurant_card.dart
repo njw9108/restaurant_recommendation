@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/widget/star_rating.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:collection/collection.dart';
+import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 
 class RestaurantCard extends StatelessWidget {
   final RestaurantModel restaurantModel;
@@ -15,58 +17,105 @@ class RestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _Thumbnail(
-            thumbnail: restaurantModel.thumbnail,
-          ),
-          const SizedBox(
-            width: 16,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 100,
+    return Dismissible(
+      key: Key(restaurantModel.id ?? ''),
+      background: Container(
+        color: Colors.red.shade400,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: const Icon(
+          Icons.delete_forever,
+          size: 30,
+        ),
+      ),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (direction) async {
+        bool res = false;
+        await showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: const Text('선택한 식당을 삭제할까요?'),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      res = true;
+                      Navigator.pop(context);
+                    },
+                    child: const Text('삭제'),
                   ),
-                  child: Text(
-                    restaurantModel.name,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('취소'),
+                  ),
+                ],
+              );
+            });
+        return Future.value(res);
+      },
+      onDismissed: (direction) async {
+        await context
+            .read<RestaurantProvider>()
+            .deleteRestaurantFromFirebase(restaurantModel.id!);
+      },
+      child: IntrinsicHeight(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _Thumbnail(
+              thumbnail: restaurantModel.thumbnail,
+            ),
+            const SizedBox(
+              width: 16,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 100,
+                    ),
+                    child: Text(
+                      restaurantModel.name,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-                StarRating(
-                  rating: restaurantModel.rating,
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  restaurantModel.address,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
+                  StarRating(
+                    rating: restaurantModel.rating,
                   ),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                _Tags(
-                  tags: restaurantModel.tags,
-                ),
-              ],
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    restaurantModel.address,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  _Tags(
+                    tags: restaurantModel.tags,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -161,7 +210,6 @@ class _Category extends StatelessWidget {
     );
   }
 }
-
 
 class _Tags extends StatelessWidget {
   final List<String> tags;

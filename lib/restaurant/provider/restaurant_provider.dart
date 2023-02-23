@@ -52,4 +52,14 @@ class RestaurantProvider {
       }
     }
   }
+
+  Future<void> deleteRestaurantFromFirebase(String restaurantId) async {
+    final uid = prefs.getString(FirestoreUserConstants.id);
+    await firebaseFirestore
+        .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+        .doc(uid)
+        .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
+        .doc(restaurantId)
+        .delete();
+  }
 }
