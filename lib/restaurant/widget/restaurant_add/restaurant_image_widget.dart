@@ -15,7 +15,7 @@ class RestaurantImageWidget extends StatelessWidget {
     final provider = context.watch<RestaurantAddProvider>();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 18.0),
       child: SizedBox(
         height: 70,
         child: Padding(

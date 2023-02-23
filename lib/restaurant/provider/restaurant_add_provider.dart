@@ -28,7 +28,8 @@ class RestaurantAddProvider
     required super.repository,
   });
 
-  final _addressModelStreamController = StreamController<AddressModel>.broadcast();
+  final _addressModelStreamController =
+      StreamController<AddressModel>.broadcast();
 
   Stream<AddressModel> get addressModelStream =>
       _addressModelStreamController.stream.asBroadcastStream();
@@ -40,7 +41,7 @@ class RestaurantAddProvider
   String _category = '';
   List<String> _tags = [];
   String _name = '';
-  double _rating = 0;
+  double _rating = 1;
   String _comment = '';
   String _address = '';
 
@@ -91,6 +92,8 @@ class RestaurantAddProvider
   set curAddressModel(AddressModel? value) {
     if (value != null) {
       _addressModelStreamController.sink.add(value);
+      _address = "${value.roadAddressName}\n(지번)${value.address}";
+      _name = value.place ?? '';
     }
     _curAddressModel = value;
   }
@@ -102,7 +105,7 @@ class RestaurantAddProvider
     _category = '';
     _tags.clear();
     _name = '';
-    _rating = 0;
+    _rating = 1;
     _comment = '';
     _address = '';
     cursorState = PaginationNotYet();
@@ -189,7 +192,8 @@ class RestaurantAddProvider
           FirestoreRestaurantConstants.rating: model.rating,
           FirestoreRestaurantConstants.comment: model.comment,
           FirestoreRestaurantConstants.images: model.images,
-          FirestoreRestaurantConstants.category: model.category,
+          FirestoreRestaurantConstants.category:
+              model.category.isEmpty ? '기타' : model.category,
           FirestoreRestaurantConstants.address: model.address,
           FirestoreRestaurantConstants.createdAt:
               DateTime.now().millisecondsSinceEpoch,

@@ -62,6 +62,7 @@ class _RestaurantAddScreenState extends State<RestaurantAddScreen> {
                   RestaurantCategoryWidget(),
                   RestaurantTagWidget(),
                   RestaurantRatingWidget(),
+                  SizedBox(height: 50),
                 ],
               ),
             ),
