@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:recommend_restaurant/common/const/color.dart';
-import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
 
-class ListSelectMenuWidget extends StatelessWidget {
+import '../../../../common/const/color.dart';
+
+class RestaurantSelectItemWidget extends StatelessWidget {
   final String title;
-  final String? content;
   final String emptyText;
-  final Widget bottomSheetWidget;
+  final String content;
+  final Widget bottomSheet;
 
-  const ListSelectMenuWidget({
-    super.key,
+  const RestaurantSelectItemWidget({
+    Key? key,
     required this.title,
-    required this.content,
+    required this.bottomSheet,
     required this.emptyText,
-    required this.bottomSheetWidget,
-  });
+    required this.content,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -52,18 +51,12 @@ class ListSelectMenuWidget extends StatelessWidget {
                   ),
                 ),
                 builder: (_) {
-                  return ChangeNotifierProvider.value(
-                    value: context.watch<RestaurantAddProvider>(),
-                    child: SizedBox(
-                      height: 400,
-                      child: bottomSheetWidget,
-                    ),
-                  );
+                  return bottomSheet;
                 },
               );
             },
             contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-            title: content == null
+            title: content.trim().isEmpty
                 ? Text(
                     emptyText,
                     style: const TextStyle(
@@ -72,7 +65,7 @@ class ListSelectMenuWidget extends StatelessWidget {
                     ),
                   )
                 : Text(
-                    content!,
+                    content,
                     style: const TextStyle(
                       fontSize: 16,
                     ),

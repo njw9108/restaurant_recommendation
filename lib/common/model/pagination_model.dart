@@ -11,6 +11,7 @@ class PaginationError extends PaginationBase {
     required this.message,
   });
 }
+class PaginationNotYet extends PaginationBase {}
 
 class PaginationLoading extends PaginationBase {}
 

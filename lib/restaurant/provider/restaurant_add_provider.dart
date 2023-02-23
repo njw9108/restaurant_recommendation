@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,23 +10,67 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
+import 'package:recommend_restaurant/common/model/pagination_model.dart';
+import 'package:recommend_restaurant/common/provider/pagination_provider.dart';
 import 'package:recommend_restaurant/restaurant/model/address_model.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/repository/kakao_address_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
-class RestaurantAddProvider with ChangeNotifier {
+class RestaurantAddProvider
+    extends PaginationProvider<AddressModel, KakaoAddressRepository> {
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final SharedPreferences prefs;
-  final KakaoAddressRepository addressRepository;
 
   RestaurantAddProvider({
     required this.prefs,
-    required this.addressRepository,
+    required super.repository,
   });
 
+  final _addressModelStreamController = StreamController<AddressModel>.broadcast();
+
+  Stream<AddressModel> get addressModelStream =>
+      _addressModelStreamController.stream.asBroadcastStream();
+
+  AddressModel? _curAddressModel;
+  String query = '';
+
   List<File> _images = [];
+  String _category = '';
+  List<String> _tags = [];
+  String _name = '';
+  double _rating = 0;
+  String _comment = '';
+  String _address = '';
+
+  String get name => _name;
+
+  set name(String value) {
+    _name = value;
+    notifyListeners();
+  }
+
+  double get rating => _rating;
+
+  set rating(double value) {
+    _rating = value;
+    notifyListeners();
+  }
+
+  String get comment => _comment;
+
+  set comment(String value) {
+    _comment = value;
+    notifyListeners();
+  }
+
+  String get address => _address;
+
+  set address(String value) {
+    _address = value;
+    notifyListeners();
+  }
 
   List<File> get images => _images;
 
@@ -34,26 +79,41 @@ class RestaurantAddProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  String? _category;
+  String get category => _category;
 
-  String? get category => _category;
-
-  set category(String? value) {
+  set category(String value) {
     _category = value;
     notifyListeners();
   }
 
-  String maxTagsCount = '5';
-  List<String> _tags = [];
-
   List<String> get tags => _tags;
+
+  set curAddressModel(AddressModel? value) {
+    if (value != null) {
+      _addressModelStreamController.sink.add(value);
+    }
+    _curAddressModel = value;
+  }
+
+  AddressModel? get curAddressModel => _curAddressModel;
+
+  void clearAllData() {
+    _images.clear();
+    _category = '';
+    _tags.clear();
+    _name = '';
+    _rating = 0;
+    _comment = '';
+    _address = '';
+    cursorState = PaginationNotYet();
+    query = '';
+    _curAddressModel = null;
+  }
 
   set tags(List<String> value) {
     _tags = value;
     notifyListeners();
   }
-
-  List<AddressModel> searchResultList = [];
 
   final _imagePicker = ImagePicker();
 
@@ -78,16 +138,30 @@ class RestaurantAddProvider with ChangeNotifier {
     return imageUrls;
   }
 
-  Future<void> uploadRestaurantData(RestaurantModel model) async {
+  RestaurantModel _makeRestaurantModel(
+      {required List<String> imageUrls, required String id}) {
+    return RestaurantModel(
+      id: id,
+      name: _name,
+      thumbnail: imageUrls.isNotEmpty ? imageUrls.first : '',
+      rating: _rating,
+      comment: _comment,
+      images: imageUrls,
+      address: _address,
+      tags: _tags,
+      category: _category,
+    );
+  }
+
+  Future<void> uploadRestaurantData() async {
     const uuid = Uuid();
     final String restaurantId = uuid.v4();
 
     final imageUrls = await uploadImages(restaurantId);
 
-    model = model.copyWith(
+    final model = _makeRestaurantModel(
       id: restaurantId,
-      thumbnail: imageUrls.isNotEmpty ? imageUrls.first : '',
-      images: imageUrls,
+      imageUrls: imageUrls,
     );
 
     await saveRestaurantModelToFirebase(model);
@@ -126,7 +200,7 @@ class RestaurantAddProvider with ChangeNotifier {
     }
   }
 
-  Future<void> pickImage({required ImageSource source}) async {
+  Future<void> pickImage({ImageSource source = ImageSource.gallery}) async {
     final pickedFile = await _imagePicker.pickImage(
       source: source,
       imageQuality: 20,
@@ -186,18 +260,8 @@ class RestaurantAddProvider with ChangeNotifier {
     }
   }
 
-  void clearImage() {
-    images.clear();
-  }
-
   void removeImage(int index) {
     images.removeAt(index);
     images = List.from(images);
-  }
-
-  Future<void> getAddress(String place) async {
-    searchResultList = await addressRepository.getAddress(place: place);
-
-    notifyListeners();
   }
 }

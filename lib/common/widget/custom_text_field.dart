@@ -11,6 +11,8 @@ class CustomTextFormField extends StatelessWidget {
   final bool readOnly;
   final int maxLine;
   final FocusNode? focusNode;
+  final TextEditingController? controller;
+  final double verticalPadding;
 
   const CustomTextFormField({
     Key? key,
@@ -23,6 +25,8 @@ class CustomTextFormField extends StatelessWidget {
     this.readOnly = false,
     this.maxLine = 1,
     this.focusNode,
+    this.controller,
+    this.verticalPadding = 8,
   }) : super(key: key);
 
   @override
@@ -35,6 +39,7 @@ class CustomTextFormField extends StatelessWidget {
     );
 
     return TextFormField(
+      controller: controller,
       cursorColor: PRIMARY_COLOR,
       autofocus: autofocus,
       obscureText: obscureText,
@@ -44,7 +49,7 @@ class CustomTextFormField extends StatelessWidget {
       maxLines: maxLine,
       focusNode: focusNode,
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+        contentPadding: EdgeInsets.symmetric(vertical: verticalPadding, horizontal: 5),
         alignLabelWithHint: true,
         hintText: hintText,
         errorText: errorText,

@@ -23,7 +23,7 @@ class PaginationProvider<T, U extends IBasePaginationRepository<T>>
     with ChangeNotifier {
   final U repository;
   final paginationThrottle = Throttle(
-    const Duration(seconds: 3),
+    const Duration(seconds: 1),
     initialValue: _PaginationInfo(query: ''),
     checkEquality: false,
   );
@@ -36,11 +36,12 @@ class PaginationProvider<T, U extends IBasePaginationRepository<T>>
     });
   }
 
-  PaginationBase cursorState = PaginationLoading();
+  PaginationBase cursorState = PaginationNotYet();
+  int page = 1;
 
   Future<void> paginate({
     required String query,
-    int size = 20,
+    int size = 15,
     int page = 1,
     //true인 경우 추가로 데이터 더 가져오기,
     //false는 새로고침(현재상태를 덮어 씌움)
@@ -63,7 +64,6 @@ class PaginationProvider<T, U extends IBasePaginationRepository<T>>
   Future<void> _throttlePagination(_PaginationInfo info) async {
     String query = info.query;
     int size = info.size;
-    int page = info.page;
     bool fetchMore = info.fetchMore;
     bool forceRefetch = info.forceRefetch;
     try {
@@ -84,6 +84,12 @@ class PaginationProvider<T, U extends IBasePaginationRepository<T>>
       //1) hasMore = false(기존 상태에서 이미 다음 데이터가 없다는 값을 들고 있다면)
       //2) 로딩중 - featchMore가 true일때(추가 데이터를 가져오는 상황)
       //        - fetchMore가 false일때는 기존 요청을 멈추고 새로고침을 한다.
+      if (forceRefetch) {
+        page = 1;
+      } else if (page == 3) {
+        return;
+      }
+
       if (cursorState is Pagination<T> && !forceRefetch) {
         final pState = cursorState as Pagination<T>;
         if (pState.meta.isEnd) {
@@ -116,6 +122,7 @@ class PaginationProvider<T, U extends IBasePaginationRepository<T>>
         notifyListeners();
 
         page += 1;
+
         // params = params.copyWith(
         //   after: pState.data.last.id,
         // );

@@ -13,6 +13,8 @@ import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'restaurant/provider/restaurant_add_provider.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -78,6 +80,21 @@ class MyApp extends StatelessWidget {
                 dio: dio,
               );
               return repository;
+            } else {
+              return previous;
+            }
+          },
+        ),
+        ChangeNotifierProxyProvider<KakaoAddressRepository,
+            RestaurantAddProvider?>(
+          create: (_) => null,
+          update: (context, repository, previous) {
+            if (previous == null) {
+              final provider = RestaurantAddProvider(
+                prefs: context.read<RestaurantProvider>().prefs,
+                repository: repository,
+              );
+              return provider;
             } else {
               return previous;
             }
