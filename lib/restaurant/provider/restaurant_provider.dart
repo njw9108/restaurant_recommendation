@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:recommend_restaurant/common/const/const_data.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
@@ -53,8 +54,21 @@ class RestaurantProvider {
     }
   }
 
-  Future<void> deleteRestaurantFromFirebase(String restaurantId) async {
+  Future<void> deleteRestaurantFromFirebase({
+    required String restaurantId,
+    required List<String> imageIdList,
+  }) async {
     final uid = prefs.getString(FirestoreUserConstants.id);
+    //delete image from firebase storage
+    for(int i=0;i<imageIdList.length;i++){
+      final path =
+          'restaurant/$uid/$restaurantId/${imageIdList[i]}';
+      final storageReference = FirebaseStorage.instance.ref().child(path);
+      await storageReference.delete();
+    }
+
+
+    //delete data from firebase store
     await firebaseFirestore
         .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
         .doc(uid)

@@ -6,6 +6,8 @@ import 'package:recommend_restaurant/common/const/const_data.dart';
 import 'package:recommend_restaurant/common/widget/overlay_loader.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
 
+import '../../../common/util/utils.dart';
+
 class RestaurantImageWidget extends StatelessWidget {
   const RestaurantImageWidget({
     Key? key,
@@ -40,8 +42,14 @@ class RestaurantImageWidget extends StatelessWidget {
 
               return GestureDetector(
                 onTap: () {
+                  final newImages = makeImageList(
+                    urls: provider.networkImage.map((e) => e.url).toList(),
+                    fit: BoxFit.fitWidth,
+                  );
+
                   final overlayLoader = OverlayLoader(
                     photos: provider.images,
+                    networkImages: newImages,
                     photoIndex: index - 1,
                   );
                   overlayLoader.showFullPhoto(context);
@@ -119,7 +127,7 @@ class RestaurantImageWidget extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20)),
                           child: const Icon(
                             Icons.close,
-                            size: 20,
+                            size: 23,
                           ),
                         ),
                       ),

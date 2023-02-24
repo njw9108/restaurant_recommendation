@@ -65,9 +65,10 @@ class RestaurantCard extends StatelessWidget {
         return Future.value(res);
       },
       onDismissed: (direction) async {
-        await context
-            .read<RestaurantProvider>()
-            .deleteRestaurantFromFirebase(restaurantModel.id!);
+        await context.read<RestaurantProvider>().deleteRestaurantFromFirebase(
+              restaurantId: restaurantModel.id!,
+              imageIdList: restaurantModel.images.map((e) => e.id).toList(),
+            );
       },
       child: IntrinsicHeight(
         child: Row(
@@ -126,7 +127,9 @@ class RestaurantCard extends StatelessWidget {
                 Icons.drag_indicator,
               ),
             ),
-            const SizedBox(width: 5,)
+            const SizedBox(
+              width: 5,
+            )
           ],
         ),
       ),
