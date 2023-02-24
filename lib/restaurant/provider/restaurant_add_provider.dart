@@ -373,6 +373,16 @@ class RestaurantAddProvider
     }
   }
 
+  Future<void> deleteTagItemFromFirebase(String item) async {
+    _tagList.remove(item);
+    tagList = List.from(_tagList);
+  }
+
+  Future<void> deleteCategoryItemFromFirebase(String item) async {
+    _categoryList.remove(item);
+    categoryList = List.from(_categoryList);
+  }
+
   Future<void> deleteImageFromFirebaseStorage(String restaurantId) async {
     final uid = prefs.getString(FirestoreUserConstants.id);
 
