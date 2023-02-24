@@ -36,6 +36,7 @@ class RestaurantAddProvider
 
   AddressModel? _curAddressModel;
   String query = '';
+  int _thumbnailIndex = 0;
 
   final List<String> _deletedNetworkImageList = [];
   List<ImageIdUrlData> _networkImage = [];
@@ -103,6 +104,13 @@ class RestaurantAddProvider
     notifyListeners();
   }
 
+  int get thumbnailIndex => _thumbnailIndex;
+
+  set thumbnailIndex(int value) {
+    _thumbnailIndex = value;
+    notifyListeners();
+  }
+
   set curAddressModel(AddressModel? value) {
     if (value != null) {
       _addressModelStreamController.sink.add(value);
@@ -127,6 +135,7 @@ class RestaurantAddProvider
     cursorState = PaginationNotYet();
     query = '';
     _curAddressModel = null;
+    _thumbnailIndex = 0;
   }
 
   void setModelForUpdate(RestaurantModel model) {
@@ -174,7 +183,7 @@ class RestaurantAddProvider
     return RestaurantModel(
       id: id,
       name: _name,
-      thumbnail: imageUrls.isNotEmpty ? imageUrls.first.url : '',
+      thumbnail: imageUrls.isNotEmpty ? imageUrls[thumbnailIndex].url : '',
       rating: _rating,
       comment: _comment,
       images: imageUrls,
@@ -235,7 +244,7 @@ class RestaurantAddProvider
 
   Future<void> updateRestaurantModelToFirebase(String restaurantId) async {
     try {
-        final uid = prefs.getString(FirestoreUserConstants.id);
+      final uid = prefs.getString(FirestoreUserConstants.id);
 
       //delete Image from firebase storage
       await deleteImageFromFirebaseStorage(restaurantId);
@@ -244,10 +253,10 @@ class RestaurantAddProvider
       final imageUrls = await uploadImages(restaurantId);
 
       String thumbnail = '';
-      if (_networkImage.isNotEmpty) {
-        thumbnail = _networkImage.first.url;
-      } else if (imageUrls.isNotEmpty) {
-        thumbnail = imageUrls.first.url;
+      if (_networkImage.length > thumbnailIndex) {
+        thumbnail = _networkImage[thumbnailIndex].url;
+      } else {
+        thumbnail = imageUrls[thumbnailIndex - _networkImage.length].url;
       }
 
       await firebaseFirestore

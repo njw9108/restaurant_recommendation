@@ -48,7 +48,7 @@ class RestaurantImageWidget extends StatelessWidget {
                   );
 
                   final overlayLoader = OverlayLoader(
-                    photos: provider.images,
+                    imageFiles: provider.images,
                     networkImages: newImages,
                     photoIndex: index - 1,
                   );
@@ -132,7 +132,7 @@ class RestaurantImageWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (index - 1 == 0)
+                    if (index - 1 == provider.thumbnailIndex)
                       Positioned(
                         bottom: 0,
                         child: Container(

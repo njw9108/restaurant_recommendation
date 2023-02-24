@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 
 class OverlayLoader {
-  final List<File>? photos;
+  final List<File>? imageFiles;
   final List<CachedNetworkImage>? networkImages;
   final int photoIndex;
 
@@ -15,13 +15,13 @@ class OverlayLoader {
   late OverlayEntry _overlayFullPhoto;
 
   OverlayLoader({
-    this.photos,
+    this.imageFiles,
     this.networkImages,
     this.photoIndex = 0,
   }) {
     _overlayFullPhoto = OverlayEntry(
       builder: (_) => FullPhotoOverlayWidget(
-        files: photos,
+        files: imageFiles,
         networkImages: networkImages,
         onRemove: removeFullPhoto,
         photoIndex: photoIndex,

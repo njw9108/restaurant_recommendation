@@ -61,53 +61,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
       createdAt = format.format(date);
     }
     return DefaultLayout(
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(
-                left: 20.0, right: 20, bottom: 25, top: 5),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.goNamed(
-                        RestaurantAddScreen.routeName,
-                        extra: widget.model,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: PRIMARY_COLOR,
-                    ),
-                    child: const Text('수정'),
-                  ),
-                ),
-                const SizedBox(
-                  width: 30,
-                ),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.goNamed(
-                        RestaurantAddScreen.routeName,
-                        extra: widget.model,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red.shade400,
-                    ),
-                    child: const Text('삭제'),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
       child: Stack(
         children: [
           Positioned(
@@ -186,37 +139,37 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                       //delete
                       bool res = false;
                       await showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              content: const Text('식당을 삭제할까요?'),
-                              actions: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    res = true;
-                                    Navigator.pop(context);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: PRIMARY_COLOR,
-                                  ),
-                                  child: const Text('삭제'),
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: const Text('식당을 삭제할까요?'),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  res = true;
+                                  Navigator.pop(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: PRIMARY_COLOR,
                                 ),
-                                const SizedBox(
-                                  width: 8,
+                                child: const Text('삭제'),
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey,
                                 ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.grey,
-                                  ),
-                                  child: const Text('취소'),
-                                ),
-                              ],
-                            );
-                          });
-
+                                child: const Text('취소'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                       if (res) {
                         await context
                             .read<RestaurantProvider>()
