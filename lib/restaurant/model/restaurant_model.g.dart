@@ -20,6 +20,7 @@ RestaurantModel _$RestaurantModelFromJson(Map<String, dynamic> json) =>
           .toList(),
       category: json['category'] as String,
       address: json['address'] as String,
+      isVisited: json['isVisited'] as bool,
     );
 
 Map<String, dynamic> _$RestaurantModelToJson(RestaurantModel instance) =>
@@ -34,4 +35,5 @@ Map<String, dynamic> _$RestaurantModelToJson(RestaurantModel instance) =>
       'images': instance.images,
       'category': instance.category,
       'address': instance.address,
+      'isVisited': instance.isVisited,
     };

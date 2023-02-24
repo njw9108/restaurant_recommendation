@@ -16,6 +16,8 @@ import '../widget/restaurant_add/restaurant_rating_widget.dart';
 import '../widget/restaurant_add/restaurant_tag_widget.dart';
 import 'package:collection/collection.dart';
 
+import '../widget/restaurant_add/restaurant_visited_widget.dart';
+
 class RestaurantAddScreen extends StatefulWidget {
   static String get routeName => 'restaurantAdd';
 
@@ -74,6 +76,7 @@ class _RestaurantAddScreenState extends State<RestaurantAddScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const RestaurantImageWidget(),
+                    const RestaurantVisitedWidget(),
                     RestaurantNameAddressWidget(
                       name: widget.model?.name,
                       address: widget.model?.address,

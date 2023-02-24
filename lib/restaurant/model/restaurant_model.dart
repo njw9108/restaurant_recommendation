@@ -40,6 +40,7 @@ class RestaurantModel {
   final List<ImageIdUrlData> images;
   final String category;
   final String address;
+  final bool isVisited;
 
   RestaurantModel({
     this.id,
@@ -52,6 +53,7 @@ class RestaurantModel {
     required this.images,
     required this.category,
     required this.address,
+    required this.isVisited,
   });
 
   factory RestaurantModel.fromJson(Map<String, dynamic> json) =>
@@ -72,6 +74,7 @@ class RestaurantModel {
         iterable.map((e) => ImageIdUrlData.fromJson(e)).toList();
     String category = doc.get(FirestoreRestaurantConstants.category);
     String address = doc.get(FirestoreRestaurantConstants.address);
+    bool isVisited = doc.get(FirestoreRestaurantConstants.isVisited);
 
     return RestaurantModel(
       id: id,
@@ -84,6 +87,7 @@ class RestaurantModel {
       address: address,
       tags: tags,
       category: category,
+      isVisited: isVisited,
     );
   }
 
@@ -100,6 +104,7 @@ class RestaurantModel {
     List<ImageIdUrlData>? images,
     String? category,
     String? address,
+    bool? isVisited,
   }) {
     return RestaurantModel(
       id: id ?? this.id,
@@ -112,6 +117,7 @@ class RestaurantModel {
       images: images ?? this.images,
       category: category ?? this.category,
       address: address ?? this.address,
+      isVisited: isVisited ?? this.isVisited,
     );
   }
 }

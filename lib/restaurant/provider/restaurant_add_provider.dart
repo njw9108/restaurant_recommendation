@@ -40,6 +40,7 @@ class RestaurantAddProvider
   String query = '';
   int _thumbnailIndex = 0;
 
+  bool _isVisited = false;
   List<String> _tagList = [];
   List<String> _categoryList = [];
   final List<String> _deletedNetworkImageList = [];
@@ -125,6 +126,13 @@ class RestaurantAddProvider
 
   List<String> get categoryList => _categoryList;
 
+  bool get isVisited => _isVisited;
+
+  set isVisited(bool value) {
+    _isVisited = value;
+    notifyListeners();
+  }
+
   set categoryList(List<String> value) {
     _categoryList = value.toList();
     saveCategoryListToFirebase(_categoryList);
@@ -156,6 +164,7 @@ class RestaurantAddProvider
     query = '';
     _curAddressModel = null;
     _thumbnailIndex = 0;
+    _isVisited = false;
   }
 
   void setModelForUpdate(RestaurantModel model) {
@@ -166,6 +175,7 @@ class RestaurantAddProvider
     _name = model.name;
     _comment = model.comment;
     _address = model.address;
+    _isVisited = model.isVisited;
 
     notifyListeners();
   }
@@ -210,6 +220,7 @@ class RestaurantAddProvider
       address: _address,
       tags: _tags,
       category: _category,
+      isVisited: _isVisited,
     );
   }
 
@@ -305,6 +316,7 @@ class RestaurantAddProvider
           FirestoreRestaurantConstants.category:
               model.category.isEmpty ? '기타' : model.category,
           FirestoreRestaurantConstants.address: model.address,
+          FirestoreRestaurantConstants.isVisited: model.isVisited,
           FirestoreRestaurantConstants.createdAt:
               DateTime.now().millisecondsSinceEpoch,
         },
@@ -351,6 +363,7 @@ class RestaurantAddProvider
           FirestoreRestaurantConstants.category:
               _category.isEmpty ? '기타' : _category,
           FirestoreRestaurantConstants.address: _address,
+          FirestoreRestaurantConstants.isVisited: _isVisited,
           FirestoreRestaurantConstants.createdAt:
               DateTime.now().millisecondsSinceEpoch,
         },
