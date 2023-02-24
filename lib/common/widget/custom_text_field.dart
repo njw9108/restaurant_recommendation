@@ -10,6 +10,10 @@ class CustomTextFormField extends StatelessWidget {
   final TextInputType? keyboardType;
   final bool readOnly;
   final int maxLine;
+  final FocusNode? focusNode;
+  final TextEditingController? controller;
+  final double verticalPadding;
+  final FormFieldValidator<String>? validator;
 
   const CustomTextFormField({
     Key? key,
@@ -21,6 +25,10 @@ class CustomTextFormField extends StatelessWidget {
     this.keyboardType,
     this.readOnly = false,
     this.maxLine = 1,
+    this.focusNode,
+    this.controller,
+    this.verticalPadding = 8,
+    this.validator,
   }) : super(key: key);
 
   @override
@@ -33,6 +41,7 @@ class CustomTextFormField extends StatelessWidget {
     );
 
     return TextFormField(
+      controller: controller,
       cursorColor: PRIMARY_COLOR,
       autofocus: autofocus,
       obscureText: obscureText,
@@ -40,8 +49,10 @@ class CustomTextFormField extends StatelessWidget {
       keyboardType: keyboardType,
       readOnly: readOnly,
       maxLines: maxLine,
+      focusNode: focusNode,
+      validator: validator,
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+        contentPadding: EdgeInsets.symmetric(vertical: verticalPadding, horizontal: 5),
         alignLabelWithHint: true,
         hintText: hintText,
         errorText: errorText,

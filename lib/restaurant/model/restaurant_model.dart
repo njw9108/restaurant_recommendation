@@ -4,6 +4,30 @@ import 'package:recommend_restaurant/common/const/firestore_constants.dart';
 
 part 'restaurant_model.g.dart';
 
+class ImageIdUrlData {
+  final String id;
+  final String url;
+
+  ImageIdUrlData({
+    required this.id,
+    required this.url,
+  });
+
+  factory ImageIdUrlData.fromJson(Map<String, dynamic> json) {
+    return ImageIdUrlData(
+      id: json['id'] as String,
+      url: json['url'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'id': id,
+      'url': url,
+    };
+  }
+}
+
 @JsonSerializable()
 class RestaurantModel {
   final String? id;
@@ -13,9 +37,10 @@ class RestaurantModel {
   final List<String> tags;
   final double rating;
   final String comment;
-  final List<String> images;
+  final List<ImageIdUrlData> images;
   final String category;
   final String address;
+  final bool isVisited;
 
   RestaurantModel({
     this.id,
@@ -28,6 +53,7 @@ class RestaurantModel {
     required this.images,
     required this.category,
     required this.address,
+    required this.isVisited,
   });
 
   factory RestaurantModel.fromJson(Map<String, dynamic> json) =>
@@ -43,10 +69,12 @@ class RestaurantModel {
     double rating =
         double.parse(doc.get(FirestoreRestaurantConstants.rating).toString());
     String comment = doc.get(FirestoreRestaurantConstants.comment);
-    List<String> images =
-        doc.get(FirestoreRestaurantConstants.images)?.cast<String>();
+    Iterable iterable = doc.get(FirestoreRestaurantConstants.images);
+    List<ImageIdUrlData> images =
+        iterable.map((e) => ImageIdUrlData.fromJson(e)).toList();
     String category = doc.get(FirestoreRestaurantConstants.category);
     String address = doc.get(FirestoreRestaurantConstants.address);
+    bool isVisited = doc.get(FirestoreRestaurantConstants.isVisited);
 
     return RestaurantModel(
       id: id,
@@ -59,6 +87,7 @@ class RestaurantModel {
       address: address,
       tags: tags,
       category: category,
+      isVisited: isVisited,
     );
   }
 
@@ -72,9 +101,10 @@ class RestaurantModel {
     List<String>? tags,
     double? rating,
     String? comment,
-    List<String>? images,
+    List<ImageIdUrlData>? images,
     String? category,
     String? address,
+    bool? isVisited,
   }) {
     return RestaurantModel(
       id: id ?? this.id,
@@ -87,6 +117,7 @@ class RestaurantModel {
       images: images ?? this.images,
       category: category ?? this.category,
       address: address ?? this.address,
+      isVisited: isVisited ?? this.isVisited,
     );
   }
 }

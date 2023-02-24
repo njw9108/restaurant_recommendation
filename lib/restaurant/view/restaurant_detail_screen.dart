@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/common/widget/app_icon.dart';
@@ -8,6 +9,12 @@ import 'package:recommend_restaurant/common/widget/overlay_loader.dart';
 import 'package:recommend_restaurant/common/widget/star_rating.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:intl/intl.dart';
+
+import '../../common/util/utils.dart';
+import '../provider/restaurant_provider.dart';
+import 'restaurant_add_screen.dart';
+
+enum SelectedMenuItem { update, delete }
 
 class RestaurantDetailScreen extends StatefulWidget {
   static String get routeName => 'restaurantDetail';
@@ -24,6 +31,7 @@ class RestaurantDetailScreen extends StatefulWidget {
 }
 
 class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
+  SelectedMenuItem? selectedMenu;
   List<CachedNetworkImage> cacheImage = [];
   PageController pageController = PageController(initialPage: 0);
   int curPage = 0;
@@ -31,8 +39,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   @override
   void initState() {
     super.initState();
-    cacheImage = _makeImageList(
-      urls: widget.model.images,
+    cacheImage = makeImageList(
+      urls: widget.model.images.map((e) => e.url).toList(),
       fit: BoxFit.cover,
     );
   }
@@ -53,24 +61,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
       createdAt = format.format(date);
     }
     return DefaultLayout(
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(
-                left: 20.0, right: 20, bottom: 25, top: 5),
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: PRIMARY_COLOR,
-              ),
-              child: const Text('수정하기'),
-            ),
-          )
-        ],
-      ),
       child: Stack(
         children: [
           Positioned(
@@ -91,8 +81,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: GestureDetector(
                       onTap: () {
-                        final newImages = _makeImageList(
-                          urls: widget.model.images,
+                        final newImages = makeImageList(
+                          urls: widget.model.images.map((e) => e.url).toList(),
                           fit: BoxFit.fitWidth,
                         );
 
@@ -114,20 +104,96 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
             top: 45,
             left: 20,
             right: 20,
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: GestureDetector(
-                onTap: () {
-                  context.pop();
-                },
-                child: const AppIcon(
-                  icon: Icons.arrow_back_ios_new_sharp,
-                  backgroundColor: Colors.white54,
-                  iconColor: Colors.black54,
-                  size: 35,
-                  iconSize: 20,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    context.pop();
+                  },
+                  child: AppIcon(
+                    icon: Icons.arrow_back_ios_new_sharp,
+                    backgroundColor: Colors.black.withOpacity(0.5),
+                    iconColor: Colors.white,
+                    size: 35,
+                    iconSize: 20,
+                  ),
                 ),
-              ),
+                PopupMenuButton<SelectedMenuItem>(
+                  initialValue: selectedMenu,
+                  child: AppIcon(
+                    icon: Icons.more_vert_outlined,
+                    backgroundColor: Colors.black.withOpacity(0.5),
+                    iconColor: Colors.white,
+                    size: 35,
+                    iconSize: 20,
+                  ),
+                  onSelected: (item) async {
+                    if (item == SelectedMenuItem.update) {
+                      //update
+                      context.goNamed(
+                        RestaurantAddScreen.routeName,
+                        extra: widget.model,
+                      );
+                    } else if (item == SelectedMenuItem.delete) {
+                      //delete
+                      bool res = false;
+                      await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: const Text('식당을 삭제할까요?'),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  res = true;
+                                  Navigator.pop(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: PRIMARY_COLOR,
+                                ),
+                                child: const Text('삭제'),
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey,
+                                ),
+                                child: const Text('취소'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      if (res) {
+                        await context
+                            .read<RestaurantProvider>()
+                            .deleteRestaurantFromFirebase(
+                              restaurantId: widget.model.id!,
+                              imageIdList:
+                                  widget.model.images.map((e) => e.id).toList(),
+                            );
+                        context.pop();
+                      }
+                    }
+                  },
+                  itemBuilder: (_) => <PopupMenuEntry<SelectedMenuItem>>[
+                    const PopupMenuItem<SelectedMenuItem>(
+                      value: SelectedMenuItem.update,
+                      child: Text('수정'),
+                    ),
+                    const PopupMenuItem<SelectedMenuItem>(
+                      value: SelectedMenuItem.delete,
+                      child: Text('삭제'),
+                    ),
+                  ],
+                )
+              ],
             ),
           ),
           Positioned(
@@ -268,40 +334,5 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
         ],
       ),
     );
-  }
-
-  List<CachedNetworkImage> _makeImageList({
-    required List<String> urls,
-    required BoxFit fit,
-  }) {
-    List<CachedNetworkImage> imageList = [];
-    for (int i = 0; i < urls.length; i++) {
-      final image = CachedNetworkImage(
-        fit: fit,
-        imageUrl: urls[i],
-        placeholder: (context, url) => Container(
-          decoration: BoxDecoration(
-            color: PRIMARY_COLOR,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.restaurant_menu,
-            size: 25,
-          ),
-        ),
-        errorWidget: (context, url, error) => Container(
-          decoration: BoxDecoration(
-            color: PRIMARY_COLOR,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Icon(
-            Icons.restaurant_menu,
-            size: 25,
-          ),
-        ),
-      );
-      imageList.add(image);
-    }
-    return imageList;
   }
 }

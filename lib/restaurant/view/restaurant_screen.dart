@@ -3,13 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/const/const_data.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 import 'package:recommend_restaurant/restaurant/view/restaurant_add_screen.dart';
 import 'package:recommend_restaurant/restaurant/view/restaurant_detail_screen.dart';
-import 'package:recommend_restaurant/restaurant/widget/restaurant_card.dart';
+import 'package:recommend_restaurant/restaurant/widget/restaurant_screen/restaurant_card.dart';
 
 class RestaurantScreen extends StatefulWidget {
   const RestaurantScreen({Key? key}) : super(key: key);
@@ -53,6 +54,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
   Widget build(BuildContext context) {
     return DefaultLayout(
       floatingActionButton: FloatingActionButton(
+        backgroundColor: PRIMARY_COLOR,
         onPressed: () {
           context.goNamed(RestaurantAddScreen.routeName);
         },

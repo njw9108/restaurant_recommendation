@@ -35,7 +35,12 @@ class GoRouterProvider {
         GoRoute(
           path: 'restaurantAdd',
           name: RestaurantAddScreen.routeName,
-          builder: (_, state) => const RestaurantAddScreen(),
+          builder: (_, state) {
+            final RestaurantModel? model = state.extra as RestaurantModel?;
+            return RestaurantAddScreen(
+              model: model,
+            );
+          },
         ),
         GoRoute(
           path: 'restaurantDetail',

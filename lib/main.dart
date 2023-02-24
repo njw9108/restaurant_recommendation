@@ -1,15 +1,19 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:recommend_restaurant/common/dio/custom_interceptor.dart';
 import 'package:recommend_restaurant/common/provider/go_router_provider.dart';
 import 'package:recommend_restaurant/firebase_options.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
+import 'package:recommend_restaurant/restaurant/repository/kakao_address_repository.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
+import 'restaurant/provider/restaurant_add_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +22,7 @@ void main() async {
     name: 'restaurant_recommendation',
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await dotenv.load();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   runApp(MyApp(prefs: prefs));
 }
@@ -25,13 +30,22 @@ void main() async {
 class MyApp extends StatelessWidget {
   final SharedPreferences prefs;
 
-  MyApp({super.key, required this.prefs});
+  const MyApp({super.key, required this.prefs});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<Dio>(
+          create: (context) {
+            final dio = Dio();
+            dio.interceptors.add(
+              CustomInterceptor(),
+            );
+            return dio;
+          },
+        ),
         ChangeNotifierProvider<AuthProvider>(
           create: (_) {
             return AuthProvider(
@@ -59,6 +73,33 @@ class MyApp extends StatelessWidget {
             );
           },
         ),
+        ProxyProvider<Dio, KakaoAddressRepository>(
+          update: (context, dio, previous) {
+            if (previous == null) {
+              final repository = KakaoAddressRepository(
+                dio: dio,
+              );
+              return repository;
+            } else {
+              return previous;
+            }
+          },
+        ),
+        ChangeNotifierProxyProvider<KakaoAddressRepository,
+            RestaurantAddProvider?>(
+          create: (_) => null,
+          update: (context, repository, previous) {
+            if (previous == null) {
+              final provider = RestaurantAddProvider(
+                prefs: context.read<RestaurantProvider>().prefs,
+                repository: repository,
+              );
+              return provider;
+            } else {
+              return previous;
+            }
+          },
+        ),
       ],
       child: Builder(
         builder: (context) {
@@ -67,7 +108,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp.router(
             title: 'recommend restaurants',
             theme: ThemeData(
-              fontFamily: 'Paybooc',
+              fontFamily: 'NanumGothic',
             ),
             routerConfig: goRouter,
           );

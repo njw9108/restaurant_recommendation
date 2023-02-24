@@ -1,448 +1,241 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:recommend_restaurant/common/const/color.dart';
-import 'package:recommend_restaurant/common/layout/default_layout.dart';
-import 'package:recommend_restaurant/common/widget/custom_text_field.dart';
-import 'package:recommend_restaurant/common/widget/overlay_loader.dart';
-import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
-import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
-import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
-import 'package:recommend_restaurant/restaurant/widget/bottom_sheet_widget.dart';
-import 'package:recommend_restaurant/restaurant/widget/list_select_menu_widget.dart';
 
-class RestaurantAddScreen extends StatelessWidget {
+import '../../common/const/color.dart';
+import '../../common/layout/default_layout.dart';
+import '../../common/util/utils.dart';
+import '../../common/widget/overlay_loader.dart';
+import '../model/restaurant_model.dart';
+import '../provider/restaurant_add_provider.dart';
+import '../widget/restaurant_add/restaurant_category_widget.dart';
+import '../widget/restaurant_add/restaurant_comment_widget.dart';
+import '../widget/restaurant_add/restaurant_image_widget.dart';
+import '../widget/restaurant_add/restaurant_name_address_widget.dart';
+import '../widget/restaurant_add/restaurant_rating_widget.dart';
+import '../widget/restaurant_add/restaurant_tag_widget.dart';
+import 'package:collection/collection.dart';
+
+import '../widget/restaurant_add/restaurant_visited_widget.dart';
+
+class RestaurantAddScreen extends StatefulWidget {
   static String get routeName => 'restaurantAdd';
 
-  const RestaurantAddScreen({Key? key}) : super(key: key);
+  final RestaurantModel? model;
+
+  const RestaurantAddScreen({
+    Key? key,
+    this.model,
+  }) : super(key: key);
+
+  @override
+  State<RestaurantAddScreen> createState() => _RestaurantAddScreenState();
+}
+
+class _RestaurantAddScreenState extends State<RestaurantAddScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    context.read<RestaurantAddProvider>().clearAllData();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        if (widget.model != null) {
+          context
+              .read<RestaurantAddProvider>()
+              .setModelForUpdate(widget.model!);
+        }
+      },
+    );
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) {
-        return MultiProvider(
-          providers: [
-            ChangeNotifierProvider<RestaurantAddProvider>(
-              create: (_) {
-                return RestaurantAddProvider(
-                  prefs: context.read<RestaurantProvider>().prefs,
-                );
-              },
+        return GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Form(
+            key: _formKey,
+            child: DefaultLayout(
+              title: '식당 추가',
+              appbarActions: _buildAppbarActions(),
+              bottomNavigationBar: _BottomNavBar(
+                formKey: _formKey,
+                model: widget.model,
+              ),
+              child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const RestaurantImageWidget(),
+                    const RestaurantVisitedWidget(),
+                    RestaurantNameAddressWidget(
+                      name: widget.model?.name,
+                      address: widget.model?.address,
+                    ),
+                    RestaurantCommentWidget(
+                      comment: widget.model?.comment,
+                    ),
+                    const RestaurantCategoryWidget(),
+                    const RestaurantTagWidget(),
+                    RestaurantRatingWidget(
+                      initRating: widget.model?.rating ?? 1,
+                    ),
+                    const SizedBox(height: 50),
+                  ],
+                ),
+              ),
             ),
-          ],
-          child: const RestaurantAddScreenBuilder(),
+          ),
         );
       },
     );
   }
-}
 
-class RestaurantAddScreenBuilder extends StatefulWidget {
-  const RestaurantAddScreenBuilder({Key? key}) : super(key: key);
-
-  @override
-  State<RestaurantAddScreenBuilder> createState() =>
-      _RestaurantAddScreenBuilderState();
-}
-
-class _RestaurantAddScreenBuilderState
-    extends State<RestaurantAddScreenBuilder> {
-  String name = '';
-  String address = '';
-  String comment = '';
-  double rating = 1;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final restaurantAddProvider = context.watch<RestaurantAddProvider>();
-
-    return GestureDetector(
-      onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: DefaultLayout(
-        title: '식당 추가',
-        appbarActions: [
-          IconButton(
-            onPressed: () async {
-              RestaurantModel model = RestaurantModel(
-                name: name,
-                thumbnail: '',
-                rating: rating,
-                comment: comment,
-                images: [],
-                address: address,
-                tags: restaurantAddProvider.tags,
-                category: restaurantAddProvider.category ?? '',
-              );
-              await restaurantAddProvider.uploadRestaurantData(model);
-              context.pop();
-            },
-            icon: const Icon(
-              Icons.done,
-            ),
+  List<Widget> _buildAppbarActions() {
+    return [
+      Padding(
+        padding: const EdgeInsets.only(right: 16.0),
+        child: PopupMenuButton(
+          //initialValue: selectedMenu,
+          child: const Icon(
+            Icons.more_vert,
           ),
-        ],
-        child: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      _buildImages(
-                        images: restaurantAddProvider.images,
-                        maxImages:
-                            int.parse(restaurantAddProvider.maxImagesCount),
-                        onTap: () async {
-                          if (restaurantAddProvider.images.length <
-                              int.parse(restaurantAddProvider.maxImagesCount)) {
-                            await restaurantAddProvider.pickImage(
-                                source: ImageSource.gallery);
-                          }
-                        },
-                        onRemove: (index) {
-                          restaurantAddProvider.removeImage(index);
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      _buildName(
-                        onChanged: (value) {
-                          name = value;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      _buildAddress(
-                        onChanged: (value) {
-                          address = value;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      _buildComment(
-                        onChanged: (value) {
-                          comment = value;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      _buildCategory(
-                        category: restaurantAddProvider.category,
-                        onBottomSheetTap: (value) {
-                          restaurantAddProvider.category = value;
-                          Navigator.pop(context);
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      _buildTags(
-                        tags: restaurantAddProvider.tags,
-                        onBottomSheetTap: (value) {
-                          if (restaurantAddProvider.tags.contains(value)) {
-                            restaurantAddProvider.tags.remove(value);
-                            restaurantAddProvider.tags =
-                                List.from(restaurantAddProvider.tags);
-                          } else {
-                            if (restaurantAddProvider.tags.length <
-                                int.parse(restaurantAddProvider.maxTagsCount)) {
-                              restaurantAddProvider.tags.add(value);
-                              restaurantAddProvider.tags =
-                                  List.from(restaurantAddProvider.tags);
-                            }
-                          }
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      _buildRating(),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                    ],
-                  ),
+          onSelected: (item) async {
+            if (item == '대표') {
+              List<Widget> imageList = [
+                ...makeImageList(
+                  urls: context
+                      .read<RestaurantAddProvider>()
+                      .networkImage
+                      .map((e) => e.url)
+                      .toList(),
+                  fit: BoxFit.cover,
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  SizedBox _buildImages({
-    required VoidCallback onTap,
-    required Function(int) onRemove,
-    required int maxImages,
-    required List<File> images,
-  }) {
-    return SizedBox(
-      height: 70,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (_, index) {
-            if (index == 0) {
-              return GestureDetector(
-                onTap: onTap,
-                child: _CameraIconWidget(
-                  imageLength: images.length,
-                  maxImagesCount: maxImages,
-                ),
-              );
-            }
-
-            return GestureDetector(
-              onTap: () {
-                final overlayLoader = OverlayLoader(
-                  photos: images,
-                  photoIndex: index - 1,
-                );
-                overlayLoader.showFullPhoto(context);
-              },
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  SizedBox(
-                    width: 70,
-                    height: 70,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.file(
-                        images[index - 1],
+                ...context.read<RestaurantAddProvider>().images.map(
+                      (e) => Image.file(
+                        e,
                         fit: BoxFit.cover,
                       ),
                     ),
-                  ),
-                  Positioned(
-                    right: -7,
-                    top: -7,
-                    child: GestureDetector(
-                      onTap: () {
-                        if (index - 1 >= 0) {
-                          onRemove(index - 1);
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(1),
-                        decoration: BoxDecoration(
-                            color: PRIMARY_COLOR,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: const Icon(
-                          Icons.close,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (index - 1 == 0)
-                    Positioned(
-                      bottom: 0,
-                      child: Container(
-                        width: 70,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 5, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.8),
-                          borderRadius: const BorderRadius.only(
-                              bottomRight: Radius.circular(10),
-                              bottomLeft: Radius.circular(10)),
-                        ),
-                        child: const Text(
-                          '대표 사진',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.white,
+              ];
+
+              final selectedIndex = await showDialog(
+                context: context,
+                builder: (context) {
+                  if (imageList.isEmpty) {
+                    return AlertDialog(
+                      content: const Text('사진이 없습니다.'),
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: PRIMARY_COLOR,
                           ),
+                          child: const Text('확인'),
                         ),
-                      ),
-                    ),
-                ],
-              ),
-            );
-          },
-          separatorBuilder: (_, index) {
-            return const SizedBox(
-              width: 16,
-            );
-          },
-          itemCount: images.length + 1,
-        ),
-      ),
-    );
-  }
+                      ],
+                    );
+                  }
 
-  Padding _buildComment({
-    required ValueChanged<String>? onChanged,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: CustomTextFormField(
-        hintText: '코멘트',
-        maxLine: 6,
-        onChanged: onChanged,
-      ),
-    );
-  }
+                  return AlertDialog(
+                    content: const Text('대표사진 설정'),
+                    actionsAlignment: MainAxisAlignment.spaceAround,
+                    actions: imageList.mapIndexed((index, e) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context, index);
+                        },
+                        child: SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: e,
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+              );
 
-  Padding _buildRating() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('평점'),
-          const SizedBox(
-            height: 8,
-          ),
-          RatingBar.builder(
-            initialRating: 1,
-            minRating: 1,
-            direction: Axis.horizontal,
-            allowHalfRating: true,
-            glowColor: Colors.limeAccent,
-            itemCount: 5,
-            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-            itemBuilder: (context, _) => const Icon(
-              Icons.star,
-              color: PRIMARY_COLOR,
+              if (selectedIndex != null) {
+                context.read<RestaurantAddProvider>().thumbnailIndex =
+                    selectedIndex;
+              }
+            }
+          },
+          itemBuilder: (_) => <PopupMenuEntry>[
+            const PopupMenuItem(
+              value: '대표',
+              child: Text('대표사진 설정'),
             ),
-            onRatingUpdate: (value) {
-              rating = value;
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Padding _buildName({
-    required ValueChanged<String>? onChanged,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: CustomTextFormField(
-        hintText: '가게 이름',
-        onChanged: onChanged,
-      ),
-    );
-  }
-
-  Padding _buildAddress({
-    required ValueChanged<String>? onChanged,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ),
-      child: CustomTextFormField(
-        hintText: '주소',
-        onChanged: onChanged,
-      ),
-    );
-  }
-
-  Padding _buildCategory({
-    required String? category,
-    required Function(String) onBottomSheetTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ),
-      child: ListSelectMenuWidget(
-        title: '카테고리',
-        content: category,
-        emptyText: '카테고리를 선택해주세요.',
-        bottomSheetWidget: CategoryBottomSheet(
-          onTap: onBottomSheetTap,
+          ],
         ),
       ),
-    );
-  }
-
-  Padding _buildTags({
-    required List<String> tags,
-    required Function(String) onBottomSheetTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ),
-      child: ListSelectMenuWidget(
-        title: '태그',
-        content: tags.isEmpty ? null : tags.join(', '),
-        emptyText: '태그를 선택해주세요.',
-        bottomSheetWidget: TagBottomSheet(
-          onTap: onBottomSheetTap,
-        ),
-      ),
-    );
+    ];
   }
 }
 
-class _CameraIconWidget extends StatelessWidget {
-  final int imageLength;
-  final int maxImagesCount;
+class _BottomNavBar extends StatelessWidget {
+  const _BottomNavBar({
+    required GlobalKey<FormState> formKey,
+    required this.model,
+  }) : _formKey = formKey;
 
-  const _CameraIconWidget({
-    required this.imageLength,
-    required this.maxImagesCount,
-  });
+  final GlobalKey<FormState> _formKey;
+  final RestaurantModel? model;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 70,
-      height: 70,
-      decoration: BoxDecoration(
-          border: Border.all(
-            color: BODY_TEXT_COLOR,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 20.0, right: 20, bottom: 25, top: 5),
+          child: ElevatedButton(
+            onPressed: () async {
+              if (_formKey.currentState!.validate()) {
+                final overlayLoader = OverlayLoader();
+                overlayLoader.showLoading(context);
+
+                if (model != null) {
+                  //update
+                  if (model!.id == null) {
+                    context.pop();
+                    return;
+                  }
+                  await context
+                      .read<RestaurantAddProvider>()
+                      .updateRestaurantModelToFirebase(model!.id!);
+                } else {
+                  //create
+                  await context
+                      .read<RestaurantAddProvider>()
+                      .uploadRestaurantData();
+                }
+                overlayLoader.removeLoading();
+                context.pop();
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: PRIMARY_COLOR,
+            ),
+            child: const Text('작성 완료'),
           ),
-          borderRadius: BorderRadius.circular(10)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.camera_alt,
-            color: BODY_TEXT_COLOR,
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Text('$imageLength/$maxImagesCount'),
-        ],
-      ),
+        )
+      ],
     );
   }
 }

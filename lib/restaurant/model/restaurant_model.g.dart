@@ -15,10 +15,12 @@ RestaurantModel _$RestaurantModelFromJson(Map<String, dynamic> json) =>
       tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
       rating: (json['rating'] as num).toDouble(),
       comment: json['comment'] as String,
-      images:
-          (json['images'] as List<dynamic>).map((e) => e as String).toList(),
+      images: (json['images'] as List<dynamic>)
+          .map((e) => ImageIdUrlData.fromJson(e as Map<String, dynamic>))
+          .toList(),
       category: json['category'] as String,
       address: json['address'] as String,
+      isVisited: json['isVisited'] as bool,
     );
 
 Map<String, dynamic> _$RestaurantModelToJson(RestaurantModel instance) =>
@@ -33,4 +35,5 @@ Map<String, dynamic> _$RestaurantModelToJson(RestaurantModel instance) =>
       'images': instance.images,
       'category': instance.category,
       'address': instance.address,
+      'isVisited': instance.isVisited,
     };
