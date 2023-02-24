@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
 
 import '../../../../../common/const/color.dart';
+import '../../../../../common/const/const_data.dart';
 import '../common/bottom_sheet_list_item.dart';
-
-const List<String> categoryList = ['집 근처', '회사 근처', '데이트', '친구', '기타'];
+import 'restaurant_category_add_filed.dart';
 
 class RestaurantCategoryModalBottomSheet extends StatefulWidget {
   const RestaurantCategoryModalBottomSheet({Key? key}) : super(key: key);
@@ -27,6 +27,9 @@ class _RestaurantCategoryModalBottomSheetState
 
   @override
   Widget build(BuildContext context) {
+    final totalCategoryList =
+        context.watch<RestaurantAddProvider>().categoryList;
+
     return Padding(
       padding: const EdgeInsets.all(25.0),
       child: Column(
@@ -40,20 +43,39 @@ class _RestaurantCategoryModalBottomSheetState
             ),
           ),
           const SizedBox(
-            height: 8,
+            height: 16,
           ),
-
+          RestaurantCategoryAddFiled(
+            textController: textController,
+          ),
+          const SizedBox(
+            height: 16,
+          ),
           Expanded(
             child: SingleChildScrollView(
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
-                children: categoryList
-                    .map(
-                      (e) => BottomSheetListItem(
-                        title: e,
-                        selectedWidget:
-                            context.watch<RestaurantAddProvider>().category == e
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '카테고리 목록 (${totalCategoryList.length}/$maxTotalCategoryListCount)',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    ...totalCategoryList
+                        .map(
+                          (e) => BottomSheetListItem(
+                            title: e,
+                            selectedWidget: context
+                                        .watch<RestaurantAddProvider>()
+                                        .category ==
+                                    e
                                 ? Row(
                                     children: [
                                       const Icon(
@@ -71,15 +93,15 @@ class _RestaurantCategoryModalBottomSheetState
                                     ],
                                   )
                                 : null,
-                        onTap: (value) {
-                          context.read<RestaurantAddProvider>().category =
-                              value;
-                          Navigator.pop(context);
-                        },
-                      ),
-                    )
-                    .toList(),
-              ),
+                            onTap: (value) {
+                              context.read<RestaurantAddProvider>().category =
+                                  value;
+                              Navigator.pop(context);
+                            },
+                          ),
+                        )
+                        .toList(),
+                  ]),
             ),
           ),
         ],

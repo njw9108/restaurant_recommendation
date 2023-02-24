@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
 
 import 'common/restaurant_select_item_widget.dart';
-import 'modal_bottom_sheet/category_modal/restaurant_category_modal.dart';
+import 'modal_bottom_sheet/category_modal/restaurant_category_modal_bottom_sheet.dart';
 
 class RestaurantCategoryWidget extends StatelessWidget {
   const RestaurantCategoryWidget({

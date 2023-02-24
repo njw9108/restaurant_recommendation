@@ -27,7 +27,7 @@ class RestaurantAddProvider
     required this.prefs,
     required super.repository,
   }) {
-    getTagListFromFirebase();
+    _getTagCategoryListFromFirebase();
   }
 
   final _addressModelStreamController =
@@ -41,6 +41,7 @@ class RestaurantAddProvider
   int _thumbnailIndex = 0;
 
   List<String> _tagList = [];
+  List<String> _categoryList = [];
   final List<String> _deletedNetworkImageList = [];
   List<ImageIdUrlData> _networkImage = [];
   List<File> _images = [];
@@ -119,6 +120,14 @@ class RestaurantAddProvider
   set tagList(List<String> value) {
     _tagList = value.toList();
     saveTagListToFirebase(_tagList);
+    notifyListeners();
+  }
+
+  List<String> get categoryList => _categoryList;
+
+  set categoryList(List<String> value) {
+    _categoryList = value.toList();
+    saveCategoryListToFirebase(_categoryList);
     notifyListeners();
   }
 
@@ -223,6 +232,41 @@ class RestaurantAddProvider
     _images.clear();
   }
 
+  Future<void> saveCategoryListToFirebase(List<String> value) async {
+    try {
+      final uid = prefs.getString(FirestoreUserConstants.id);
+      await firebaseFirestore
+          .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+          .doc(uid)
+          .set(
+        {
+          FirestoreRestaurantConstants.pathCategoryListCollection: value,
+          FirestoreRestaurantConstants.pathTagListCollection: tagList,
+        },
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _getTagCategoryListFromFirebase() async {
+    final uid = prefs.getString(FirestoreUserConstants.id);
+    final data = await firebaseFirestore
+        .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+        .doc(uid)
+        .get();
+    final temp = data.data();
+
+    _categoryList =
+        temp?[FirestoreRestaurantConstants.pathCategoryListCollection]
+                ?.cast<String>() ??
+            [];
+    _tagList = temp?[FirestoreRestaurantConstants.pathTagListCollection]
+            ?.cast<String>() ??
+        [];
+    notifyListeners();
+  }
+
   Future<void> saveTagListToFirebase(List<String> value) async {
     try {
       final uid = prefs.getString(FirestoreUserConstants.id);
@@ -232,25 +276,12 @@ class RestaurantAddProvider
           .set(
         {
           FirestoreRestaurantConstants.pathTagListCollection: value,
+          FirestoreRestaurantConstants.pathCategoryListCollection: categoryList,
         },
       );
     } catch (e) {
       rethrow;
     }
-  }
-
-  Future<void> getTagListFromFirebase() async {
-    final uid = prefs.getString(FirestoreUserConstants.id);
-    final data = await firebaseFirestore
-        .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
-        .doc(uid)
-        .get();
-    final temp = data.data();
-
-    _tagList = temp?[FirestoreRestaurantConstants.pathTagListCollection]
-            ?.cast<String>() ??
-        [];
-    notifyListeners();
   }
 
   Future<void> saveRestaurantModelToFirebase(RestaurantModel model) async {

@@ -7,8 +7,6 @@ import '../../../../../common/const/const_data.dart';
 import '../common/bottom_sheet_list_item.dart';
 import 'restaurant_tag_add_filed.dart';
 
-final List<String> tagList = ['한식', '중식', '일식', '양식', '매움', '달콤함', '국물요리'];
-
 class RestaurantTagsModalBottomSheet extends StatefulWidget {
   const RestaurantTagsModalBottomSheet({Key? key}) : super(key: key);
 

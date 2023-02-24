@@ -12,6 +12,7 @@ class FirestoreUserConstants {
 class FirestoreRestaurantConstants {
   static const pathRestaurantCollection = "restaurant";
   static const pathTagListCollection = "tag_list";
+  static const pathCategoryListCollection = "category_list";
   static const pathRestaurantListCollection = "restaurant_list";
   static const restaurantId = "restaurantId";
   static const name = "name";
