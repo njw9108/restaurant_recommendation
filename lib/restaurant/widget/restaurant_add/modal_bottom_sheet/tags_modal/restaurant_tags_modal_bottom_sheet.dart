@@ -5,14 +5,31 @@ import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider
 import '../../../../../common/const/color.dart';
 import '../../../../../common/const/const_data.dart';
 import '../common/bottom_sheet_list_item.dart';
+import 'restaurant_tag_add_filed.dart';
 
 final List<String> tagList = ['한식', '중식', '일식', '양식', '매움', '달콤함', '국물요리'];
 
-class RestaurantTagsModalBottomSheet extends StatelessWidget {
+class RestaurantTagsModalBottomSheet extends StatefulWidget {
   const RestaurantTagsModalBottomSheet({Key? key}) : super(key: key);
 
   @override
+  State<RestaurantTagsModalBottomSheet> createState() =>
+      _RestaurantTagsModalBottomSheetState();
+}
+
+class _RestaurantTagsModalBottomSheetState
+    extends State<RestaurantTagsModalBottomSheet> {
+  final textController = TextEditingController();
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final totalTagList = context.watch<RestaurantAddProvider>().tagList;
     final tags = context.watch<RestaurantAddProvider>().tags;
 
     return Padding(
@@ -28,14 +45,31 @@ class RestaurantTagsModalBottomSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(
-            height: 8,
+            height: 16,
+          ),
+          RestaurantTagAddFiled(
+            textController: textController,
+          ),
+          const SizedBox(
+            height: 16,
           ),
           Expanded(
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ...tagList
+                  Text(
+                    '태그 목록 (${totalTagList.length}/$maxTotalTagListCount)',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  ...totalTagList
                       .map(
                         (e) => BottomSheetListItem(
                           title: e,
@@ -52,7 +86,8 @@ class RestaurantTagsModalBottomSheet extends StatelessWidget {
                                     Text(
                                       e,
                                       style: const TextStyle(
-                                          fontWeight: FontWeight.w700),
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                   ],
                                 )

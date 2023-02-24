@@ -10,7 +10,7 @@ import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 import 'package:recommend_restaurant/restaurant/view/restaurant_add_screen.dart';
 import 'package:recommend_restaurant/restaurant/view/restaurant_detail_screen.dart';
-import 'package:recommend_restaurant/restaurant/widget/restaurant_card.dart';
+import 'package:recommend_restaurant/restaurant/widget/restaurant_screen/restaurant_card.dart';
 
 class RestaurantScreen extends StatefulWidget {
   const RestaurantScreen({Key? key}) : super(key: key);

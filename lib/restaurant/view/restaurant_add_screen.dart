@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../common/const/color.dart';
 import '../../common/layout/default_layout.dart';
 import '../../common/util/utils.dart';
+import '../../common/widget/overlay_loader.dart';
 import '../model/restaurant_model.dart';
 import '../provider/restaurant_add_provider.dart';
 import '../widget/restaurant_add/restaurant_category_widget.dart';
@@ -203,10 +204,12 @@ class _BottomNavBar extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
+                final overlayLoader = OverlayLoader();
+                overlayLoader.showLoading(context);
+
                 if (model != null) {
                   //update
                   if (model!.id == null) {
-                    print('id null');
                     context.pop();
                     return;
                   }
@@ -219,13 +222,14 @@ class _BottomNavBar extends StatelessWidget {
                       .read<RestaurantAddProvider>()
                       .uploadRestaurantData();
                 }
+                overlayLoader.removeLoading();
                 context.pop();
               }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: PRIMARY_COLOR,
             ),
-            child: const Text('작성완료'),
+            child: const Text('작성 완료'),
           ),
         )
       ],
