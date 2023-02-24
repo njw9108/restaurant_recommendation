@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class BottomSheetListItem extends StatelessWidget {
@@ -27,6 +26,7 @@ class BottomSheetListItem extends StatelessWidget {
               ),
           contentPadding: EdgeInsets.zero,
           minVerticalPadding: 0,
+          trailing: const Icon(Icons.drag_indicator),
         ),
         const Divider(
           height: 1,
