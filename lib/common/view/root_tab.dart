@@ -49,7 +49,6 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-      title: '식당 추천',
       bottomNavigationBar: BottomNavigationBar(
         // selectedItemColor: PRIMARY_COLOR,
         // unselectedItemColor: BODY_TEXT_COLOR,
