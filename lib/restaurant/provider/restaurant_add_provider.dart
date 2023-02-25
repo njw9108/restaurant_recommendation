@@ -253,8 +253,8 @@ class RestaurantAddProvider
           .doc(uid)
           .set(
         {
-          FirestoreRestaurantConstants.pathCategoryListCollection: value,
-          FirestoreRestaurantConstants.pathTagListCollection: tagList,
+          FirestoreRestaurantConstants.pathCategoryList: value,
+          FirestoreRestaurantConstants.pathTagList: tagList,
         },
       );
     } catch (e) {
@@ -271,10 +271,10 @@ class RestaurantAddProvider
     final temp = data.data();
 
     _categoryList =
-        temp?[FirestoreRestaurantConstants.pathCategoryListCollection]
+        temp?[FirestoreRestaurantConstants.pathCategoryList]
                 ?.cast<String>() ??
             [];
-    _tagList = temp?[FirestoreRestaurantConstants.pathTagListCollection]
+    _tagList = temp?[FirestoreRestaurantConstants.pathTagList]
             ?.cast<String>() ??
         [];
     notifyListeners();
@@ -288,8 +288,8 @@ class RestaurantAddProvider
           .doc(uid)
           .set(
         {
-          FirestoreRestaurantConstants.pathTagListCollection: value,
-          FirestoreRestaurantConstants.pathCategoryListCollection: categoryList,
+          FirestoreRestaurantConstants.pathTagList: value,
+          FirestoreRestaurantConstants.pathCategoryList: categoryList,
         },
       );
     } catch (e) {

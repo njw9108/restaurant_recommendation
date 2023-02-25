@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
             }
           },
         ),
-        Provider<RestaurantProvider>(
+        ChangeNotifierProvider<RestaurantProvider>(
           create: (_) {
             return RestaurantProvider(
               prefs: prefs,

@@ -60,6 +60,12 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
       DateFormat format = DateFormat('yyyy-MM-dd');
       createdAt = format.format(date);
     }
+
+    final bool isFavorite = context
+        .watch<RestaurantProvider>()
+        .favoriteRestaurantList
+        .contains(widget.model.id);
+
     return DefaultLayout(
       child: Stack(
         children: [
@@ -363,8 +369,32 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
             right: 20,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: const [
-                AppIcon(icon: Icons.favorite),
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    final list = context
+                        .read<RestaurantProvider>()
+                        .favoriteRestaurantList;
+                    if (isFavorite) {
+                      list.remove(widget.model.id);
+                    } else {
+                      if (widget.model.id != null) {
+                        list.add(widget.model.id!);
+                      }
+                    }
+                    context.read<RestaurantProvider>().favoriteRestaurantList =
+                        List.from(list);
+                  },
+                  child: isFavorite
+                      ? const AppIcon(
+                          icon: Icons.favorite,
+                          backgroundColor: Colors.red,
+                          iconColor: Colors.white,
+                        )
+                      : const AppIcon(
+                          icon: Icons.favorite,
+                        ),
+                ),
               ],
             ),
           ),
