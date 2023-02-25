@@ -77,6 +77,7 @@ class RestaurantCard extends StatelessWidget {
           children: [
             _Thumbnail(
               thumbnail: restaurantModel.thumbnail,
+              id: restaurantModel.id!,
             ),
             const SizedBox(
               width: 16,
@@ -139,56 +140,63 @@ class RestaurantCard extends StatelessWidget {
 
 class _Thumbnail extends StatelessWidget {
   final String thumbnail;
+  final String id;
 
-  const _Thumbnail({Key? key, required this.thumbnail}) : super(key: key);
+  const _Thumbnail({
+    Key? key,
+    required this.thumbnail,
+    required this.id,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     if (thumbnail.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: CachedNetworkImage(
-          width: 95,
-          height: 95,
-          fit: BoxFit.cover,
-          imageUrl: thumbnail,
-          placeholder: (context, url) => Container(
+      return Hero(
+        tag: id,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: CachedNetworkImage(
             width: 95,
             height: 95,
-            decoration: BoxDecoration(
-              color: PRIMARY_COLOR,
-              borderRadius: BorderRadius.circular(20),
+            fit: BoxFit.cover,
+            imageUrl: thumbnail,
+            placeholder: (context, url) => Container(
+              width: 95,
+              height: 95,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const CircularProgressIndicator.adaptive(),
             ),
-            child: const Icon(
-              Icons.restaurant_menu,
-              size: 25,
-            ),
-          ),
-          errorWidget: (context, url, error) => Container(
-            width: 95,
-            height: 95,
-            decoration: BoxDecoration(
-              color: PRIMARY_COLOR,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Icon(
-              Icons.restaurant_menu,
-              size: 25,
+            errorWidget: (context, url, error) => Container(
+              width: 95,
+              height: 95,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Icon(
+                Icons.error,
+                size: 25,
+                color: PRIMARY_COLOR,
+              ),
             ),
           ),
         ),
       );
     } else {
-      return Container(
-        width: 95,
-        height: 95,
-        decoration: BoxDecoration(
-          color: PRIMARY_COLOR,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: const Icon(
-          Icons.restaurant_menu,
-          size: 25,
+      return Hero(
+        tag: id,
+        child: Container(
+          width: 95,
+          height: 95,
+          decoration: BoxDecoration(
+            color: PRIMARY_COLOR,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: const Icon(
+            Icons.restaurant_menu,
+            size: 25,
+          ),
         ),
       );
     }

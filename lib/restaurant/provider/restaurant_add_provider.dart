@@ -197,10 +197,12 @@ class RestaurantAddProvider
             images[i], SettableMetadata(contentType: 'image/jpg'));
 
         final url = await uploadTask.ref.getDownloadURL();
-        imageUrls.add(ImageIdUrlData(
-          id: imageId,
-          url: url,
-        ));
+        imageUrls.add(
+          ImageIdUrlData(
+            id: imageId,
+            url: url,
+          ),
+        );
       }
     } catch (e) {
       rethrow;
@@ -251,8 +253,8 @@ class RestaurantAddProvider
           .doc(uid)
           .set(
         {
-          FirestoreRestaurantConstants.pathCategoryListCollection: value,
-          FirestoreRestaurantConstants.pathTagListCollection: tagList,
+          FirestoreRestaurantConstants.pathCategoryList: value,
+          FirestoreRestaurantConstants.pathTagList: tagList,
         },
       );
     } catch (e) {
@@ -269,10 +271,10 @@ class RestaurantAddProvider
     final temp = data.data();
 
     _categoryList =
-        temp?[FirestoreRestaurantConstants.pathCategoryListCollection]
+        temp?[FirestoreRestaurantConstants.pathCategoryList]
                 ?.cast<String>() ??
             [];
-    _tagList = temp?[FirestoreRestaurantConstants.pathTagListCollection]
+    _tagList = temp?[FirestoreRestaurantConstants.pathTagList]
             ?.cast<String>() ??
         [];
     notifyListeners();
@@ -286,8 +288,8 @@ class RestaurantAddProvider
           .doc(uid)
           .set(
         {
-          FirestoreRestaurantConstants.pathTagListCollection: value,
-          FirestoreRestaurantConstants.pathCategoryListCollection: categoryList,
+          FirestoreRestaurantConstants.pathTagList: value,
+          FirestoreRestaurantConstants.pathCategoryList: categoryList,
         },
       );
     } catch (e) {
@@ -397,8 +399,8 @@ class RestaurantAddProvider
   Future<void> pickImage({ImageSource source = ImageSource.gallery}) async {
     final pickedFile = await _imagePicker.pickImage(
       source: source,
-      imageQuality: 20,
-      maxWidth: 350,
+      imageQuality: 40,
+      maxWidth: 500,
       maxHeight: 500,
     );
     if (pickedFile != null) {
@@ -421,7 +423,7 @@ class RestaurantAddProvider
       cropImage = await FlutterImageCompress.compressAndGetFile(
         file.path,
         '${directory.path}/restaurant_img.jpg',
-        quality: 20,
+        quality: 40,
       );
     } else {
       cropImage = await FlutterImageCompress.compressAndGetFile(

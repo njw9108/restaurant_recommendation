@@ -6,13 +6,61 @@ import 'package:recommend_restaurant/common/const/const_data.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class RestaurantProvider {
+class RestaurantProvider with ChangeNotifier {
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final SharedPreferences prefs;
 
   RestaurantProvider({
     required this.prefs,
-  });
+  }) {
+    getFavoriteRestaurantList();
+  }
+
+  List<String> _favoriteRestaurantList = [];
+
+  List<String> get favoriteRestaurantList => _favoriteRestaurantList;
+
+  set favoriteRestaurantList(List<String> value) {
+    _favoriteRestaurantList = value;
+    saveFavoriteRestaurantList();
+    notifyListeners();
+  }
+
+  Future<void> saveFavoriteRestaurantList() async {
+    try {
+      final uid = prefs.getString(FirestoreUserConstants.id);
+      await firebaseFirestore
+          .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+          .doc(uid)
+          .collection(FirestoreRestaurantConstants.pathFavoriteListCollection)
+          .doc(FirestoreRestaurantConstants.pathFavoriteListCollection)
+          .set(
+        {
+          FirestoreRestaurantConstants.pathFavoriteListCollection:
+              _favoriteRestaurantList,
+        },
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> getFavoriteRestaurantList() async {
+    final uid = prefs.getString(FirestoreUserConstants.id);
+    final data = await firebaseFirestore
+        .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+        .doc(uid)
+        .collection(FirestoreRestaurantConstants.pathFavoriteListCollection)
+        .doc(FirestoreRestaurantConstants.pathFavoriteListCollection)
+        .get();
+    final temp = data.data();
+
+    _favoriteRestaurantList =
+        temp?[FirestoreRestaurantConstants.pathFavoriteListCollection]
+                ?.cast<String>() ??
+            [];
+    notifyListeners();
+  }
 
   Stream<QuerySnapshot> getRestaurantStream(int limit) {
     final uid = prefs.getString(FirestoreUserConstants.id);
@@ -60,13 +108,11 @@ class RestaurantProvider {
   }) async {
     final uid = prefs.getString(FirestoreUserConstants.id);
     //delete image from firebase storage
-    for(int i=0;i<imageIdList.length;i++){
-      final path =
-          'restaurant/$uid/$restaurantId/${imageIdList[i]}';
+    for (int i = 0; i < imageIdList.length; i++) {
+      final path = 'restaurant/$uid/$restaurantId/${imageIdList[i]}';
       final storageReference = FirebaseStorage.instance.ref().child(path);
       await storageReference.delete();
     }
-
 
     //delete data from firebase store
     await firebaseFirestore

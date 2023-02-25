@@ -11,7 +11,7 @@ class RestaurantVisitedWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textValue =
-        context.watch<RestaurantAddProvider>().isVisited ? '방문' : '방문 예정';
+        context.watch<RestaurantAddProvider>().isVisited ? '방문했어요' : '아직 안가봤어요';
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
