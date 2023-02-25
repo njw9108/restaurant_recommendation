@@ -274,13 +274,27 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                         height: 1.5,
                       ),
                     ),
-                    Text(
-                      widget.model.name,
-                      style: const TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w900,
-                        height: 1.5,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.model.name,
+                          style: const TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.w900,
+                            height: 1.5,
+                          ),
+                        ),
+                        Text(
+                          widget.model.isVisited ? '방문' : '미방문',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: BODY_TEXT_COLOR,
+                            fontWeight: FontWeight.w300,
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(
                       height: 4,
@@ -288,6 +302,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     StarRating(
                       rating: widget.model.rating,
                       iconSize: 18,
+                    ),
+                    const SizedBox(
+                      height: 16,
                     ),
                     Text(
                       widget.model.address,
