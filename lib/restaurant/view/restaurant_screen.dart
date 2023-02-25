@@ -239,6 +239,7 @@ class _RestaurantSortItemWidget extends StatelessWidget {
               title,
               style: TextStyle(
                 fontSize: 18,
+                fontWeight: isSelected ? FontWeight.w700 : null,
                 color: isSelected ? null : BODY_TEXT_COLOR,
               ),
             ),
