@@ -70,24 +70,21 @@ class RestaurantImageWidget extends StatelessWidget {
                                   width: 95,
                                   height: 95,
                                   decoration: BoxDecoration(
-                                    color: PRIMARY_COLOR,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
-                                  child: const Icon(
-                                    Icons.restaurant_menu,
-                                    size: 25,
-                                  ),
+                                  child: const CircularProgressIndicator
+                                      .adaptive(),
                                 ),
                                 errorWidget: (context, url, error) => Container(
                                   width: 95,
                                   height: 95,
                                   decoration: BoxDecoration(
-                                    color: PRIMARY_COLOR,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: const Icon(
-                                    Icons.restaurant_menu,
+                                    Icons.error,
                                     size: 25,
+                                    color: PRIMARY_COLOR,
                                   ),
                                 ),
                               ),

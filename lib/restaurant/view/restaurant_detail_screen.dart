@@ -69,35 +69,54 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
             child: SizedBox(
               width: double.infinity,
               height: imageHeight,
-              child: PageView.builder(
-                controller: pageController,
-                onPageChanged: (value) {
-                  setState(() {
-                    curPage = value;
-                  });
-                },
-                itemBuilder: (_, index) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: GestureDetector(
-                      onTap: () {
-                        final newImages = makeImageList(
-                          urls: widget.model.images.map((e) => e.url).toList(),
-                          fit: BoxFit.fitWidth,
-                        );
-
-                        final overlayLoader = OverlayLoader(
-                          networkImages: newImages,
-                          photoIndex: curPage,
-                        );
-                        overlayLoader.showFullPhoto(context);
+              child: widget.model.images.isEmpty
+                  ? Hero(
+                      tag: widget.model.id!,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: PRIMARY_COLOR,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.restaurant_menu,
+                          size: 30,
+                        ),
+                      ),
+                    )
+                  : PageView.builder(
+                      controller: pageController,
+                      onPageChanged: (value) {
+                        setState(() {
+                          curPage = value;
+                        });
                       },
-                      child: cacheImage[index],
+                      itemBuilder: (_, index) {
+                        return Hero(
+                          tag: widget.model.id!,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: GestureDetector(
+                              onTap: () {
+                                final newImages = makeImageList(
+                                  urls: widget.model.images
+                                      .map((e) => e.url)
+                                      .toList(),
+                                  fit: BoxFit.fitWidth,
+                                );
+                                final overlayLoader = OverlayLoader(
+                                  networkImages: newImages,
+                                  photoIndex: curPage,
+                                );
+                                overlayLoader.showFullPhoto(context);
+                              },
+                              child: cacheImage[index],
+                            ),
+                          ),
+                        );
+                      },
+                      itemCount: widget.model.images.length,
                     ),
-                  );
-                },
-                itemCount: widget.model.images.length,
-              ),
             ),
           ),
           Positioned(
@@ -196,28 +215,29 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
               ],
             ),
           ),
-          Positioned(
-            top: imageHeight - 80,
-            left: 20,
-            right: 20,
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
-                decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(15)),
-                child: Text(
-                  '${curPage + 1} / ${widget.model.images.length}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
+          if (widget.model.images.isNotEmpty)
+            Positioned(
+              top: imageHeight - 80,
+              left: 20,
+              right: 20,
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+                  decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(15)),
+                  child: Text(
+                    '${curPage + 1} / ${widget.model.images.length}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
           Positioned(
             left: 0,
             right: 0,
