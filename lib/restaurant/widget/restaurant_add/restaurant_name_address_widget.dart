@@ -103,6 +103,8 @@ class _RestaurantNameAddressWidgetState
           ),
           CustomTextFormField(
             hintText: '식당 이름',
+            maxLength: 30,
+            counterText: '',
             focusNode: focusNode,
             readOnly: !isInput,
             controller: nameController,
@@ -122,6 +124,8 @@ class _RestaurantNameAddressWidgetState
           CustomTextFormField(
             hintText: '주소',
             maxLine: 2,
+            maxLength: 50,
+            counterText: '',
             readOnly: !isInput,
             controller: addressController,
             verticalPadding: 16,

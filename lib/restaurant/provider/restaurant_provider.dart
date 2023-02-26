@@ -6,6 +6,15 @@ import 'package:recommend_restaurant/common/const/const_data.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum SortType {
+  dateDescending,
+  dateAscending,
+  ratingDescending,
+  ratingAscending,
+  nameDescending,
+  nameAscending,
+}
+
 class RestaurantProvider with ChangeNotifier {
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final SharedPreferences prefs;
@@ -13,20 +22,35 @@ class RestaurantProvider with ChangeNotifier {
   RestaurantProvider({
     required this.prefs,
   }) {
-    getFavoriteRestaurantList();
+    getFavoriteRestaurantListFromFirebase();
+    getSortTypeFromFirebase();
   }
 
   List<String> _favoriteRestaurantList = [];
+  SortType _sortType = SortType.dateDescending;
+  String orderKey = '';
+  bool descending = false;
 
   List<String> get favoriteRestaurantList => _favoriteRestaurantList;
 
   set favoriteRestaurantList(List<String> value) {
     _favoriteRestaurantList = value;
-    saveFavoriteRestaurantList();
+    saveFavoriteRestaurantListToFirebase();
     notifyListeners();
   }
 
-  Future<void> saveFavoriteRestaurantList() async {
+  SortType get sortType => _sortType;
+
+  set sortType(SortType value) {
+    _sortType = value;
+    saveSortTypeToFirebase();
+    final getValue = getSortType();
+    orderKey = getValue['key'];
+    descending = getValue['descending'];
+    notifyListeners();
+  }
+
+  Future<void> saveFavoriteRestaurantListToFirebase() async {
     try {
       final uid = prefs.getString(FirestoreUserConstants.id);
       await firebaseFirestore
@@ -45,7 +69,7 @@ class RestaurantProvider with ChangeNotifier {
     }
   }
 
-  Future<void> getFavoriteRestaurantList() async {
+  Future<void> getFavoriteRestaurantListFromFirebase() async {
     final uid = prefs.getString(FirestoreUserConstants.id);
     final data = await firebaseFirestore
         .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
@@ -62,15 +86,100 @@ class RestaurantProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Stream<QuerySnapshot> getRestaurantStream(int limit) {
+  Future<void> saveSortTypeToFirebase() async {
+    try {
+      final uid = prefs.getString(FirestoreUserConstants.id);
+      await firebaseFirestore
+          .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+          .doc(uid)
+          .collection(FirestoreRestaurantConstants.pathSortTypeCollection)
+          .doc(FirestoreRestaurantConstants.pathSortTypeCollection)
+          .set(
+        {
+          FirestoreRestaurantConstants.pathSortTypeCollection: _sortType.index,
+        },
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> getSortTypeFromFirebase() async {
     final uid = prefs.getString(FirestoreUserConstants.id);
+    final data = await firebaseFirestore
+        .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+        .doc(uid)
+        .collection(FirestoreRestaurantConstants.pathSortTypeCollection)
+        .doc(FirestoreRestaurantConstants.pathSortTypeCollection)
+        .get();
+    final temp = data.data();
+
+    _sortType = temp?[FirestoreRestaurantConstants.pathSortTypeCollection] ==
+            null
+        ? SortType.dateDescending
+        : SortType
+            .values[temp?[FirestoreRestaurantConstants.pathSortTypeCollection]];
+    final value = getSortType();
+    orderKey = value['key'];
+    descending = value['descending'];
+
+    notifyListeners();
+  }
+
+  Stream<QuerySnapshot> getRestaurantStream({
+    required int limit,
+    required String orderKey,
+    required bool descending,
+  }) {
+    final uid = prefs.getString(FirestoreUserConstants.id);
+
     return firebaseFirestore
         .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
         .doc(uid)
         .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
-        .orderBy(FirestoreRestaurantConstants.createdAt, descending: true)
+        .orderBy(orderKey, descending: descending)
         .limit(limit)
         .snapshots();
+  }
+
+  Map<String, dynamic> getSortType() {
+    switch (_sortType) {
+      case SortType.dateAscending:
+        return {
+          'key': FirestoreRestaurantConstants.createdAt,
+          'descending': false,
+        };
+      case SortType.dateDescending:
+        return {
+          'key': FirestoreRestaurantConstants.createdAt,
+          'descending': true,
+        };
+      case SortType.ratingAscending:
+        return {
+          'key': FirestoreRestaurantConstants.rating,
+          'descending': false,
+        };
+      case SortType.ratingDescending:
+        return {
+          'key': FirestoreRestaurantConstants.rating,
+          'descending': true,
+        };
+      case SortType.nameAscending:
+        return {
+          'key': FirestoreRestaurantConstants.name,
+          'descending': false,
+        };
+      case SortType.nameDescending:
+        return {
+          'key': FirestoreRestaurantConstants.name,
+          'descending': true,
+        };
+      default:
+        return {
+          'key': FirestoreRestaurantConstants.createdAt,
+          'descending': true,
+        };
+    }
   }
 
   Future<void> precacheFireStoreImage(BuildContext context) async {
@@ -121,5 +230,41 @@ class RestaurantProvider with ChangeNotifier {
         .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
         .doc(restaurantId)
         .delete();
+  }
+
+  String sortTypeToString(SortType type) {
+    switch (type) {
+      case SortType.dateDescending:
+        return '날짜 내림차순';
+      case SortType.dateAscending:
+        return '날짜 오름차순';
+      case SortType.ratingDescending:
+        return '별점 내림차순';
+      case SortType.ratingAscending:
+        return '별점 오름차순';
+      case SortType.nameDescending:
+        return '이름 내림차순';
+      case SortType.nameAscending:
+        return '이름 오름차순';
+    }
+  }
+
+  SortType stringToSortType(String value) {
+    switch (value) {
+      case '날짜 내림차순':
+        return SortType.dateDescending;
+      case '날짜 오름차순':
+        return SortType.dateAscending;
+      case '별점 내림차순':
+        return SortType.ratingDescending;
+      case '별점 오름차순':
+        return SortType.ratingAscending;
+      case '이름 내림차순':
+        return SortType.nameDescending;
+      case '이름 오름차순':
+        return SortType.nameAscending;
+      default:
+        return SortType.dateDescending;
+    }
   }
 }

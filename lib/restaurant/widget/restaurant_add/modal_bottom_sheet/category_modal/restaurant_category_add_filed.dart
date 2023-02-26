@@ -22,6 +22,7 @@ class RestaurantCategoryAddFiled extends StatelessWidget {
           child: SizedBox(
             height: 60,
             child: TextField(
+              maxLength: 20,
               controller: textController,
               decoration: InputDecoration(
                 filled: true,
@@ -30,6 +31,7 @@ class RestaurantCategoryAddFiled extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
                 ),
+                counterText: '',
                 hintText: '카테고리 입력',
                 prefixIcon: const Icon(Icons.add),
               ),
