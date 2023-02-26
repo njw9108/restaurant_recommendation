@@ -70,56 +70,75 @@ class RestaurantCard extends StatelessWidget {
               imageIdList: restaurantModel.images.map((e) => e.id).toList(),
             );
       },
-      child: IntrinsicHeight(
+      child: SizedBox(
+        height: 110,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _Thumbnail(
-              thumbnail: restaurantModel.thumbnail,
-              id: restaurantModel.id!,
+            SizedBox(
+              height: 95,
+              child: _Thumbnail(
+                thumbnail: restaurantModel.thumbnail,
+                id: restaurantModel.id!,
+              ),
             ),
             const SizedBox(
               width: 16,
             ),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 100,
-                    ),
-                    child: Text(
-                      restaurantModel.name,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
+              child: SizedBox(
+                height: 95,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 100,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            restaurantModel.category,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 3,
+                          ),
+                          Text(
+                            restaurantModel.name,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  StarRating(
-                    rating: restaurantModel.rating,
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    restaurantModel.address,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
+                    StarRating(
+                      rating: restaurantModel.rating,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  _Tags(
-                    tags: restaurantModel.tags,
-                  ),
-                ],
+                    Text(
+                      restaurantModel.address,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    // _Tags(
+                    //   tags: restaurantModel.tags,
+                    // ),
+                  ],
+                ),
               ),
             ),
             const Align(
@@ -128,9 +147,6 @@ class RestaurantCard extends StatelessWidget {
                 Icons.drag_indicator,
               ),
             ),
-            const SizedBox(
-              width: 5,
-            )
           ],
         ),
       ),
@@ -221,7 +237,9 @@ class _Category extends StatelessWidget {
         horizontal: 5,
       ),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10), color: Colors.limeAccent),
+        borderRadius: BorderRadius.circular(10),
+        color: TAG_COLOR,
+      ),
       alignment: Alignment.center,
       child: Text(
         category,

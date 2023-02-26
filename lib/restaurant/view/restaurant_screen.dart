@@ -132,8 +132,12 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                           }
                         },
                         separatorBuilder: (_, index) {
-                          return const SizedBox(
-                            height: 20,
+                          return const Padding(
+                            padding: EdgeInsets.only(bottom: 16.0),
+                            child: Divider(
+                              color: BODY_TEXT_COLOR,
+                              height: 1,
+                            ),
                           );
                         },
                         itemCount: snapshot.data?.docs.length ?? 0,

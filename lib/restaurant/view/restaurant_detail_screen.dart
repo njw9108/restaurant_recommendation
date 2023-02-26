@@ -275,32 +275,34 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     ),
                     Text(
                       widget.model.category,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: BODY_TEXT_COLOR,
                         height: 1.5,
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          widget.model.name,
-                          style: const TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.w900,
-                            height: 1.5,
-                          ),
+                    Text(
+                      widget.model.name,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w900,
+                        height: 1.5,
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Text(
+                        widget.model.isVisited ? '방문' : '미방문',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: BODY_TEXT_COLOR,
+                          fontWeight: FontWeight.w300,
+                          height: 1.5,
                         ),
-                        Text(
-                          widget.model.isVisited ? '방문' : '미방문',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            color: BODY_TEXT_COLOR,
-                            fontWeight: FontWeight.w300,
-                            height: 1.5,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                     const SizedBox(
                       height: 4,
@@ -314,6 +316,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     ),
                     Text(
                       widget.model.address,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 18,
                         height: 1.5,
@@ -334,8 +338,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                           return Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
-                            decoration:
-                                const BoxDecoration(color: Colors.yellow),
+                            decoration: const BoxDecoration(color: TAG_COLOR),
                             alignment: Alignment.center,
                             child: Text(
                               widget.model.tags[index],
@@ -356,7 +359,10 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                         fontSize: 16,
                         height: 1.6,
                       ),
-                    )
+                    ),
+                    const SizedBox(
+                      height: 100,
+                    ),
                   ],
                 ),
               ),

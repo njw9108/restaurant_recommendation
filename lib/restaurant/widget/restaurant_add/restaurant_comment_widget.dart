@@ -40,6 +40,8 @@ class _RestaurantCommentWidgetState extends State<RestaurantCommentWidget> {
       child: CustomTextFormField(
         hintText: '코멘트',
         maxLine: 6,
+        maxLength: 500,
+        counterText: '',
         controller: controller,
         onChanged: (value) {
           context.read<RestaurantAddProvider>().comment = value;

@@ -14,6 +14,8 @@ class CustomTextFormField extends StatelessWidget {
   final TextEditingController? controller;
   final double verticalPadding;
   final FormFieldValidator<String>? validator;
+  final int? maxLength;
+  final String? counterText;
 
   const CustomTextFormField({
     Key? key,
@@ -29,6 +31,8 @@ class CustomTextFormField extends StatelessWidget {
     this.controller,
     this.verticalPadding = 8,
     this.validator,
+    this.maxLength,
+    this.counterText,
   }) : super(key: key);
 
   @override
@@ -51,9 +55,12 @@ class CustomTextFormField extends StatelessWidget {
       maxLines: maxLine,
       focusNode: focusNode,
       validator: validator,
+      maxLength: maxLength,
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(vertical: verticalPadding, horizontal: 5),
+        contentPadding:
+            EdgeInsets.symmetric(vertical: verticalPadding, horizontal: 5),
         alignLabelWithHint: true,
+        counterText: counterText,
         hintText: hintText,
         errorText: errorText,
         hintStyle: const TextStyle(
