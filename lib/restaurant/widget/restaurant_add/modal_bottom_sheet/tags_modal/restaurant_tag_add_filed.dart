@@ -4,6 +4,7 @@ import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider
 
 import '../../../../../common/const/color.dart';
 import '../../../../../common/const/const_data.dart';
+import '../../../../provider/restaurant_provider.dart';
 
 class RestaurantTagAddFiled extends StatelessWidget {
   final TextEditingController textController;
@@ -48,13 +49,13 @@ class RestaurantTagAddFiled extends StatelessWidget {
               if (textController.text.trim().isEmpty) {
                 return;
               }
-              final tagList = context.read<RestaurantAddProvider>().tagList;
+              final tagList = context.read<RestaurantProvider>().tagList;
 
               if (tagList.length < maxTotalTagListCount) {
                 FocusManager.instance.primaryFocus?.unfocus();
                 tagList.add(textController.text);
 
-                context.read<RestaurantAddProvider>().tagList =
+                context.read<RestaurantProvider>().tagList =
                     List.from(tagList.toSet());
 
                 textController.text = '';

@@ -4,6 +4,7 @@ import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider
 
 import '../../../../../common/const/color.dart';
 import '../../../../../common/const/const_data.dart';
+import '../../../../provider/restaurant_provider.dart';
 import '../common/bottom_sheet_list_item.dart';
 import 'restaurant_tag_add_filed.dart';
 
@@ -27,7 +28,7 @@ class _RestaurantTagsModalBottomSheetState
 
   @override
   Widget build(BuildContext context) {
-    final totalTagList = context.watch<RestaurantAddProvider>().tagList;
+    final totalTagList = context.watch<RestaurantProvider>().tagList;
     final tags = context.watch<RestaurantAddProvider>().tags;
 
     return GestureDetector(
@@ -123,7 +124,7 @@ class _RestaurantTagsModalBottomSheetState
                             },
                             onDismissed: (direction) async {
                               await context
-                                  .read<RestaurantAddProvider>()
+                                  .read<RestaurantProvider>()
                                   .deleteTagItemFromFirebase(e);
                             },
                             child: BottomSheetListItem(

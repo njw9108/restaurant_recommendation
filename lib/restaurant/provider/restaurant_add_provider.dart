@@ -24,9 +24,7 @@ class RestaurantAddProvider
   RestaurantAddProvider({
     required super.repository,
     required this.firebaseRepository,
-  }) {
-    _getTagCategoryListFromFirebase();
-  }
+  });
 
   final _addressModelStreamController =
       StreamController<AddressModel>.broadcast();
@@ -40,8 +38,7 @@ class RestaurantAddProvider
 
   bool _isFavorite = false;
   bool _isVisited = false;
-  List<String> _tagList = [];
-  List<String> _categoryList = [];
+
   final List<String> _deletedNetworkImageList = [];
   List<ImageIdUrlData> _networkImage = [];
   List<File> _images = [];
@@ -115,26 +112,10 @@ class RestaurantAddProvider
     notifyListeners();
   }
 
-  List<String> get tagList => _tagList;
-
-  set tagList(List<String> value) {
-    _tagList = value.toList();
-    saveTagListToFirebase(_tagList);
-    notifyListeners();
-  }
-
-  List<String> get categoryList => _categoryList;
-
   bool get isVisited => _isVisited;
 
   set isVisited(bool value) {
     _isVisited = value;
-    notifyListeners();
-  }
-
-  set categoryList(List<String> value) {
-    _categoryList = value.toList();
-    saveCategoryListToFirebase(_categoryList);
     notifyListeners();
   }
 
@@ -248,58 +229,6 @@ class RestaurantAddProvider
     }
   }
 
-  Future<void> saveCategoryListToFirebase(List<String> value) async {
-    try {
-      await firebaseRepository.saveRestaurantToFirebase(
-        collectionId:
-            FirestoreRestaurantConstants.pathTagCategoryListCollection,
-        docId: FirestoreRestaurantConstants.pathTagCategoryListCollection,
-        data: {
-          FirestoreRestaurantConstants.pathCategoryList: value,
-          FirestoreRestaurantConstants.pathTagList: tagList,
-        },
-      );
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> saveTagListToFirebase(List<String> value) async {
-    try {
-      await firebaseRepository.saveRestaurantToFirebase(
-        collectionId:
-            FirestoreRestaurantConstants.pathTagCategoryListCollection,
-        docId: FirestoreRestaurantConstants.pathTagCategoryListCollection,
-        data: {
-          FirestoreRestaurantConstants.pathTagList: value,
-          FirestoreRestaurantConstants.pathCategoryList: categoryList,
-        },
-      );
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<void> _getTagCategoryListFromFirebase() async {
-    try {
-      final temp = await firebaseRepository.getRestaurantFromFirebase(
-        collectionId:
-            FirestoreRestaurantConstants.pathTagCategoryListCollection,
-        docId: FirestoreRestaurantConstants.pathTagCategoryListCollection,
-      );
-
-      _categoryList = temp?[FirestoreRestaurantConstants.pathCategoryList]
-              ?.cast<String>() ??
-          [];
-      _tagList =
-          temp?[FirestoreRestaurantConstants.pathTagList]?.cast<String>() ?? [];
-
-      notifyListeners();
-    } catch (e) {
-      print(e);
-    }
-  }
-
   Future<void> updateRestaurantModelToFirebase(String restaurantId) async {
     try {
       //delete Image from firebase storage
@@ -337,16 +266,6 @@ class RestaurantAddProvider
     } catch (e) {
       rethrow;
     }
-  }
-
-  Future<void> deleteTagItemFromFirebase(String item) async {
-    _tagList.remove(item);
-    tagList = List.from(_tagList);
-  }
-
-  Future<void> deleteCategoryItemFromFirebase(String item) async {
-    _categoryList.remove(item);
-    categoryList = List.from(_categoryList);
   }
 
   Future<void> deleteImageFromFirebaseStorage(String restaurantId) async {

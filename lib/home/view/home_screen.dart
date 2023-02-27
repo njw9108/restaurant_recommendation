@@ -3,6 +3,7 @@ import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 
 import '../widget/favorite/favorite_restaurant_list_widget.dart';
+import '../widget/search_tags/SearchTagsListWidget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const Divider(
               thickness: 8,
             ),
+            const SearchTagsListWidget(),
           ],
         ),
       ),
