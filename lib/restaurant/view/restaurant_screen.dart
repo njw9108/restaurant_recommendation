@@ -215,7 +215,6 @@ class _RestaurantSortItemWidget extends StatelessWidget {
   final String title;
 
   const _RestaurantSortItemWidget({
-    super.key,
     required this.onTap,
     required this.title,
   });

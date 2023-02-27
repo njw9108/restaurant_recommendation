@@ -68,13 +68,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
       createdAt = format.format(date);
     }
 
-    // final bool isFavorite = context
-    //     .watch<RestaurantProvider>()
-    //     .favoriteRestaurantList
-    //     .contains(widget.model.id);
-
-    //bool isFavorite = ;
-
     return DefaultLayout(
       child: Stack(
         children: [

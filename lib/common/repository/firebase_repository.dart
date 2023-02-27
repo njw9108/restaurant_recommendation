@@ -157,9 +157,13 @@ class FirebaseRepository {
         .doc(uid)
         .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
         .where(
-          'isFavorite',
-          isEqualTo: true,
+          'tags',
+          arrayContainsAny: ['뉴','매운'],
         )
+        // .where(
+        //   'isFavorite',
+        //   isEqualTo: true,
+        // )
         //.orderBy(orderKey, descending: descending)
         .limit(limit)
         .snapshots();
