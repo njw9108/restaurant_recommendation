@@ -44,6 +44,7 @@ class RestaurantModel {
   final String category;
   final String address;
   final bool isVisited;
+  final bool isFavorite;
 
   RestaurantModel({
     this.id,
@@ -57,6 +58,7 @@ class RestaurantModel {
     required this.category,
     required this.address,
     required this.isVisited,
+    required this.isFavorite,
   });
 
   factory RestaurantModel.fromJson(Map<String, dynamic> json) =>
@@ -78,6 +80,7 @@ class RestaurantModel {
     String category = doc.get(FirestoreRestaurantConstants.category);
     String address = doc.get(FirestoreRestaurantConstants.address);
     bool isVisited = doc.get(FirestoreRestaurantConstants.isVisited);
+    bool isFavorite = doc.get(FirestoreRestaurantConstants.isFavorite);
 
     return RestaurantModel(
       id: id,
@@ -91,6 +94,7 @@ class RestaurantModel {
       tags: tags,
       category: category,
       isVisited: isVisited,
+      isFavorite: isFavorite,
     );
   }
 
@@ -111,6 +115,7 @@ class RestaurantModel {
     String? category,
     String? address,
     bool? isVisited,
+    bool? isFavorite,
   }) {
     return RestaurantModel(
       id: id ?? this.id,
@@ -124,6 +129,7 @@ class RestaurantModel {
       category: category ?? this.category,
       address: address ?? this.address,
       isVisited: isVisited ?? this.isVisited,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 }

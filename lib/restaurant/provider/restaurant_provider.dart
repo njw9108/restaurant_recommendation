@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
+import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 
 import '../../common/repository/firebase_repository.dart';
 
@@ -19,22 +20,13 @@ class RestaurantProvider with ChangeNotifier {
   RestaurantProvider({
     required this.firebaseRepository,
   }) {
-    getFavoriteRestaurantListFromFirebase();
     getSortTypeFromFirebase();
   }
 
-  List<String> _favoriteRestaurantList = [];
   SortType _sortType = SortType.dateDescending;
   String orderKey = '';
   bool descending = false;
-
-  List<String> get favoriteRestaurantList => _favoriteRestaurantList;
-
-  set favoriteRestaurantList(List<String> value) {
-    _favoriteRestaurantList = value;
-    saveFavoriteRestaurantListToFirebase();
-    notifyListeners();
-  }
+  bool _curFavorite = false;
 
   SortType get sortType => _sortType;
 
@@ -47,36 +39,11 @@ class RestaurantProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveFavoriteRestaurantListToFirebase() async {
-    try {
-      await firebaseRepository.saveRestaurantToFirebase(
-        collectionId: FirestoreRestaurantConstants.pathFavoriteListCollection,
-        docId: FirestoreRestaurantConstants.pathFavoriteListCollection,
-        data: {
-          FirestoreRestaurantConstants.pathFavoriteListCollection:
-              _favoriteRestaurantList,
-        },
-      );
-    } catch (e) {
-      print(e);
-    }
-  }
+  bool get curFavorite => _curFavorite;
 
-  Future<void> getFavoriteRestaurantListFromFirebase() async {
-    try {
-      final data = await firebaseRepository.getRestaurantFromFirebase(
-        collectionId: FirestoreRestaurantConstants.pathFavoriteListCollection,
-        docId: FirestoreRestaurantConstants.pathFavoriteListCollection,
-      );
-
-      _favoriteRestaurantList =
-          data?[FirestoreRestaurantConstants.pathFavoriteListCollection]
-                  ?.cast<String>() ??
-              [];
-      notifyListeners();
-    } catch (e) {
-      print(e);
-    }
+  set curFavorite(bool value) {
+    _curFavorite = value;
+    notifyListeners();
   }
 
   Future<void> saveSortTypeToFirebase() async {
@@ -116,8 +83,8 @@ class RestaurantProvider with ChangeNotifier {
 
   Stream<QuerySnapshot> getRestaurantStream({
     required int limit,
-    required String orderKey,
-    required bool descending,
+    String orderKey = FirestoreRestaurantConstants.createdAt,
+    bool descending = true,
   }) {
     return firebaseRepository.getRestaurantStream(
       limit: limit,
@@ -164,6 +131,20 @@ class RestaurantProvider with ChangeNotifier {
           'descending': true,
         };
     }
+  }
+
+  Future<void> toggleFavorite(RestaurantModel model) async {
+    _curFavorite = !_curFavorite;
+    notifyListeners();
+    final newModel = model.copyWith(
+      isFavorite: _curFavorite,
+    );
+
+    await firebaseRepository.saveRestaurantToFirebase(
+      collectionId: FirestoreRestaurantConstants.pathRestaurantListCollection,
+      docId: newModel.id!,
+      data: newModel.toJson(),
+    );
   }
 
   // Future<void> precacheFireStoreImage(BuildContext context) async {

@@ -43,6 +43,13 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
       urls: widget.model.images.map((e) => e.url).toList(),
       fit: BoxFit.cover,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        context.read<RestaurantProvider>().curFavorite =
+            widget.model.isFavorite;
+      },
+    );
   }
 
   @override
@@ -61,10 +68,12 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
       createdAt = format.format(date);
     }
 
-    final bool isFavorite = context
-        .watch<RestaurantProvider>()
-        .favoriteRestaurantList
-        .contains(widget.model.id);
+    // final bool isFavorite = context
+    //     .watch<RestaurantProvider>()
+    //     .favoriteRestaurantList
+    //     .contains(widget.model.id);
+
+    //bool isFavorite = ;
 
     return DefaultLayout(
       child: Stack(
@@ -377,21 +386,12 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 GestureDetector(
-                  onTap: () {
-                    final list = context
+                  onTap: () async {
+                    await context
                         .read<RestaurantProvider>()
-                        .favoriteRestaurantList;
-                    if (isFavorite) {
-                      list.remove(widget.model.id);
-                    } else {
-                      if (widget.model.id != null) {
-                        list.add(widget.model.id!);
-                      }
-                    }
-                    context.read<RestaurantProvider>().favoriteRestaurantList =
-                        List.from(list);
+                        .toggleFavorite(widget.model);
                   },
-                  child: isFavorite
+                  child: context.watch<RestaurantProvider>().curFavorite
                       ? const AppIcon(
                           icon: Icons.favorite,
                           backgroundColor: Colors.red,

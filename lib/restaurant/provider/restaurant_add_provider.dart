@@ -38,6 +38,7 @@ class RestaurantAddProvider
   String query = '';
   int _thumbnailIndex = 0;
 
+  bool _isFavorite = false;
   bool _isVisited = false;
   List<String> _tagList = [];
   List<String> _categoryList = [];
@@ -163,6 +164,7 @@ class RestaurantAddProvider
     _curAddressModel = null;
     _thumbnailIndex = 0;
     _isVisited = false;
+    _isFavorite = false;
   }
 
   void setModelForUpdate(RestaurantModel model) {
@@ -174,6 +176,7 @@ class RestaurantAddProvider
     _comment = model.comment;
     _address = model.address;
     _isVisited = model.isVisited;
+    _isFavorite = model.isFavorite;
 
     notifyListeners();
   }
@@ -213,6 +216,7 @@ class RestaurantAddProvider
       tags: _tags,
       category: _category.isNotEmpty ? _category : '기타',
       isVisited: _isVisited,
+      isFavorite: _isFavorite,
       createdAt: DateTime.now().millisecondsSinceEpoch,
     );
   }
