@@ -93,6 +93,18 @@ class RestaurantProvider with ChangeNotifier {
     );
   }
 
+  Stream<QuerySnapshot> getFavoriteRestaurantStream({
+    required int limit,
+    String orderKey = FirestoreRestaurantConstants.createdAt,
+    bool descending = true,
+  }) {
+    return firebaseRepository.getFavoriteRestaurantStream(
+      limit: limit,
+      orderKey: orderKey,
+      descending: descending,
+    );
+  }
+
   Map<String, dynamic> getSortType() {
     switch (_sortType) {
       case SortType.dateAscending:

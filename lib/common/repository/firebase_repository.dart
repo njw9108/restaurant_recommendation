@@ -144,4 +144,24 @@ class FirebaseRepository {
         .limit(limit)
         .snapshots();
   }
+
+  Stream<QuerySnapshot> getFavoriteRestaurantStream({
+    required int limit,
+    required String orderKey,
+    required bool descending,
+  }) {
+    final uid = prefs.getString(FirestoreUserConstants.id);
+
+    return firebaseFirestore
+        .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+        .doc(uid)
+        .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
+        .where(
+          'isFavorite',
+          isEqualTo: true,
+        )
+        //.orderBy(orderKey, descending: descending)
+        .limit(limit)
+        .snapshots();
+  }
 }
