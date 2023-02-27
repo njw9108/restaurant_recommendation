@@ -37,6 +37,9 @@ class RestaurantModel {
   final List<String> tags;
   final double rating;
   final String comment;
+  @JsonKey(
+    toJson: _toJson,
+  )
   final List<ImageIdUrlData> images;
   final String category;
   final String address;
@@ -90,6 +93,9 @@ class RestaurantModel {
       isVisited: isVisited,
     );
   }
+
+  static List<Map> _toJson(List<ImageIdUrlData> value) =>
+      value.map((e) => e.toJson()).toList();
 
   Map<String, dynamic> toJson() => _$RestaurantModelToJson(this);
 

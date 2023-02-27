@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:recommend_restaurant/common/dio/custom_interceptor.dart';
 import 'package:recommend_restaurant/common/provider/go_router_provider.dart';
+import 'package:recommend_restaurant/common/repository/firebase_repository.dart';
 import 'package:recommend_restaurant/firebase_options.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 import 'package:recommend_restaurant/restaurant/repository/kakao_address_repository.dart';
@@ -66,11 +67,22 @@ class MyApp extends StatelessWidget {
             }
           },
         ),
-        ChangeNotifierProvider<RestaurantProvider>(
-          create: (_) {
-            return RestaurantProvider(
-              prefs: prefs,
-            );
+        Provider<FirebaseRepository>(
+          create: (context) {
+            return FirebaseRepository(prefs: prefs);
+          },
+        ),
+        ChangeNotifierProxyProvider<FirebaseRepository, RestaurantProvider?>(
+          create: (_) => null,
+          update: (context, firebase, previous) {
+            if (previous == null) {
+              final provider = RestaurantProvider(
+                firebaseRepository: firebase,
+              );
+              return provider;
+            } else {
+              return previous;
+            }
           },
         ),
         ProxyProvider<Dio, KakaoAddressRepository>(
@@ -85,14 +97,14 @@ class MyApp extends StatelessWidget {
             }
           },
         ),
-        ChangeNotifierProxyProvider<KakaoAddressRepository,
+        ChangeNotifierProxyProvider2<KakaoAddressRepository, FirebaseRepository,
             RestaurantAddProvider?>(
           create: (_) => null,
-          update: (context, repository, previous) {
+          update: (context, repository, firebase, previous) {
             if (previous == null) {
               final provider = RestaurantAddProvider(
-                prefs: context.read<RestaurantProvider>().prefs,
                 repository: repository,
+                firebaseRepository: firebase,
               );
               return provider;
             } else {
@@ -104,6 +116,7 @@ class MyApp extends StatelessWidget {
       child: Builder(
         builder: (context) {
           final goRouter = context.watch<GoRouterProvider>().router;
+          final restaurantProvider = context.read<RestaurantProvider>();
 
           return MaterialApp.router(
             title: 'recommend restaurants',

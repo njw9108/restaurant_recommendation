@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -15,17 +13,17 @@ import 'package:recommend_restaurant/common/provider/pagination_provider.dart';
 import 'package:recommend_restaurant/restaurant/model/address_model.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/repository/kakao_address_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../common/repository/firebase_repository.dart';
 
 class RestaurantAddProvider
     extends PaginationProvider<AddressModel, KakaoAddressRepository> {
-  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  final SharedPreferences prefs;
+  final FirebaseRepository firebaseRepository;
 
   RestaurantAddProvider({
-    required this.prefs,
     required super.repository,
+    required this.firebaseRepository,
   }) {
     _getTagCategoryListFromFirebase();
   }
@@ -183,163 +181,130 @@ class RestaurantAddProvider
   final _imagePicker = ImagePicker();
 
   Future<List<ImageIdUrlData>> uploadImages(String restaurantId) async {
-    final uid = prefs.getString(FirestoreUserConstants.id);
     List<ImageIdUrlData> imageUrls = [];
-
-    const uuid = Uuid();
 
     try {
       for (int i = 0; i < _images.length; i++) {
-        final String imageId = uuid.v4();
-        final path = 'restaurant/$uid/$restaurantId/$imageId';
-        final storageReference = FirebaseStorage.instance.ref().child(path);
-        final uploadTask = await storageReference.putFile(
-            images[i], SettableMetadata(contentType: 'image/jpg'));
-
-        final url = await uploadTask.ref.getDownloadURL();
-        imageUrls.add(
-          ImageIdUrlData(
-            id: imageId,
-            url: url,
-          ),
+        final data = await firebaseRepository.saveImageToStorage(
+          restaurantId: restaurantId,
+          file: _images[i],
         );
+        imageUrls.add(data);
       }
     } catch (e) {
-      rethrow;
+      print(e);
     }
     return imageUrls;
   }
 
   RestaurantModel _makeRestaurantModel(
-      {required List<ImageIdUrlData> imageUrls, required String id}) {
+      {required List<ImageIdUrlData> imageUrls,
+      required String id,
+      String? thumbnail}) {
     return RestaurantModel(
       id: id,
       name: _name,
-      thumbnail: imageUrls.isNotEmpty ? imageUrls[thumbnailIndex].url : '',
+      thumbnail: thumbnail ??
+          (imageUrls.isNotEmpty ? imageUrls[thumbnailIndex].url : ''),
       rating: _rating,
       comment: _comment,
       images: imageUrls,
       address: _address,
       tags: _tags,
-      category: _category,
+      category: _category.isNotEmpty ? _category : '기타',
       isVisited: _isVisited,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
     );
   }
 
   Future<void> uploadRestaurantData() async {
-    const uuid = Uuid();
-    final String restaurantId = uuid.v4();
+    try {
+      const uuid = Uuid();
+      final String restaurantId = uuid.v4();
 
-    final imageIdUrls = await uploadImages(restaurantId);
+      final imageIdUrls = await uploadImages(restaurantId);
 
-    final model = _makeRestaurantModel(
-      id: restaurantId,
-      imageUrls: imageIdUrls,
-    );
+      final model = _makeRestaurantModel(
+        id: restaurantId,
+        imageUrls: imageIdUrls,
+      );
 
-    await saveRestaurantModelToFirebase(model);
+      await firebaseRepository.saveRestaurantToFirebase(
+        collectionId: FirestoreRestaurantConstants.pathRestaurantListCollection,
+        docId: restaurantId,
+        data: model.toJson(),
+      );
 
-    for (int i = 0; i < _images.length; i++) {
-      _images[i].delete();
+      for (int i = 0; i < _images.length; i++) {
+        _images[i].delete();
+      }
+      _images.clear();
+    } catch (e) {
+      print(e);
     }
-    _images.clear();
   }
 
   Future<void> saveCategoryListToFirebase(List<String> value) async {
     try {
-      final uid = prefs.getString(FirestoreUserConstants.id);
-      await firebaseFirestore
-          .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
-          .doc(uid)
-          .collection(
-              FirestoreRestaurantConstants.pathTagCategoryListCollection)
-          .doc(FirestoreRestaurantConstants.pathTagCategoryListCollection)
-          .set(
-        {
+      await firebaseRepository.saveRestaurantToFirebase(
+        collectionId:
+            FirestoreRestaurantConstants.pathTagCategoryListCollection,
+        docId: FirestoreRestaurantConstants.pathTagCategoryListCollection,
+        data: {
           FirestoreRestaurantConstants.pathCategoryList: value,
           FirestoreRestaurantConstants.pathTagList: tagList,
         },
       );
     } catch (e) {
-      rethrow;
+      print(e);
     }
   }
 
   Future<void> saveTagListToFirebase(List<String> value) async {
     try {
-      final uid = prefs.getString(FirestoreUserConstants.id);
-      await firebaseFirestore
-          .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
-          .doc(uid)
-          .collection(
-              FirestoreRestaurantConstants.pathTagCategoryListCollection)
-          .doc(FirestoreRestaurantConstants.pathTagCategoryListCollection)
-          .set(
-        {
+      await firebaseRepository.saveRestaurantToFirebase(
+        collectionId:
+            FirestoreRestaurantConstants.pathTagCategoryListCollection,
+        docId: FirestoreRestaurantConstants.pathTagCategoryListCollection,
+        data: {
           FirestoreRestaurantConstants.pathTagList: value,
           FirestoreRestaurantConstants.pathCategoryList: categoryList,
         },
       );
     } catch (e) {
-      rethrow;
+      print(e);
     }
   }
 
   Future<void> _getTagCategoryListFromFirebase() async {
-    final uid = prefs.getString(FirestoreUserConstants.id);
-    final data = await firebaseFirestore
-        .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
-        .doc(uid)
-        .collection(FirestoreRestaurantConstants.pathTagCategoryListCollection)
-        .doc(FirestoreRestaurantConstants.pathTagCategoryListCollection)
-        .get();
-    final temp = data.data();
-
-    _categoryList =
-        temp?[FirestoreRestaurantConstants.pathCategoryList]?.cast<String>() ??
-            [];
-    _tagList =
-        temp?[FirestoreRestaurantConstants.pathTagList]?.cast<String>() ?? [];
-    notifyListeners();
-  }
-
-  Future<void> saveRestaurantModelToFirebase(RestaurantModel model) async {
     try {
-      final uid = prefs.getString(FirestoreUserConstants.id);
-      await firebaseFirestore
-          .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
-          .doc(uid)
-          .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
-          .doc(model.id)
-          .set(
-        {
-          FirestoreRestaurantConstants.restaurantId: model.id,
-          FirestoreRestaurantConstants.name: model.name,
-          FirestoreRestaurantConstants.thumbnail: model.thumbnail,
-          FirestoreRestaurantConstants.tags: model.tags,
-          FirestoreRestaurantConstants.rating: model.rating,
-          FirestoreRestaurantConstants.comment: model.comment,
-          FirestoreRestaurantConstants.images:
-              model.images.map((e) => e.toJson()).toList(),
-          FirestoreRestaurantConstants.category:
-              model.category.isEmpty ? '기타' : model.category,
-          FirestoreRestaurantConstants.address: model.address,
-          FirestoreRestaurantConstants.isVisited: model.isVisited,
-          FirestoreRestaurantConstants.createdAt:
-              DateTime.now().millisecondsSinceEpoch,
-        },
+      final temp = await firebaseRepository.getRestaurantFromFirebase(
+        collectionId:
+            FirestoreRestaurantConstants.pathTagCategoryListCollection,
+        docId: FirestoreRestaurantConstants.pathTagCategoryListCollection,
       );
+
+      _categoryList = temp?[FirestoreRestaurantConstants.pathCategoryList]
+              ?.cast<String>() ??
+          [];
+      _tagList =
+          temp?[FirestoreRestaurantConstants.pathTagList]?.cast<String>() ?? [];
+
+      notifyListeners();
     } catch (e) {
-      rethrow;
+      print(e);
     }
   }
 
   Future<void> updateRestaurantModelToFirebase(String restaurantId) async {
     try {
-      final uid = prefs.getString(FirestoreUserConstants.id);
-
       //delete Image from firebase storage
-      await deleteImageFromFirebaseStorage(restaurantId);
+      for (int i = 0; i < _deletedNetworkImageList.length; i++) {
+        await firebaseRepository.deleteImageFromStorage(
+          restaurantId: restaurantId,
+          imageId: _deletedNetworkImageList[i],
+        );
+      }
 
       //upload image from local
       final imageUrls = await uploadImages(restaurantId);
@@ -351,30 +316,19 @@ class RestaurantAddProvider
         thumbnail = imageUrls[thumbnailIndex - _networkImage.length].url;
       }
 
-      await firebaseFirestore
-          .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
-          .doc(uid)
-          .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
-          .doc(restaurantId)
-          .update(
-        {
-          FirestoreRestaurantConstants.restaurantId: restaurantId,
-          FirestoreRestaurantConstants.name: _name,
-          FirestoreRestaurantConstants.thumbnail: thumbnail,
-          FirestoreRestaurantConstants.tags: _tags,
-          FirestoreRestaurantConstants.rating: _rating,
-          FirestoreRestaurantConstants.comment: _comment,
-          FirestoreRestaurantConstants.images: [
-            ..._networkImage.map((e) => e.toJson()).toList(),
-            ...imageUrls.map((e) => e.toJson()).toList(),
-          ],
-          FirestoreRestaurantConstants.category:
-              _category.isEmpty ? '기타' : _category,
-          FirestoreRestaurantConstants.address: _address,
-          FirestoreRestaurantConstants.isVisited: _isVisited,
-          FirestoreRestaurantConstants.createdAt:
-              DateTime.now().millisecondsSinceEpoch,
-        },
+      final model = _makeRestaurantModel(
+        id: restaurantId,
+        imageUrls: [
+          ...networkImage,
+          ...imageUrls,
+        ],
+        thumbnail: thumbnail,
+      );
+
+      await firebaseRepository.updateRestaurantToFirebase(
+        collectionId: FirestoreRestaurantConstants.pathRestaurantListCollection,
+        docId: restaurantId,
+        data: model.toJson(),
       );
     } catch (e) {
       rethrow;
@@ -392,13 +346,15 @@ class RestaurantAddProvider
   }
 
   Future<void> deleteImageFromFirebaseStorage(String restaurantId) async {
-    final uid = prefs.getString(FirestoreUserConstants.id);
-
-    for (int i = 0; i < _deletedNetworkImageList.length; i++) {
-      final path =
-          'restaurant/$uid/$restaurantId/${_deletedNetworkImageList[i]}';
-      final storageReference = FirebaseStorage.instance.ref().child(path);
-      await storageReference.delete();
+    try {
+      for (int i = 0; i < _deletedNetworkImageList.length; i++) {
+        await firebaseRepository.deleteImageFromStorage(
+          restaurantId: restaurantId,
+          imageId: _deletedNetworkImageList[i],
+        );
+      }
+    } catch (e) {
+      print(e);
     }
   }
 

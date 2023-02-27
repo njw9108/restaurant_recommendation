@@ -32,7 +32,7 @@ Map<String, dynamic> _$RestaurantModelToJson(RestaurantModel instance) =>
       'tags': instance.tags,
       'rating': instance.rating,
       'comment': instance.comment,
-      'images': instance.images,
+      'images': RestaurantModel._toJson(instance.images),
       'category': instance.category,
       'address': instance.address,
       'isVisited': instance.isVisited,

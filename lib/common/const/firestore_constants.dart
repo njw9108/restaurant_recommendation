@@ -17,7 +17,7 @@ class FirestoreRestaurantConstants {
   static const pathSortTypeCollection = "sort_type";
   static const pathTagList = "tag_list";
   static const pathCategoryList = "category_list";
-  static const restaurantId = "restaurantId";
+  static const restaurantId = "id";
   static const name = "name";
   static const thumbnail = "thumbnail";
   static const tags = "tags";
