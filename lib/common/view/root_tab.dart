@@ -29,7 +29,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    context.read<RestaurantProvider>().precacheFireStoreImage(context);
+    //context.read<RestaurantProvider>().precacheFireStoreImage(context);
     controller = TabController(length: screenList.length, vsync: this);
 
     controller.addListener(tabListener);
