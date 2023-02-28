@@ -4,6 +4,7 @@ import 'package:recommend_restaurant/common/const/firestore_constants.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 
 import '../../common/repository/firebase_repository.dart';
+import '../../user/provider/auth_provider.dart';
 
 enum SortType {
   dateDescending,
@@ -16,12 +17,16 @@ enum SortType {
 
 class RestaurantProvider with ChangeNotifier {
   final FirebaseRepository firebaseRepository;
+  final AuthProvider authProvider;
 
   RestaurantProvider({
     required this.firebaseRepository,
+    required this.authProvider,
   }) {
-    getSortTypeFromFirebase();
-    _getTagCategoryListFromFirebase();
+    authProvider.authStream.listen((event) {
+      getSortTypeFromFirebase();
+      _getTagCategoryListFromFirebase();
+    });
   }
 
   SortType _sortType = SortType.dateDescending;
@@ -191,7 +196,6 @@ class RestaurantProvider with ChangeNotifier {
     _categoryList.remove(item);
     categoryList = List.from(_categoryList);
   }
-
 
   Map<String, dynamic> getSortType() {
     switch (_sortType) {

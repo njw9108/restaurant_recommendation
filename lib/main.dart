@@ -14,6 +14,7 @@ import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'home/provider/home_provider.dart';
 import 'restaurant/provider/restaurant_add_provider.dart';
 
 void main() async {
@@ -68,16 +69,19 @@ class MyApp extends StatelessWidget {
           },
         ),
         Provider<FirebaseRepository>(
-          create: (context) {
-            return FirebaseRepository(prefs: prefs);
-          },
+          create: (_) => FirebaseRepository(prefs: prefs),
         ),
-        ChangeNotifierProxyProvider<FirebaseRepository, RestaurantProvider?>(
+        ChangeNotifierProvider(
+          create: (_) => HomeProvider(),
+        ),
+        ChangeNotifierProxyProvider2<FirebaseRepository, AuthProvider,
+            RestaurantProvider?>(
           create: (_) => null,
-          update: (context, firebase, previous) {
+          update: (context, firebase, auth, previous) {
             if (previous == null) {
               final provider = RestaurantProvider(
                 firebaseRepository: firebase,
+                authProvider: auth,
               );
               return provider;
             } else {

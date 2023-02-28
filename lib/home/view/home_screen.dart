@@ -3,7 +3,7 @@ import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 
 import '../widget/favorite/favorite_restaurant_list_widget.dart';
-import '../widget/search_tags/SearchTagsListWidget.dart';
+import '../widget/search_tags/search_tags_list_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -19,12 +19,12 @@ class _HomeScreenState extends State<HomeScreen> {
       title: '마이슐랭',
       child: SingleChildScrollView(
         child: Column(
-          children: [
-            const FavoriteRestaurantListWidget(),
-            const Divider(
+          children: const [
+            SearchTagsListWidget(),
+            Divider(
               thickness: 8,
             ),
-            const SearchTagsListWidget(),
+            FavoriteRestaurantListWidget(),
           ],
         ),
       ),

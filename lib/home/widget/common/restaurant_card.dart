@@ -5,8 +5,8 @@ import '../../../common/const/color.dart';
 import '../../../common/widget/star_rating.dart';
 import '../../../restaurant/model/restaurant_model.dart';
 
-class FavoriteRestaurantCard extends StatelessWidget {
-  const FavoriteRestaurantCard({
+class RestaurantCard extends StatelessWidget {
+  const RestaurantCard({
     super.key,
     required this.model,
   });

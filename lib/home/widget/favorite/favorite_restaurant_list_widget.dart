@@ -7,7 +7,7 @@ import '../../../common/const/const_data.dart';
 import '../../../restaurant/model/restaurant_model.dart';
 import '../../../restaurant/provider/restaurant_provider.dart';
 import '../../../restaurant/view/restaurant_detail_screen.dart';
-import 'faviruteRestaurantCard.dart';
+import '../common/restaurant_card.dart';
 
 class FavoriteRestaurantListWidget extends StatefulWidget {
   const FavoriteRestaurantListWidget({
@@ -103,7 +103,7 @@ class _FavoriteRestaurantListWidgetState
                                       extra: model,
                                     );
                                   },
-                                  child: FavoriteRestaurantCard(model: model),
+                                  child: RestaurantCard(model: model),
                                 );
                               },
                               itemCount: restaurantList.length,
