@@ -14,10 +14,10 @@ class SearchCategoriesListWidget extends StatefulWidget {
 
   @override
   State<SearchCategoriesListWidget> createState() =>
-      _SearchTagsListWidgetState();
+      _SearchCategoriesListWidgetState();
 }
 
-class _SearchTagsListWidgetState extends State<SearchCategoriesListWidget> {
+class _SearchCategoriesListWidgetState extends State<SearchCategoriesListWidget> {
   final ScrollController mainController = ScrollController();
   final ScrollController tagController = ScrollController();
   int _limit = firestoreDataLimit;

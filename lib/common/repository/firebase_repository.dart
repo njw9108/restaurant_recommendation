@@ -145,8 +145,10 @@ class FirebaseRepository {
         .snapshots();
   }
 
-  Stream<QuerySnapshot> getFavoriteRestaurantStream({
+  Stream<QuerySnapshot> getSearchRestaurantStream({
     required int limit,
+    required String collection,
+    required bool isEqualTo,
   }) {
     final uid = prefs.getString(FirestoreUserConstants.id);
 
@@ -154,17 +156,30 @@ class FirebaseRepository {
         .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
         .doc(uid)
         .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
-        // .where(
-        //   'tags',
-        //   arrayContainsAny: ['뉴','매운'],
-        // )
         .where(
-          'isFavorite',
-          isEqualTo: true,
+          collection,
+          isEqualTo: isEqualTo,
         )
         .limit(limit)
         .snapshots();
   }
+
+  // Stream<QuerySnapshot> getNotVisitedRestaurantStream({
+  //   required int limit,
+  // }) {
+  //   final uid = prefs.getString(FirestoreUserConstants.id);
+  //
+  //   return firebaseFirestore
+  //       .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+  //       .doc(uid)
+  //       .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
+  //       .where(
+  //     'isVisited',
+  //     isEqualTo: false,
+  //   )
+  //       .limit(limit)
+  //       .snapshots();
+  // }
 
   Stream<QuerySnapshot> searchTagRestaurantStream({
     required int limit,

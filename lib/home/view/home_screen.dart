@@ -5,6 +5,7 @@ import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import '../widget/favorite/favorite_restaurant_list_widget.dart';
 import '../widget/search_categories/search_categories_list_widget.dart';
 import '../widget/search_tags/search_tags_list_widget.dart';
+import '../widget/visited/visited_restaurant_list_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -30,6 +31,10 @@ class _HomeScreenState extends State<HomeScreen> {
               thickness: 8,
             ),
             FavoriteRestaurantListWidget(),
+            Divider(
+              thickness: 8,
+            ),
+            VisitedRestaurantListWidget(),
           ],
         ),
       ),

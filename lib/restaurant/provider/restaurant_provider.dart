@@ -120,8 +120,20 @@ class RestaurantProvider with ChangeNotifier {
   Stream<QuerySnapshot> getFavoriteRestaurantStream({
     required int limit,
   }) {
-    return firebaseRepository.getFavoriteRestaurantStream(
+    return firebaseRepository.getSearchRestaurantStream(
       limit: limit,
+      collection: 'isFavorite',
+      isEqualTo: true,
+    );
+  }
+
+  Stream<QuerySnapshot> getNotVisitedRestaurantStream({
+    required int limit,
+  }) {
+    return firebaseRepository.getSearchRestaurantStream(
+      limit: limit,
+      collection: 'isVisited',
+      isEqualTo: false,
     );
   }
 
