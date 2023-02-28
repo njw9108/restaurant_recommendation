@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:recommend_restaurant/home/widget/common/restaurant_card.dart';
 
 import '../../../restaurant/model/restaurant_model.dart';
+import '../../../restaurant/view/restaurant_detail_screen.dart';
 
 class RestaurantResultWidget extends StatelessWidget {
   const RestaurantResultWidget({
@@ -26,7 +28,17 @@ class RestaurantResultWidget extends StatelessWidget {
               itemBuilder: (_, index) {
                 DocumentSnapshot doc = restaurantList[index];
                 final model = RestaurantModel.fromDocument(doc);
-                return RestaurantResultCard(model: model, );
+                return GestureDetector(
+                  onTap: () {
+                    context.goNamed(
+                      RestaurantDetailScreen.routeName,
+                      extra: model,
+                    );
+                  },
+                  child: RestaurantResultCard(
+                    model: model,
+                  ),
+                );
               },
               itemCount: restaurantList.length,
               separatorBuilder: (BuildContext context, int index) {

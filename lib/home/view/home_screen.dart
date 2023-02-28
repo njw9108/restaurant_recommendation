@@ -22,11 +22,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: const [
-            SearchTagsListWidget(),
+            SearchCategoriesListWidget(),
             Divider(
               thickness: 8,
             ),
-            SearchCategoriesListWidget(),
+            SearchTagsListWidget(),
             Divider(
               thickness: 8,
             ),
@@ -35,6 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
               thickness: 8,
             ),
             VisitedRestaurantListWidget(),
+            SizedBox(
+              height: 20,
+            ),
           ],
         ),
       ),
