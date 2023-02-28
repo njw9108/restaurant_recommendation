@@ -103,7 +103,7 @@ class _FavoriteRestaurantListWidgetState
                                       extra: model,
                                     );
                                   },
-                                  child: RestaurantCard(model: model),
+                                  child: RestaurantResultCard(model: model),
                                 );
                               },
                               itemCount: restaurantList.length,

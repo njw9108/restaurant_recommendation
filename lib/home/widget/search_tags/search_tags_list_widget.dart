@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/home/provider/home_provider.dart';
-import 'package:recommend_restaurant/home/widget/common/restaurant_card.dart';
 
 import '../../../common/const/const_data.dart';
-import '../../../restaurant/model/restaurant_model.dart';
 import '../../../restaurant/provider/restaurant_provider.dart';
+import '../common/expandable_tag_list.dart';
+import '../common/restaurant_result_widget.dart';
 
 class SearchTagsListWidget extends StatefulWidget {
   const SearchTagsListWidget({Key? key}) : super(key: key);
@@ -77,60 +76,10 @@ class _SearchTagsListWidgetState extends State<SearchTagsListWidget> {
               const SizedBox(
                 height: 20,
               ),
-              ExpansionTile(
-                leading: const Icon(Icons.tag),
-                title: const Text(
-                  '태그 리스트 보기',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                textColor: Colors.black,
-                iconColor: Colors.black,
-                children: [
-                  SizedBox(
-                    height: 200,
-                    child: Scrollbar(
-                      thumbVisibility: true,
-                      controller: tagController,
-                      child: GridView.builder(
-                        controller: tagController,
-                        shrinkWrap: true,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 3.5,
-                        ),
-                        itemCount: tagList.length,
-                        itemBuilder: (_, index) {
-                          bool isChecked = context
-                              .watch<HomeProvider>()
-                              .selectedTagList
-                              .contains(tagList[index]);
-                          return CheckboxListTile(
-                            title: Text(tagList[index]),
-                            value: isChecked,
-                            onChanged: (bool? value) {
-                              final temp =
-                                  context.read<HomeProvider>().selectedTagList;
-
-                              if (!value!) {
-                                temp.remove(tagList[index]);
-                              } else {
-                                if (temp.length < 10) {
-                                  temp.add(tagList[index]);
-                                }
-                              }
-                              context.read<HomeProvider>().selectedTagList =
-                                  List.from(temp.toSet());
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ],
+              ExpandableTagList(
+                tagController: tagController,
+                tagList: tagList,
+                title: '태그 리스트 보기',
               ),
               const SizedBox(
                 height: 20,
@@ -160,29 +109,9 @@ class _SearchTagsListWidgetState extends State<SearchTagsListWidget> {
                         ),
                       );
                     }
-                    return SizedBox(
-                      height: 250,
-                      child: snapshot.hasData
-                          ? ListView.separated(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              controller: mainController,
-                              itemBuilder: (_, index) {
-                                DocumentSnapshot doc = restaurantList[index];
-                                final model = RestaurantModel.fromDocument(doc);
-                                return RestaurantCard(model: model);
-                              },
-                              itemCount: restaurantList.length,
-                              separatorBuilder:
-                                  (BuildContext context, int index) {
-                                return const SizedBox(
-                                  width: 10,
-                                );
-                              },
-                            )
-                          : const Center(
-                              child: CircularProgressIndicator(),
-                            ),
+                    return RestaurantResultWidget(
+                      mainController: mainController,
+                      restaurantList: restaurantList,
                     );
                   },
                 ),
