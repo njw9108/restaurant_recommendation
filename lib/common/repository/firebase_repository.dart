@@ -168,6 +168,7 @@ class FirebaseRepository {
 
   Stream<QuerySnapshot> searchTagRestaurantStream({
     required int limit,
+    required String collection,
     required List<String> query,
   }) {
     final uid = prefs.getString(FirestoreUserConstants.id);
@@ -177,8 +178,27 @@ class FirebaseRepository {
         .doc(uid)
         .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
         .where(
-          'tags',
+          collection,
           arrayContainsAny: query,
+        )
+        .limit(limit)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> searchCategoryRestaurantStream({
+    required int limit,
+    required String collection,
+    required List<String> query,
+  }) {
+    final uid = prefs.getString(FirestoreUserConstants.id);
+
+    return firebaseFirestore
+        .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+        .doc(uid)
+        .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
+        .where(
+          collection,
+          whereIn: query,
         )
         .limit(limit)
         .snapshots();

@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../../provider/home_provider.dart';
 
 class ExpandableTagList extends StatelessWidget {
   final ScrollController tagController;
   final List<String> tagList;
   final String title;
+  final List<String> selectedList;
+  final Function(bool, int) onChanged;
 
   const ExpandableTagList({
     super.key,
     required this.tagController,
     required this.tagList,
     required this.title,
+    required this.selectedList,
+    required this.onChanged,
   });
 
   @override
@@ -40,27 +41,27 @@ class ExpandableTagList extends StatelessWidget {
               ),
               itemCount: tagList.length,
               itemBuilder: (_, index) {
-                bool isChecked = context
-                    .watch<HomeProvider>()
-                    .selectedTagList
-                    .contains(tagList[index]);
+                bool isChecked = selectedList.contains(tagList[index]);
                 return CheckboxListTile(
-                  title: Text(tagList[index]),
-                  value: isChecked,
-                  onChanged: (bool? value) {
-                    final temp = context.read<HomeProvider>().selectedTagList;
-
-                    if (!value!) {
-                      temp.remove(tagList[index]);
-                    } else {
-                      if (temp.length < 10) {
-                        temp.add(tagList[index]);
-                      }
+                    title: Text(tagList[index]),
+                    value: isChecked,
+                    onChanged: (value) {
+                      onChanged(value!, index);
                     }
-                    context.read<HomeProvider>().selectedTagList =
-                        List.from(temp.toSet());
-                  },
-                );
+                    // onChanged: (bool? value) {
+                    //   final temp = context.read<HomeProvider>().selectedTagList;
+                    //
+                    //   if (!value!) {
+                    //     temp.remove(tagList[index]);
+                    //   } else {
+                    //     if (temp.length < 10) {
+                    //       temp.add(tagList[index]);
+                    //     }
+                    //   }
+                    //   context.read<HomeProvider>().selectedTagList =
+                    //       List.from(temp.toSet());
+                    // },
+                    );
               },
             ),
           ),

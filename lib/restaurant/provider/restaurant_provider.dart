@@ -131,7 +131,19 @@ class RestaurantProvider with ChangeNotifier {
   }) {
     return firebaseRepository.searchTagRestaurantStream(
       limit: limit,
+      collection: 'tags',
       query: tags,
+    );
+  }
+
+  Stream<QuerySnapshot> searchCategoryRestaurantStream({
+    required int limit,
+    required List<String> categories,
+  }) {
+    return firebaseRepository.searchCategoryRestaurantStream(
+      limit: limit,
+      collection: 'category',
+      query: categories,
     );
   }
 
