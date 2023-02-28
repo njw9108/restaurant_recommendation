@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
-import 'package:recommend_restaurant/common/widget/overlay_loader.dart';
-import 'package:recommend_restaurant/user/provider/auth_provider.dart';
+
+import '../widget/apple_login_btn.dart';
+import '../widget/google_login_btn.dart';
+import '../widget/kakao_login_btn.dart';
 
 class LoginScreen extends StatelessWidget {
   static String routeName = 'login';
@@ -11,39 +15,37 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
-    // if (authProvider.status == LoginStatus.authenticating) {}
-
     return DefaultLayout(
-      child: SingleChildScrollView(
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: SafeArea(
-          top: true,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const _Title(),
-                const SizedBox(
-                  height: 16,
-                ),
-                const SizedBox(
-                  height: 40,
-                ),
-                ElevatedButton(
-                  onPressed: authProvider.status != LoginStatus.authenticating
-                      ? () async {
-                          final overlayLoader = OverlayLoader();
-                          overlayLoader.showLoading(context);
-                          await context.read<AuthProvider>().signIn();
-                          overlayLoader.removeLoading();
-                        }
-                      : null,
-                  child: const Text('Sign in with Google'),
-                ),
-              ],
-            ),
+      child: SafeArea(
+        top: true,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: const [
+                  _Title(),
+                  SizedBox(height: 8,),
+                  _SubTitle(),
+                ],
+              ),
+              Column(
+                children: [
+                  const KakaoLoginBtn(),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  const GoogleLoginBtn(),
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  if (Platform.isIOS) const AppleLoginBtn(),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -57,12 +59,27 @@ class _Title extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Text(
-      '환영합니다!',
+      '마이슐랭 시작하기',
       style: TextStyle(
-        fontSize: 34,
-        fontWeight: FontWeight.w500,
+        fontSize: 28,
+        fontWeight: FontWeight.w700,
         color: Colors.black,
-        fontFamily: 'Paybooc',
+      ),
+    );
+  }
+}
+
+class _SubTitle extends StatelessWidget {
+  const _SubTitle({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'My Eating Table',
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+        color: BODY_TEXT_COLOR,
       ),
     );
   }
