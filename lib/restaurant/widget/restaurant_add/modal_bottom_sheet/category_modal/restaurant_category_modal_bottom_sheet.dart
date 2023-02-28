@@ -29,7 +29,7 @@ class _RestaurantCategoryModalBottomSheetState
   @override
   Widget build(BuildContext context) {
     final totalCategoryList =
-        context.watch<RestaurantAddProvider>().categoryList;
+        context.watch<RestaurantProvider>().categoryList;
 
     return GestureDetector(
       onTap: FocusScope.of(context).unfocus,
@@ -124,7 +124,7 @@ class _RestaurantCategoryModalBottomSheetState
                               },
                               onDismissed: (direction) async {
                                 await context
-                                    .read<RestaurantAddProvider>()
+                                    .read<RestaurantProvider>()
                                     .deleteCategoryItemFromFirebase(e);
                               },
                               child: BottomSheetListItem(

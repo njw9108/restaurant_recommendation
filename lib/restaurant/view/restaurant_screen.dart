@@ -110,26 +110,20 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.all(10),
                         itemBuilder: (_, index) {
-                          DocumentSnapshot doc =
-                              snapshot.data?.docs[index] as DocumentSnapshot;
+                          DocumentSnapshot doc = restaurantList[index];
+                          final model = RestaurantModel.fromDocument(doc);
 
-                          if (snapshot.data?.docs[index] != null) {
-                            final model = RestaurantModel.fromDocument(doc);
-
-                            return GestureDetector(
-                              onTap: () {
-                                context.goNamed(
-                                  RestaurantDetailScreen.routeName,
-                                  extra: model,
-                                );
-                              },
-                              child: RestaurantCard(
-                                restaurantModel: model,
-                              ),
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
+                          return GestureDetector(
+                            onTap: () {
+                              context.goNamed(
+                                RestaurantDetailScreen.routeName,
+                                extra: model,
+                              );
+                            },
+                            child: RestaurantCard(
+                              restaurantModel: model,
+                            ),
+                          );
                         },
                         separatorBuilder: (_, index) {
                           return const Padding(
@@ -221,7 +215,6 @@ class _RestaurantSortItemWidget extends StatelessWidget {
   final String title;
 
   const _RestaurantSortItemWidget({
-    super.key,
     required this.onTap,
     required this.title,
   });

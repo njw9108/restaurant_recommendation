@@ -27,5 +27,6 @@ class FirestoreRestaurantConstants {
   static const category = "category";
   static const address = "address";
   static const isVisited = "isVisited";
+  static const isFavorite = "isFavorite";
   static const createdAt = "createdAt";
 }

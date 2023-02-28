@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
 
 import '../../../../../common/const/color.dart';
 import '../../../../../common/const/const_data.dart';
+import '../../../../provider/restaurant_provider.dart';
 
 class RestaurantCategoryAddFiled extends StatelessWidget {
   final TextEditingController textController;
@@ -49,13 +49,13 @@ class RestaurantCategoryAddFiled extends StatelessWidget {
                 return;
               }
               final categoryList =
-                  context.read<RestaurantAddProvider>().categoryList;
+                  context.read<RestaurantProvider>().categoryList;
 
               if (categoryList.length < maxTotalCategoryListCount) {
                 FocusManager.instance.primaryFocus?.unfocus();
                 categoryList.add(textController.text);
 
-                context.read<RestaurantAddProvider>().categoryList =
+                context.read<RestaurantProvider>().categoryList =
                     List.from(categoryList.toSet());
 
                 textController.text = '';

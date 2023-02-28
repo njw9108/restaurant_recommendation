@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +38,11 @@ class AuthProvider with ChangeNotifier {
     required this.prefs,
   });
 
+  final _authStreamController = StreamController<LoginStatus>.broadcast();
+
+  Stream<LoginStatus> get authStream =>
+      _authStreamController.stream.asBroadcastStream();
+
   String? getUserFirebaseId() {
     return prefs.getString(FirestoreUserConstants.id);
   }
@@ -63,6 +70,7 @@ class AuthProvider with ChangeNotifier {
             await _getMyUserModelFromFirebaseStore(firebaseUser);
         if (getUserModel) {
           _status = LoginStatus.authenticated;
+          _authStreamController.sink.add(_status);
         }
       }
     } catch (e) {}
@@ -86,6 +94,7 @@ class AuthProvider with ChangeNotifier {
             await _getMyUserModelFromFirebaseStore(firebaseUser);
         if (getUserModel) {
           _status = LoginStatus.authenticated;
+          _authStreamController.sink.add(_status);
           notifyListeners();
         }
       } else {

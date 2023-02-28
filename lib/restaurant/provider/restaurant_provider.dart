@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
+import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 
 import '../../common/repository/firebase_repository.dart';
+import '../../user/provider/auth_provider.dart';
 
 enum SortType {
   dateDescending,
@@ -15,26 +17,24 @@ enum SortType {
 
 class RestaurantProvider with ChangeNotifier {
   final FirebaseRepository firebaseRepository;
+  final AuthProvider authProvider;
 
   RestaurantProvider({
     required this.firebaseRepository,
+    required this.authProvider,
   }) {
-    getFavoriteRestaurantListFromFirebase();
-    getSortTypeFromFirebase();
+    authProvider.authStream.listen((event) {
+      getSortTypeFromFirebase();
+      _getTagCategoryListFromFirebase();
+    });
   }
 
-  List<String> _favoriteRestaurantList = [];
   SortType _sortType = SortType.dateDescending;
   String orderKey = '';
   bool descending = false;
-
-  List<String> get favoriteRestaurantList => _favoriteRestaurantList;
-
-  set favoriteRestaurantList(List<String> value) {
-    _favoriteRestaurantList = value;
-    saveFavoriteRestaurantListToFirebase();
-    notifyListeners();
-  }
+  bool _curFavorite = false;
+  List<String> _tagList = [];
+  List<String> _categoryList = [];
 
   SortType get sortType => _sortType;
 
@@ -47,36 +47,27 @@ class RestaurantProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveFavoriteRestaurantListToFirebase() async {
-    try {
-      await firebaseRepository.saveRestaurantToFirebase(
-        collectionId: FirestoreRestaurantConstants.pathFavoriteListCollection,
-        docId: FirestoreRestaurantConstants.pathFavoriteListCollection,
-        data: {
-          FirestoreRestaurantConstants.pathFavoriteListCollection:
-              _favoriteRestaurantList,
-        },
-      );
-    } catch (e) {
-      print(e);
-    }
+  bool get curFavorite => _curFavorite;
+
+  set curFavorite(bool value) {
+    _curFavorite = value;
+    notifyListeners();
   }
 
-  Future<void> getFavoriteRestaurantListFromFirebase() async {
-    try {
-      final data = await firebaseRepository.getRestaurantFromFirebase(
-        collectionId: FirestoreRestaurantConstants.pathFavoriteListCollection,
-        docId: FirestoreRestaurantConstants.pathFavoriteListCollection,
-      );
+  List<String> get tagList => _tagList;
 
-      _favoriteRestaurantList =
-          data?[FirestoreRestaurantConstants.pathFavoriteListCollection]
-                  ?.cast<String>() ??
-              [];
-      notifyListeners();
-    } catch (e) {
-      print(e);
-    }
+  set tagList(List<String> value) {
+    _tagList = value.toList();
+    saveTagListToFirebase(_tagList);
+    notifyListeners();
+  }
+
+  List<String> get categoryList => _categoryList;
+
+  set categoryList(List<String> value) {
+    _categoryList = value.toList();
+    saveCategoryListToFirebase(_categoryList);
+    notifyListeners();
   }
 
   Future<void> saveSortTypeToFirebase() async {
@@ -116,14 +107,118 @@ class RestaurantProvider with ChangeNotifier {
 
   Stream<QuerySnapshot> getRestaurantStream({
     required int limit,
-    required String orderKey,
-    required bool descending,
+    String orderKey = FirestoreRestaurantConstants.createdAt,
+    bool descending = true,
   }) {
     return firebaseRepository.getRestaurantStream(
       limit: limit,
       orderKey: orderKey,
       descending: descending,
     );
+  }
+
+  Stream<QuerySnapshot> getFavoriteRestaurantStream({
+    required int limit,
+  }) {
+    return firebaseRepository.getSearchRestaurantStream(
+      limit: limit,
+      collection: 'isFavorite',
+      isEqualTo: true,
+    );
+  }
+
+  Stream<QuerySnapshot> getNotVisitedRestaurantStream({
+    required int limit,
+  }) {
+    return firebaseRepository.getSearchRestaurantStream(
+      limit: limit,
+      collection: 'isVisited',
+      isEqualTo: false,
+    );
+  }
+
+  Stream<QuerySnapshot> searchTagRestaurantStream({
+    required int limit,
+    required List<String> tags,
+  }) {
+    return firebaseRepository.searchTagRestaurantStream(
+      limit: limit,
+      collection: 'tags',
+      query: tags,
+    );
+  }
+
+  Stream<QuerySnapshot> searchCategoryRestaurantStream({
+    required int limit,
+    required List<String> categories,
+  }) {
+    return firebaseRepository.searchCategoryRestaurantStream(
+      limit: limit,
+      collection: 'category',
+      query: categories,
+    );
+  }
+
+  Future<void> saveCategoryListToFirebase(List<String> value) async {
+    try {
+      await firebaseRepository.saveRestaurantToFirebase(
+        collectionId:
+            FirestoreRestaurantConstants.pathTagCategoryListCollection,
+        docId: FirestoreRestaurantConstants.pathTagCategoryListCollection,
+        data: {
+          FirestoreRestaurantConstants.pathCategoryList: value,
+          FirestoreRestaurantConstants.pathTagList: tagList,
+        },
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> saveTagListToFirebase(List<String> value) async {
+    try {
+      await firebaseRepository.saveRestaurantToFirebase(
+        collectionId:
+            FirestoreRestaurantConstants.pathTagCategoryListCollection,
+        docId: FirestoreRestaurantConstants.pathTagCategoryListCollection,
+        data: {
+          FirestoreRestaurantConstants.pathTagList: value,
+          FirestoreRestaurantConstants.pathCategoryList: categoryList,
+        },
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _getTagCategoryListFromFirebase() async {
+    try {
+      final temp = await firebaseRepository.getRestaurantFromFirebase(
+        collectionId:
+            FirestoreRestaurantConstants.pathTagCategoryListCollection,
+        docId: FirestoreRestaurantConstants.pathTagCategoryListCollection,
+      );
+
+      _categoryList = temp?[FirestoreRestaurantConstants.pathCategoryList]
+              ?.cast<String>() ??
+          [];
+      _tagList =
+          temp?[FirestoreRestaurantConstants.pathTagList]?.cast<String>() ?? [];
+
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> deleteTagItemFromFirebase(String item) async {
+    _tagList.remove(item);
+    tagList = List.from(_tagList);
+  }
+
+  Future<void> deleteCategoryItemFromFirebase(String item) async {
+    _categoryList.remove(item);
+    categoryList = List.from(_categoryList);
   }
 
   Map<String, dynamic> getSortType() {
@@ -164,6 +259,20 @@ class RestaurantProvider with ChangeNotifier {
           'descending': true,
         };
     }
+  }
+
+  Future<void> toggleFavorite(RestaurantModel model) async {
+    _curFavorite = !_curFavorite;
+    notifyListeners();
+    final newModel = model.copyWith(
+      isFavorite: _curFavorite,
+    );
+
+    await firebaseRepository.saveRestaurantToFirebase(
+      collectionId: FirestoreRestaurantConstants.pathRestaurantListCollection,
+      docId: newModel.id!,
+      data: newModel.toJson(),
+    );
   }
 
   // Future<void> precacheFireStoreImage(BuildContext context) async {

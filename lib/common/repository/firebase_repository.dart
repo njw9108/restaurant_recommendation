@@ -144,4 +144,78 @@ class FirebaseRepository {
         .limit(limit)
         .snapshots();
   }
+
+  Stream<QuerySnapshot> getSearchRestaurantStream({
+    required int limit,
+    required String collection,
+    required bool isEqualTo,
+  }) {
+    final uid = prefs.getString(FirestoreUserConstants.id);
+
+    return firebaseFirestore
+        .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+        .doc(uid)
+        .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
+        .where(
+          collection,
+          isEqualTo: isEqualTo,
+        )
+        .limit(limit)
+        .snapshots();
+  }
+
+  // Stream<QuerySnapshot> getNotVisitedRestaurantStream({
+  //   required int limit,
+  // }) {
+  //   final uid = prefs.getString(FirestoreUserConstants.id);
+  //
+  //   return firebaseFirestore
+  //       .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+  //       .doc(uid)
+  //       .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
+  //       .where(
+  //     'isVisited',
+  //     isEqualTo: false,
+  //   )
+  //       .limit(limit)
+  //       .snapshots();
+  // }
+
+  Stream<QuerySnapshot> searchTagRestaurantStream({
+    required int limit,
+    required String collection,
+    required List<String> query,
+  }) {
+    final uid = prefs.getString(FirestoreUserConstants.id);
+
+    return firebaseFirestore
+        .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+        .doc(uid)
+        .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
+        .where(
+          collection,
+          arrayContainsAny: query,
+        )
+        .limit(limit)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> searchCategoryRestaurantStream({
+    required int limit,
+    required String collection,
+    required List<String> query,
+  }) {
+    final uid = prefs.getString(FirestoreUserConstants.id);
+
+    return firebaseFirestore
+        .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
+        .doc(uid)
+        .collection(FirestoreRestaurantConstants.pathRestaurantListCollection)
+        .where(
+          collection,
+          whereIn: query,
+        )
+        .limit(limit)
+        .snapshots();
+  }
 }
