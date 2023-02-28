@@ -19,7 +19,6 @@ class ExpandableTagList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      leading: const Icon(Icons.tag),
       title: Text(
         title,
         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
