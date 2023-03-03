@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -51,7 +50,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AuthProvider>(
           create: (_) {
             return AuthProvider(
-              firebaseAuth: FirebaseAuth.instance,
               googleSignIn: GoogleSignIn(),
               prefs: prefs,
             );

@@ -18,7 +18,7 @@ class GoogleLoginBtn extends StatelessWidget {
           ? () async {
               final overlayLoader = OverlayLoader();
               overlayLoader.showLoading(context);
-              await context.read<AuthProvider>().signIn();
+              await context.read<AuthProvider>().signInWithGoogle();
               overlayLoader.removeLoading();
             }
           : null,
