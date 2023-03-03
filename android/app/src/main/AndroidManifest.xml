@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.njw9108.recommend_restaurant">
    <application
-        android:label="recommend_restaurant"
+        android:label="마이슐랭"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
