@@ -21,14 +21,16 @@ class LoginScreen extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            //crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                //crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: const [
                   _Title(),
-                  SizedBox(height: 8,),
+                  SizedBox(
+                    height: 8,
+                  ),
                   _SubTitle(),
                 ],
               ),
@@ -58,13 +60,9 @@ class _Title extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      '마이슐랭 시작하기',
-      style: TextStyle(
-        fontSize: 28,
-        fontWeight: FontWeight.w700,
-        color: Colors.black,
-      ),
+    return Image.asset(
+      'assets/image/main_logo.png',
+      width: MediaQuery.of(context).size.width / 2,
     );
   }
 }
@@ -77,7 +75,7 @@ class _SubTitle extends StatelessWidget {
     return const Text(
       'My Eating Table',
       style: TextStyle(
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: FontWeight.w500,
         color: GRAY_COLOR,
       ),
