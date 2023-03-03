@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
-import 'package:recommend_restaurant/common/view/root_tab.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
-import 'package:recommend_restaurant/user/view/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   static String routeName = 'splash';
@@ -32,17 +30,19 @@ class _SplashScreenState extends State<SplashScreen> {
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Icon(
-              Icons.restaurant,
-              size: MediaQuery.of(context).size.width / 2,
+            Padding(
+              padding: const EdgeInsets.all(52.0),
+              child: Image.asset(
+                'assets/image/main_logo.png',
+              ),
+            ),
+            const LinearProgressIndicator(
+              backgroundColor: Color(0xffc5c5c5),
               color: PRIMARY_COLOR,
+              minHeight: 8,
             ),
-            const SizedBox(
-              height: 16,
-            ),
-            const CircularProgressIndicator(),
           ],
         ),
       ),

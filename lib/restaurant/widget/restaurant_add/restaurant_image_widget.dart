@@ -183,7 +183,7 @@ class _CameraIconWidget extends StatelessWidget {
       height: 70,
       decoration: BoxDecoration(
           border: Border.all(
-            color: BODY_TEXT_COLOR,
+            color: GRAY_COLOR,
           ),
           borderRadius: BorderRadius.circular(10)),
       child: Column(
@@ -191,7 +191,7 @@ class _CameraIconWidget extends StatelessWidget {
         children: [
           const Icon(
             Icons.camera_alt,
-            color: BODY_TEXT_COLOR,
+            color: GRAY_COLOR,
           ),
           const SizedBox(
             height: 5,

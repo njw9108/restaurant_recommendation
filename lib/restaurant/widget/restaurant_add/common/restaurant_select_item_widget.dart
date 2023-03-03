@@ -26,7 +26,7 @@ class RestaurantSelectItemWidget extends StatelessWidget {
           child: Text(
             title,
             style: const TextStyle(
-              color: BODY_TEXT_COLOR,
+              color: GRAY_COLOR,
               fontSize: 12,
             ),
           ),
@@ -35,7 +35,7 @@ class RestaurantSelectItemWidget extends StatelessWidget {
           decoration: const BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: BODY_TEXT_COLOR,
+                color: GRAY_COLOR,
               ),
             ),
           ),
@@ -61,7 +61,7 @@ class RestaurantSelectItemWidget extends StatelessWidget {
                     emptyText,
                     style: const TextStyle(
                       fontSize: 16,
-                      color: BODY_TEXT_COLOR,
+                      color: GRAY_COLOR,
                     ),
                   )
                 : Text(

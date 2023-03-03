@@ -79,7 +79,7 @@ class _SearchCategoriesListWidgetState extends State<SearchCategoriesListWidget>
               Text(
                 '#${context.watch<HomeProvider>().selectedCategoryList.join(', #')}',
                 style: const TextStyle(
-                  color: BODY_TEXT_COLOR,
+                  color: GRAY_COLOR,
                 ),
               ),
               const SizedBox(

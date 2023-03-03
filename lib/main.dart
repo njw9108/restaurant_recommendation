@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:recommend_restaurant/common/dio/custom_interceptor.dart';
 import 'package:recommend_restaurant/common/provider/go_router_provider.dart';
 import 'package:recommend_restaurant/common/repository/firebase_repository.dart';
+import 'package:recommend_restaurant/common/view/splash_screen.dart';
 import 'package:recommend_restaurant/firebase_options.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 import 'package:recommend_restaurant/restaurant/repository/kakao_address_repository.dart';

@@ -79,7 +79,7 @@ class _SubTitle extends StatelessWidget {
       style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w500,
-        color: BODY_TEXT_COLOR,
+        color: GRAY_COLOR,
       ),
     );
   }
