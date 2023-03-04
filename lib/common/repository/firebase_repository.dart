@@ -22,7 +22,7 @@ class FirebaseRepository {
     required Map<String, dynamic> data,
   }) async {
     try {
-      final uid = prefs.getString(FirestoreUserConstants.id);
+      final uid = prefs.getString(FirestoreUserConstants.uid);
       await firebaseFirestore
           .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
           .doc(uid)
@@ -39,7 +39,7 @@ class FirebaseRepository {
     required String docId,
   }) async {
     try {
-      final uid = prefs.getString(FirestoreUserConstants.id);
+      final uid = prefs.getString(FirestoreUserConstants.uid);
       final data = await firebaseFirestore
           .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
           .doc(uid)
@@ -58,7 +58,7 @@ class FirebaseRepository {
     required Map<String, dynamic> data,
   }) async {
     try {
-      final uid = prefs.getString(FirestoreUserConstants.id);
+      final uid = prefs.getString(FirestoreUserConstants.uid);
 
       await firebaseFirestore
           .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
@@ -75,7 +75,7 @@ class FirebaseRepository {
     required String restaurantId,
     required List<String> imageIdList,
   }) async {
-    final uid = prefs.getString(FirestoreUserConstants.id);
+    final uid = prefs.getString(FirestoreUserConstants.uid);
     //delete image from firebase storage
     for (int i = 0; i < imageIdList.length; i++) {
       await deleteImageFromStorage(
@@ -97,7 +97,7 @@ class FirebaseRepository {
     required String restaurantId,
     required File file,
   }) async {
-    final uid = prefs.getString(FirestoreUserConstants.id);
+    final uid = prefs.getString(FirestoreUserConstants.uid);
     const uuid = Uuid();
 
     try {
@@ -122,7 +122,7 @@ class FirebaseRepository {
     required String restaurantId,
     required String imageId,
   }) async {
-    final uid = prefs.getString(FirestoreUserConstants.id);
+    final uid = prefs.getString(FirestoreUserConstants.uid);
     final path =
         '${FirestoreRestaurantConstants.pathRestaurantCollection}/$uid/$restaurantId/$imageId';
     final storageReference = FirebaseStorage.instance.ref().child(path);
@@ -134,7 +134,7 @@ class FirebaseRepository {
     required String orderKey,
     required bool descending,
   }) {
-    final uid = prefs.getString(FirestoreUserConstants.id);
+    final uid = prefs.getString(FirestoreUserConstants.uid);
 
     return firebaseFirestore
         .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
@@ -150,7 +150,7 @@ class FirebaseRepository {
     required String collection,
     required bool isEqualTo,
   }) {
-    final uid = prefs.getString(FirestoreUserConstants.id);
+    final uid = prefs.getString(FirestoreUserConstants.uid);
 
     return firebaseFirestore
         .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
@@ -186,7 +186,7 @@ class FirebaseRepository {
     required String collection,
     required List<String> query,
   }) {
-    final uid = prefs.getString(FirestoreUserConstants.id);
+    final uid = prefs.getString(FirestoreUserConstants.uid);
 
     return firebaseFirestore
         .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
@@ -205,7 +205,7 @@ class FirebaseRepository {
     required String collection,
     required List<String> query,
   }) {
-    final uid = prefs.getString(FirestoreUserConstants.id);
+    final uid = prefs.getString(FirestoreUserConstants.uid);
 
     return firebaseFirestore
         .collection(FirestoreRestaurantConstants.pathRestaurantCollection)

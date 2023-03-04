@@ -280,7 +280,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        color: BODY_TEXT_COLOR,
+                        color: GRAY_COLOR,
                         height: 1.5,
                       ),
                     ),
@@ -300,7 +300,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                         widget.model.isVisited ? '방문' : '미방문',
                         style: const TextStyle(
                           fontSize: 15,
-                          color: BODY_TEXT_COLOR,
+                          color: GRAY_COLOR,
                           fontWeight: FontWeight.w300,
                           height: 1.5,
                         ),

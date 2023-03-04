@@ -120,7 +120,7 @@ class _RestaurantSearchPaginationWidgetState
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
             child: Divider(
-              color: BODY_TEXT_COLOR,
+              color: GRAY_COLOR,
             ),
           );
         },
@@ -156,7 +156,7 @@ class _RestaurantSearchResultWidget extends StatelessWidget {
               info.categoryName ?? '',
               style: const TextStyle(
                 fontSize: 15,
-                color: BODY_TEXT_COLOR,
+                color: GRAY_COLOR,
               ),
             ),
           ],
@@ -168,7 +168,7 @@ class _RestaurantSearchResultWidget extends StatelessWidget {
           info.roadAddressName ?? '',
           style: const TextStyle(
             fontSize: 15,
-            color: BODY_TEXT_COLOR,
+            color: GRAY_COLOR,
           ),
         ),
         const SizedBox(
@@ -178,7 +178,7 @@ class _RestaurantSearchResultWidget extends StatelessWidget {
           "(지번) ${info.address ?? ''}",
           style: const TextStyle(
             fontSize: 15,
-            color: BODY_TEXT_COLOR,
+            color: GRAY_COLOR,
           ),
         ),
       ],

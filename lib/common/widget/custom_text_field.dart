@@ -64,14 +64,14 @@ class CustomTextFormField extends StatelessWidget {
         hintText: hintText,
         errorText: errorText,
         hintStyle: const TextStyle(
-          color: BODY_TEXT_COLOR,
+          color: GRAY_COLOR,
           fontSize: 14,
           height: 2,
         ),
         fillColor: INPUT_BG_COLOR,
         filled: false,
         label: hintText != null ? Text(hintText!) : null,
-        labelStyle: const TextStyle(color: BODY_TEXT_COLOR),
+        labelStyle: const TextStyle(color: GRAY_COLOR),
         focusedBorder: baseBorder.copyWith(
           borderSide: baseBorder.borderSide.copyWith(
             color: PRIMARY_COLOR,

@@ -129,7 +129,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                           return const Padding(
                             padding: EdgeInsets.only(bottom: 16.0),
                             child: Divider(
-                              color: BODY_TEXT_COLOR,
+                              color: GRAY_COLOR,
                               height: 1,
                             ),
                           );
@@ -237,7 +237,7 @@ class _RestaurantSortItemWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: isSelected ? FontWeight.w700 : null,
-                color: isSelected ? null : BODY_TEXT_COLOR,
+                color: isSelected ? null : GRAY_COLOR,
               ),
             ),
             if (isSelected)

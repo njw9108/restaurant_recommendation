@@ -58,8 +58,9 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         onTap: (int index) {
           controller.animateTo(index);
         },
-        unselectedItemColor: Colors.grey,
-        selectedItemColor: Colors.black,
+        backgroundColor: SECONDARY_COLOR,
+        unselectedItemColor: GRAY_COLOR,
+        selectedItemColor: Colors.white,
         currentIndex: index,
         items: const [
           BottomNavigationBarItem(

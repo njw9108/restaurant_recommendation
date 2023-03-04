@@ -74,7 +74,7 @@ class _SearchTagsListWidgetState extends State<SearchTagsListWidget> {
               Text(
                 '#${context.watch<HomeProvider>().selectedTagList.join(', #')}',
                 style: const TextStyle(
-                  color: BODY_TEXT_COLOR,
+                  color: GRAY_COLOR,
                 ),
               ),
               const SizedBox(
