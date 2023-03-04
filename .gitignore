@@ -49,3 +49,4 @@ firebase_options.dart
 GoogleService-Info.plist
 google-services.json
 firebase_app_id_file.json
+strings.xml

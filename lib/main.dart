@@ -2,18 +2,19 @@ import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:recommend_restaurant/common/dio/custom_interceptor.dart';
 import 'package:recommend_restaurant/common/provider/go_router_provider.dart';
 import 'package:recommend_restaurant/common/repository/firebase_repository.dart';
-import 'package:recommend_restaurant/common/view/splash_screen.dart';
 import 'package:recommend_restaurant/firebase_options.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 import 'package:recommend_restaurant/restaurant/repository/kakao_address_repository.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:recommend_restaurant/user/repository/firebase_auth_remote_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'common/const/const_data.dart';
 import 'home/provider/home_provider.dart';
 import 'restaurant/provider/restaurant_add_provider.dart';
 
@@ -24,7 +25,13 @@ void main() async {
     name: 'restaurant_recommendation',
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   await dotenv.load();
+  String appkey = dotenv.env[nativeAppKey] ?? '';
+  KakaoSdk.init(
+    nativeAppKey: appkey,
+  );
+
   SharedPreferences prefs = await SharedPreferences.getInstance();
   runApp(MyApp(prefs: prefs));
 }
@@ -48,12 +55,42 @@ class MyApp extends StatelessWidget {
             return dio;
           },
         ),
-        ChangeNotifierProvider<AuthProvider>(
-          create: (_) {
-            return AuthProvider(
-              googleSignIn: GoogleSignIn(),
-              prefs: prefs,
-            );
+        ProxyProvider<Dio, KakaoAddressRepository>(
+          update: (context, dio, previous) {
+            if (previous == null) {
+              final repository = KakaoAddressRepository(
+                dio: dio,
+              );
+              return repository;
+            } else {
+              return previous;
+            }
+          },
+        ),
+        ProxyProvider<Dio, FirebaseAuthRemoteRepository>(
+          update: (context, dio, previous) {
+            if (previous == null) {
+              final repository = FirebaseAuthRemoteRepository(
+                dio: dio,
+              );
+              return repository;
+            } else {
+              return previous;
+            }
+          },
+        ),
+        ChangeNotifierProxyProvider<FirebaseAuthRemoteRepository,
+            AuthProvider?>(
+          create: (_) => null,
+          update: (context, repository, previous) {
+            if (previous == null) {
+              return AuthProvider(
+                prefs: prefs,
+                firebaseAuthRemoteRepository: repository,
+              );
+            } else {
+              return previous;
+            }
           },
         ),
         ProxyProvider<AuthProvider, GoRouterProvider>(
@@ -83,18 +120,6 @@ class MyApp extends StatelessWidget {
                 authProvider: auth,
               );
               return provider;
-            } else {
-              return previous;
-            }
-          },
-        ),
-        ProxyProvider<Dio, KakaoAddressRepository>(
-          update: (context, dio, previous) {
-            if (previous == null) {
-              final repository = KakaoAddressRepository(
-                dio: dio,
-              );
-              return repository;
             } else {
               return previous;
             }

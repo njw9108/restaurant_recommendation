@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../provider/auth_provider.dart';
+import 'social_login_btn.dart';
+
 class KakaoLoginBtn extends StatelessWidget {
   const KakaoLoginBtn({
     super.key,
@@ -7,39 +10,12 @@ class KakaoLoginBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: const Color(0xffFEE500),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Image.asset(
-                'assets/image/btn_kakao.png',
-                height: 32,
-              ),
-            ),
-          ),
-          const Expanded(
-            flex: 2,
-            child: Text(
-              '카카오 로그인',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-              ),
-            ),
-          ),
-          const Spacer(),
-        ],
-      ),
+    return const SocialLoginBtn(
+      type: SignInType.kakao,
+      imagePath: 'assets/image/btn_kakao.png',
+      tittle: '카카오 로그인',
+      fontColor: Colors.black,
+      backGroundColor: Color(0xffFEE500),
     );
   }
 }

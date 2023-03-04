@@ -3,11 +3,16 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
 import 'package:recommend_restaurant/user/model/my_user_model.dart';
+import 'package:recommend_restaurant/user/use_case/apple_login.dart';
+import 'package:recommend_restaurant/user/use_case/google_login.dart';
+import 'package:recommend_restaurant/user/use_case/social_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+import '../model/login_result.dart';
+import '../repository/firebase_auth_remote_repository.dart';
+import '../use_case/kakao_login.dart';
 
 enum LoginStatus {
   notInit,
@@ -27,8 +32,8 @@ enum SignInType {
 
 class AuthProvider with ChangeNotifier {
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  final GoogleSignIn googleSignIn;
   final SharedPreferences prefs;
+  final FirebaseAuthRemoteRepository firebaseAuthRemoteRepository;
 
   LoginStatus _status = LoginStatus.notInit;
 
@@ -38,10 +43,20 @@ class AuthProvider with ChangeNotifier {
 
   MyUserModel? get userModel => _userModel;
 
+  late SocialLogin _googleLoginUseCase;
+  late SocialLogin _appleLoginUseCase;
+  late SocialLogin _kakaoLoginUseCase;
+
   AuthProvider({
-    required this.googleSignIn,
     required this.prefs,
-  });
+    required this.firebaseAuthRemoteRepository,
+  }) {
+    _googleLoginUseCase = GoogleLogin();
+    _appleLoginUseCase = AppleLogin();
+    _kakaoLoginUseCase = KakaoLogin(
+      repository: firebaseAuthRemoteRepository,
+    );
+  }
 
   final _authStreamController = StreamController<LoginStatus>.broadcast();
 
@@ -87,65 +102,30 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signInWithGoogle() async {
+  Future<void> socialSignIn(SignInType type) async {
     _status = LoginStatus.authenticating;
     notifyListeners();
 
-    GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-    if (googleUser != null) {
-      GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
-      final firebaseUser = await _getFirebaseUser(
-        accessToken: googleAuth.accessToken ?? '',
-        idToken: googleAuth.idToken ?? '',
-        type: SignInType.google,
-      );
-
-      if (firebaseUser != null) {
-        final getUserModel =
-            await _getMyUserModelFromFirebaseStore(firebaseUser);
-        if (getUserModel) {
-          _status = LoginStatus.authenticated;
-          _authStreamController.sink.add(_status);
-          notifyListeners();
-        }
-      } else {
-        _status = LoginStatus.authenticateError;
-        notifyListeners();
-      }
-    } else {
-      _status = LoginStatus.authenticateCanceled;
-      notifyListeners();
+    SocialLogin useCase;
+    switch (type) {
+      case SignInType.google:
+        useCase = _googleLoginUseCase;
+        break;
+      case SignInType.apple:
+        useCase = _appleLoginUseCase;
+        break;
+      case SignInType.kakao:
+        useCase = _kakaoLoginUseCase;
+        break;
     }
-  }
 
-  Future<void> signInWithApple() async {
-    _status = LoginStatus.authenticating;
-    notifyListeners();
-
-    try {
-      final String? idToken = prefs.getString(FirestoreUserConstants.idToken);
-
-      //
-      // AppleAuthProvider appleAuthProvider = AppleAuthProvider();
-      // appleAuthProvider.addScope('name');
-      // appleAuthProvider.addScope('email');
-      //
-      //
-      // UserCredential credential = await FirebaseAuth.instance.signInWithProvider(appleAuthProvider);
-      // User? user = credential.user;
-      // print(credential.credential?.token);
-
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-
+    final result = await useCase.login();
+    if (result is LoginResult) {
+      //로그인 성공
       final firebaseUser = await _getFirebaseUser(
-        accessToken: credential.authorizationCode,
-        idToken: credential.identityToken ?? '',
-        type: SignInType.apple,
+        accessToken: result.accessToken,
+        idToken: result.idToken,
+        type: type,
       );
 
       if (firebaseUser != null) {
@@ -153,6 +133,7 @@ class AuthProvider with ChangeNotifier {
             await _getMyUserModelFromFirebaseStore(firebaseUser);
         if (getUserModel) {
           _status = LoginStatus.authenticated;
+          //로그아웃 후 로그인이 될때마다 정보를 가져올수 있도록 stream 추가
           _authStreamController.sink.add(_status);
           notifyListeners();
         }
@@ -160,7 +141,12 @@ class AuthProvider with ChangeNotifier {
         _status = LoginStatus.authenticateError;
         notifyListeners();
       }
-    } catch (e) {
+    } else if (result is LoginError) {
+      //로그인 실패, 에러
+      _status = LoginStatus.authenticateError;
+      notifyListeners();
+    } else if (result is LoginCanceled) {
+      //로그인 취소
       _status = LoginStatus.authenticateCanceled;
       notifyListeners();
     }
@@ -173,35 +159,31 @@ class AuthProvider with ChangeNotifier {
   }) async {
     try {
       AuthCredential credential;
+      User? firebaseUser;
       switch (type) {
         case SignInType.google:
           credential = GoogleAuthProvider.credential(
             accessToken: accessToken,
             idToken: idToken,
           );
+          firebaseUser =
+              (await FirebaseAuth.instance.signInWithCredential(credential))
+                  .user;
           break;
         case SignInType.apple:
           credential = OAuthProvider("apple.com").credential(
             accessToken: accessToken,
             idToken: idToken,
           );
+          firebaseUser =
+              (await FirebaseAuth.instance.signInWithCredential(credential))
+                  .user;
           break;
         case SignInType.kakao:
-          credential = GoogleAuthProvider.credential(
-            accessToken: accessToken,
-            idToken: idToken,
-          );
-          break;
-        default:
-          credential = GoogleAuthProvider.credential(
-            accessToken: accessToken,
-            idToken: idToken,
-          );
+          firebaseUser =
+              (await FirebaseAuth.instance.signInWithCustomToken(idToken)).user;
           break;
       }
-
-      User? firebaseUser =
-          (await FirebaseAuth.instance.signInWithCredential(credential)).user;
 
       if (firebaseUser != null) {
         await prefs.setString(FirestoreUserConstants.accessToken, accessToken);
@@ -292,10 +274,42 @@ class AuthProvider with ChangeNotifier {
     _status = LoginStatus.uninitialized;
     await prefs.remove(FirestoreUserConstants.accessToken);
     await prefs.remove(FirestoreUserConstants.idToken);
+    await prefs.remove(FirestoreUserConstants.loginType);
+
+    await _appleLoginUseCase.logout();
+    await _kakaoLoginUseCase.logout();
+    await _googleLoginUseCase.logout();
 
     await FirebaseAuth.instance.signOut();
-    await googleSignIn.disconnect();
-    await googleSignIn.signOut();
+
     notifyListeners();
   }
+
+
+  // void deleteUserFromFirebase() async {
+  //   CollectionReference users = FirebaseFirestore.instance.collection(FirestoreUserConstants.pathUserCollection);
+  //   users.doc(docId).delete();
+  //   User user = FirebaseAuth.instance.currentUser;
+  //   user.delete();
+  //   await signOutGoogle(); // 위(2번 로그아웃 샘플코드)에서 정의한 함수입니다.
+  // }
+  //
+  // Future<void> withdrawal() async {
+  //   final int? loginType = prefs.getInt(FirestoreUserConstants.loginType);
+  //   if (loginType != null) {
+  //     switch (SignInType.values[loginType]) {
+  //       case SignInType.google:
+  //         _googleLoginUseCase.withdrawal();
+  //         break;
+  //       case SignInType.apple:
+  //         _googleLoginUseCase.withdrawal();
+  //         break;
+  //       case SignInType.kakao:
+  //         _googleLoginUseCase.withdrawal();
+  //         break;
+  //     }
+  //   }
+  //
+  //   await signOut();
+  // }
 }
