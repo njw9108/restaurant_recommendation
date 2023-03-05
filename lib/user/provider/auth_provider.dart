@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
@@ -32,7 +32,6 @@ enum SignInType {
 }
 
 class AuthProvider with ChangeNotifier {
-  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final SharedPreferences prefs;
   final FirebaseAuthRemoteRepository firebaseAuthRemoteRepository;
   final FirebaseRepository firebaseRepository;
@@ -208,21 +207,17 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> _saveUserToFirebaseStore(MyUserModel userModel) async {
     try {
-      await firebaseFirestore
-          .collection(FirestoreUserConstants.pathUserCollection)
-          .doc(userModel.id)
-          .set(
-        {
-          FirestoreUserConstants.uid: userModel.id,
-          FirestoreUserConstants.nickname: userModel.nickname,
-          FirestoreUserConstants.email: userModel.email,
-          FirestoreUserConstants.photoUrl: userModel.photoUrl,
-          FirestoreUserConstants.createdAt:
-              DateTime.now().millisecondsSinceEpoch.toString(),
-        },
-      );
+      await firebaseRepository.saveUserToFirebase(userModel: userModel);
     } catch (e) {
-      rethrow;
+      print(e);
+    }
+  }
+
+  Future<void> updateUserName(String userName) async {
+    if (_userModel != null) {
+      _userModel = _userModel!.copyWith(nickname: userName);
+      firebaseRepository.updateUserToFirebase(userModel: userModel!);
+      notifyListeners();
     }
   }
 
@@ -241,12 +236,8 @@ class AuthProvider with ChangeNotifier {
 
   Future<bool> _getMyUserModelFromFirebaseStore(User firebaseUser) async {
     try {
-      final result = await firebaseFirestore
-          .collection(FirestoreUserConstants.pathUserCollection)
-          .doc(firebaseUser.uid)
-          .get();
-
-      final Map<String, dynamic>? userData = result.data();
+      final userData = await firebaseRepository.getUserModelFromFirebase(
+          uid: firebaseUser.uid);
 
       if (userData == null ||
           userData[FirestoreUserConstants.uid] == null ||
@@ -254,7 +245,7 @@ class AuthProvider with ChangeNotifier {
         _userModel = MyUserModel(
           id: firebaseUser.uid,
           photoUrl: firebaseUser.photoURL ?? '',
-          nickname: firebaseUser.displayName ?? '',
+          nickname: firebaseUser.displayName ?? '익명 유저',
           email: firebaseUser.email ?? '',
         );
 

@@ -17,22 +17,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  TextEditingController nameController = TextEditingController();
-
-  @override
-  void initState() {
-    final user = context.read<AuthProvider>().userModel;
-    nameController.text = user?.nickname ?? '';
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().userModel;
@@ -58,49 +42,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(imageSize / 2),
-                  child: user.photoUrl.isEmpty
-                      ? const EmptyImage()
-                      : CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          width: imageSize,
-                          height: imageSize,
-                          imageUrl: user.photoUrl,
-                          placeholder: (context, url) =>
-                              const CircularProgressIndicator.adaptive(),
-                          errorWidget: (context, url, error) =>
-                              const EmptyImage(),
-                        ),
-                ),
-              ],
+            GestureDetector(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  builder: (_) {
+                    return const _NameUpdateWidget();
+                  },
+                );
+              },
+              child: _LabelTextWidget(
+                label: '이름',
+                content: user.nickname,
+                isUpdatable: true,
+              ),
             ),
-            const SizedBox(
-              height: 40,
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 10.0),
+              child: Divider(
+                thickness: 1,
+              ),
             ),
-            CustomTextFormField(
-              onChanged: (String value) {},
-              readOnly: true,
-              hintText: '이름',
-              controller: nameController,
+            _LabelTextWidget(
+              label: '버전',
+              content: user.nickname,
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            CustomTextFormField(
-              onChanged: (String value) {},
-              readOnly: true,
-              hintText: '버전',
-              controller: nameController,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
+            const Spacer(),
             Container(
               decoration: const BoxDecoration(
                 border: Border(
@@ -118,7 +94,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
             ),
-            const Spacer(),
+            const SizedBox(
+              height: 20,
+            ),
             Container(
               decoration: const BoxDecoration(
                 border: Border(
@@ -196,6 +174,111 @@ class _ProfileScreenState extends State<ProfileScreen> {
               height: 20,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LabelTextWidget extends StatelessWidget {
+  final String label;
+  final String content;
+  final bool isUpdatable;
+
+  const _LabelTextWidget({
+    required this.label,
+    required this.content,
+    this.isUpdatable = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label),
+        const SizedBox(
+          height: 5,
+        ),
+        Row(
+          children: [
+            Text(
+              content,
+              style: const TextStyle(fontSize: 20),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            if (isUpdatable)
+              const Icon(
+                Icons.edit,
+                color: GRAY_COLOR,
+                size: 15,
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _NameUpdateWidget extends StatefulWidget {
+  const _NameUpdateWidget({
+    super.key,
+  });
+
+  @override
+  State<_NameUpdateWidget> createState() => _NameUpdateWidgetState();
+}
+
+class _NameUpdateWidgetState extends State<_NameUpdateWidget> {
+  String editValue = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(
+                height: 20,
+              ),
+              const Text('이름'),
+              const SizedBox(
+                height: 10,
+              ),
+              CustomTextFormField(
+                onChanged: (String value) {
+                  setState(() {
+                    editValue = value;
+                  });
+                },
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<AuthProvider>().updateUserName(editValue);
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: PRIMARY_COLOR,
+                ),
+                child: const Text('수정'),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+            ],
+          ),
         ),
       ),
     );

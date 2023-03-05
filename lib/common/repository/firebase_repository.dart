@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:recommend_restaurant/user/model/my_user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -218,6 +219,44 @@ class FirebaseRepository {
         )
         .limit(limit)
         .snapshots();
+  }
+
+  Future<void> saveUserToFirebase({required MyUserModel userModel}) async {
+    await firebaseFirestore
+        .collection(FirestoreUserConstants.pathUserCollection)
+        .doc(userModel.id)
+        .set(
+      {
+        FirestoreUserConstants.uid: userModel.id,
+        FirestoreUserConstants.nickname: userModel.nickname,
+        FirestoreUserConstants.email: userModel.email,
+        FirestoreUserConstants.photoUrl: userModel.photoUrl,
+        FirestoreUserConstants.createdAt:
+            DateTime.now().millisecondsSinceEpoch.toString(),
+      },
+    );
+  }
+
+  Future<void> updateUserToFirebase({required MyUserModel userModel}) async {
+    await firebaseFirestore
+        .collection(FirestoreUserConstants.pathUserCollection)
+        .doc(userModel.id)
+        .update(
+      {
+        FirestoreUserConstants.uid: userModel.id,
+        FirestoreUserConstants.nickname: userModel.nickname,
+        FirestoreUserConstants.email: userModel.email,
+        FirestoreUserConstants.photoUrl: userModel.photoUrl,
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>?> getUserModelFromFirebase({required String uid}) async {
+    final result = await firebaseFirestore
+        .collection(FirestoreUserConstants.pathUserCollection)
+        .doc(uid)
+        .get();
+    return result.data();
   }
 
   Future<void> deleteUserDB() async {
