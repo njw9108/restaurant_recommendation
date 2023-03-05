@@ -22,6 +22,7 @@ enum LoginStatus {
   authenticateError,
   authenticateException,
   authenticateCanceled,
+  withdrawal,
 }
 
 enum SignInType {
@@ -278,8 +279,15 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void statusInit() {
+    _status = LoginStatus.uninitialized;
+    notifyListeners();
+  }
+
   Future<void> withdrawal() async {
-    await firebaseRepository.deleteUserDB();
+    _status = LoginStatus.withdrawal;
+
+    firebaseRepository.deleteUserDB();
 
     await FirebaseAuth.instance.currentUser?.delete();
 
@@ -298,10 +306,11 @@ class AuthProvider with ChangeNotifier {
       }
     }
 
-    _status = LoginStatus.uninitialized;
-    await prefs.remove(FirestoreUserConstants.accessToken);
-    await prefs.remove(FirestoreUserConstants.idToken);
-    await prefs.remove(FirestoreUserConstants.loginType);
+    await Future.wait([
+      prefs.remove(FirestoreUserConstants.accessToken),
+      prefs.remove(FirestoreUserConstants.idToken),
+      prefs.remove(FirestoreUserConstants.loginType),
+    ]);
 
     notifyListeners();
   }

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:recommend_restaurant/common/view/root_tab.dart';
 import 'package:recommend_restaurant/common/view/splash_screen.dart';
-import 'package:recommend_restaurant/common/view/update_screen.dart';
+import 'package:recommend_restaurant/common/view/app_update_screen.dart';
+import 'package:recommend_restaurant/common/view/withdrawal_screen.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/view/restaurant_add_screen.dart';
 import 'package:recommend_restaurant/restaurant/view/restaurant_detail_screen.dart';
@@ -70,10 +71,20 @@ class GoRouterProvider {
       name: AppUpdateScreen.routeName,
       builder: (_, state) => const AppUpdateScreen(),
     ),
+    GoRoute(
+      path: '/withdrawal',
+      name: WithdrawalScreen.routeName,
+      builder: (_, state) => const WithdrawalScreen(),
+    ),
   ];
 
   String? redirectLogic(BuildContext context, GoRouterState state) {
     final loggingIn = state.location == '/login';
+
+    //탈퇴한 회원은 탈퇴페이지로 이동
+    if (provider.status == LoginStatus.withdrawal) {
+      return '/withdrawal';
+    }
 
     //유저 정보가 없는데 로그인 중이라면 그대로 로그인 페이지에 두고
     //만약 로그인 중이 아니라면 로그인 페이지로 이동

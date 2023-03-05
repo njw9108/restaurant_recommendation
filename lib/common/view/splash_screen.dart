@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/common/provider/app_version_provider.dart';
-import 'package:recommend_restaurant/common/view/update_screen.dart';
+import 'package:recommend_restaurant/common/view/app_update_screen.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
