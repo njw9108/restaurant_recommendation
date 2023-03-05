@@ -10,6 +10,7 @@ import 'package:recommend_restaurant/user/use_case/google_login.dart';
 import 'package:recommend_restaurant/user/use_case/social_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../common/repository/firebase_repository.dart';
 import '../model/login_result.dart';
 import '../repository/firebase_auth_remote_repository.dart';
 import '../use_case/kakao_login.dart';
@@ -34,6 +35,7 @@ class AuthProvider with ChangeNotifier {
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final SharedPreferences prefs;
   final FirebaseAuthRemoteRepository firebaseAuthRemoteRepository;
+  final FirebaseRepository firebaseRepository;
 
   LoginStatus _status = LoginStatus.notInit;
 
@@ -50,6 +52,7 @@ class AuthProvider with ChangeNotifier {
   AuthProvider({
     required this.prefs,
     required this.firebaseAuthRemoteRepository,
+    required this.firebaseRepository,
   }) {
     _googleLoginUseCase = GoogleLogin();
     _appleLoginUseCase = AppleLogin();
@@ -285,31 +288,31 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> withdrawal() async {
+    await firebaseRepository.deleteUserDB();
 
-  // void deleteUserFromFirebase() async {
-  //   CollectionReference users = FirebaseFirestore.instance.collection(FirestoreUserConstants.pathUserCollection);
-  //   users.doc(docId).delete();
-  //   User user = FirebaseAuth.instance.currentUser;
-  //   user.delete();
-  //   await signOutGoogle(); // 위(2번 로그아웃 샘플코드)에서 정의한 함수입니다.
-  // }
-  //
-  // Future<void> withdrawal() async {
-  //   final int? loginType = prefs.getInt(FirestoreUserConstants.loginType);
-  //   if (loginType != null) {
-  //     switch (SignInType.values[loginType]) {
-  //       case SignInType.google:
-  //         _googleLoginUseCase.withdrawal();
-  //         break;
-  //       case SignInType.apple:
-  //         _googleLoginUseCase.withdrawal();
-  //         break;
-  //       case SignInType.kakao:
-  //         _googleLoginUseCase.withdrawal();
-  //         break;
-  //     }
-  //   }
-  //
-  //   await signOut();
-  // }
+    await FirebaseAuth.instance.currentUser?.delete();
+
+    final int? loginType = prefs.getInt(FirestoreUserConstants.loginType);
+    if (loginType != null) {
+      switch (SignInType.values[loginType]) {
+        case SignInType.google:
+          _googleLoginUseCase.withdrawal();
+          break;
+        case SignInType.apple:
+          _appleLoginUseCase.withdrawal();
+          break;
+        case SignInType.kakao:
+          _kakaoLoginUseCase.withdrawal();
+          break;
+      }
+    }
+
+    _status = LoginStatus.uninitialized;
+    await prefs.remove(FirestoreUserConstants.accessToken);
+    await prefs.remove(FirestoreUserConstants.idToken);
+    await prefs.remove(FirestoreUserConstants.loginType);
+
+    notifyListeners();
+  }
 }

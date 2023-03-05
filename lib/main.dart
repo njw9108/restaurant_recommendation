@@ -55,6 +55,9 @@ class MyApp extends StatelessWidget {
             return dio;
           },
         ),
+        Provider<FirebaseRepository>(
+          create: (_) => FirebaseRepository(prefs: prefs),
+        ),
         ProxyProvider<Dio, KakaoAddressRepository>(
           update: (context, dio, previous) {
             if (previous == null) {
@@ -79,14 +82,16 @@ class MyApp extends StatelessWidget {
             }
           },
         ),
-        ChangeNotifierProxyProvider<FirebaseAuthRemoteRepository,
-            AuthProvider?>(
+        ChangeNotifierProxyProvider2<FirebaseAuthRemoteRepository,
+            FirebaseRepository, AuthProvider?>(
           create: (_) => null,
-          update: (context, repository, previous) {
+          update:
+              (context, authRemoteRepository, firebaseRepository, previous) {
             if (previous == null) {
               return AuthProvider(
                 prefs: prefs,
-                firebaseAuthRemoteRepository: repository,
+                firebaseAuthRemoteRepository: authRemoteRepository,
+                firebaseRepository: firebaseRepository,
               );
             } else {
               return previous;
@@ -103,9 +108,6 @@ class MyApp extends StatelessWidget {
               return previous;
             }
           },
-        ),
-        Provider<FirebaseRepository>(
-          create: (_) => FirebaseRepository(prefs: prefs),
         ),
         ChangeNotifierProvider(
           create: (_) => HomeProvider(),

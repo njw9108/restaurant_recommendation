@@ -27,7 +27,6 @@ class GoogleLogin implements SocialLogin {
   @override
   Future<bool> logout() async {
     try {
-      await _googleSignIn.disconnect();
       await _googleSignIn.signOut();
       return true;
     } catch (e) {
@@ -36,8 +35,13 @@ class GoogleLogin implements SocialLogin {
   }
 
   @override
-  Future<bool> withdrawal() {
-    // TODO: implement withdrawal
-    throw UnimplementedError();
+  Future<bool> withdrawal() async {
+    try {
+      await _googleSignIn.signOut();
+      await _googleSignIn.disconnect();
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

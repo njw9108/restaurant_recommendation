@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 
 import '../widget/favorite/favorite_restaurant_list_widget.dart';

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -77,12 +78,12 @@ class FirebaseRepository {
   }) async {
     final uid = prefs.getString(FirestoreUserConstants.uid);
     //delete image from firebase storage
-    for (int i = 0; i < imageIdList.length; i++) {
-      await deleteImageFromStorage(
-        restaurantId: restaurantId,
-        imageId: imageIdList[i],
-      );
-    }
+    // for (int i = 0; i < imageIdList.length; i++) {
+    //   await deleteImageFromStorage(
+    //     restaurantId: restaurantId,
+    //     imageId: imageIdList[i],
+    //   );
+    // }
 
     //delete data from firebase store
     await firebaseFirestore
@@ -217,5 +218,25 @@ class FirebaseRepository {
         )
         .limit(limit)
         .snapshots();
+  }
+
+  Future<void> deleteUserDB() async {
+    final uid = prefs.getString(FirestoreUserConstants.uid);
+
+    //restaurant 정보 삭제
+    HttpsCallable callable =
+        FirebaseFunctions.instanceFor(region: 'asia-northeast3')
+            .httpsCallable('recursiveDelete');
+    try {
+      final resp = callable({'path': '/restaurant/$uid'});
+    } catch (e) {
+      print(e);
+    }
+
+    // //user 정보 삭제
+    await firebaseFirestore
+        .collection(FirestoreUserConstants.pathUserCollection)
+        .doc(uid)
+        .delete();
   }
 }
