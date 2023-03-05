@@ -5,6 +5,7 @@ import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 
 import '../../common/const/color.dart';
+import '../../common/provider/app_version_provider.dart';
 import '../../common/widget/custom_text_field.dart';
 
 const double imageSize = 200;
@@ -67,14 +68,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 10.0),
+              padding: EdgeInsets.only(
+                top: 5,
+                bottom: 10.0,
+              ),
               child: Divider(
                 thickness: 1,
               ),
             ),
             _LabelTextWidget(
               label: '버전',
-              content: user.nickname,
+              content: context.watch<AppVersionProvider>().appVersion,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(
+                top: 5,
+                bottom: 10.0,
+              ),
+              child: Divider(
+                thickness: 1,
+              ),
             ),
             const Spacer(),
             Container(
@@ -260,6 +273,7 @@ class _NameUpdateWidgetState extends State<_NameUpdateWidget> {
                     editValue = value;
                   });
                 },
+                maxLength: 10,
               ),
               const SizedBox(
                 height: 20,

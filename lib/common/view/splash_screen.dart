@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
+import 'package:recommend_restaurant/common/provider/app_version_provider.dart';
+import 'package:recommend_restaurant/common/view/update_screen.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -18,8 +21,15 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(seconds: 1), () {
-        context.read<AuthProvider>().checkLogin();
+      Future.delayed(const Duration(milliseconds: 500), () async {
+        final isValidVersion = await context.read<AppVersionProvider>().checkAppVersion();
+        if (isValidVersion) {
+          context.read<AuthProvider>().checkLogin();
+        } else {
+          context.goNamed(
+            AppUpdateScreen.routeName,
+          );
+        }
       });
     });
   }
@@ -48,4 +58,5 @@ class _SplashScreenState extends State<SplashScreen> {
       ),
     );
   }
+
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:recommend_restaurant/common/view/root_tab.dart';
 import 'package:recommend_restaurant/common/view/splash_screen.dart';
+import 'package:recommend_restaurant/common/view/update_screen.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 import 'package:recommend_restaurant/restaurant/view/restaurant_add_screen.dart';
 import 'package:recommend_restaurant/restaurant/view/restaurant_detail_screen.dart';
@@ -63,6 +64,11 @@ class GoRouterProvider {
       path: '/login',
       name: LoginScreen.routeName,
       builder: (_, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/app_update',
+      name: AppUpdateScreen.routeName,
+      builder: (_, state) => const AppUpdateScreen(),
     ),
   ];
 

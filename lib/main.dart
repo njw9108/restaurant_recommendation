@@ -15,6 +15,7 @@ import 'package:recommend_restaurant/user/repository/firebase_auth_remote_reposi
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'common/const/const_data.dart';
+import 'common/provider/app_version_provider.dart';
 import 'home/provider/home_provider.dart';
 import 'restaurant/provider/restaurant_add_provider.dart';
 
@@ -141,6 +142,9 @@ class MyApp extends StatelessWidget {
               return previous;
             }
           },
+        ),
+        ChangeNotifierProvider<AppVersionProvider>(
+          create: (_) => AppVersionProvider(),
         ),
       ],
       child: Builder(

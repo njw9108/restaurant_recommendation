@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/home/view/home_screen.dart';
-import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 import 'package:recommend_restaurant/restaurant/view/restaurant_screen.dart';
 import 'package:recommend_restaurant/user/view/profile_screen.dart';
 

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -189,7 +188,7 @@ class AuthProvider with ChangeNotifier {
 
       if (firebaseUser != null) {
         await prefs.setString(FirestoreUserConstants.accessToken, accessToken);
-        await prefs.setString(FirestoreUserConstants.idToken, idToken ?? '');
+        await prefs.setString(FirestoreUserConstants.idToken, idToken);
         await prefs.setInt(FirestoreUserConstants.loginType, type.index);
       }
 

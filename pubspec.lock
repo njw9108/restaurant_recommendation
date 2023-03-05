@@ -13,10 +13,10 @@ packages:
     dependency: transitive
     description:
       name: _flutterfire_internals
-      sha256: "6215ac7d00ed98300b72f45ed2b38c2ca841f9f4e6965fab33cbd591e45e4473"
+      sha256: "64fcb0dbca4386356386c085142fa6e79c00a3326ceaa778a2d25f5d9ba61441"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.13"
+    version: "1.0.16"
   analyzer:
     dependency: transitive
     description:
@@ -401,6 +401,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.12"
+  firebase_remote_config:
+    dependency: "direct main"
+    description:
+      name: firebase_remote_config
+      sha256: "1309deefd5ff29ea719fa3c48441f492204822c258c001751f762d8bbec1a222"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.13"
+  firebase_remote_config_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_remote_config_platform_interface
+      sha256: "3e20fa1d937d10a52b8e9b3c955161890d30d0924e18438280797b960d2799a4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.33"
+  firebase_remote_config_web:
+    dependency: transitive
+    description:
+      name: firebase_remote_config_web
+      sha256: f79573f237fe84c5927a7d2d5cee5ee6529a70bfe430c63ef0d2aa257eac4c96
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.22"
   firebase_storage:
     dependency: "direct main"
     description:
@@ -872,6 +896,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  package_info_plus:
+    dependency: "direct main"
+    description:
+      name: package_info_plus
+      sha256: "8df5ab0a481d7dc20c0e63809e90a588e496d276ba53358afc4c4443d0a00697"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.3"
+  package_info_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: package_info_plus_platform_interface
+      sha256: "9bc8ba46813a4cc42c66ab781470711781940780fd8beddd0c3da62506d3a6c6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   path:
     dependency: transitive
     description:
