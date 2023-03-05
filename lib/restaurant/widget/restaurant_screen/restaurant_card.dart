@@ -134,9 +134,6 @@ class RestaurantCard extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    // _Tags(
-                    //   tags: restaurantModel.tags,
-                    // ),
                   ],
                 ),
               ),

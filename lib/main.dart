@@ -15,6 +15,7 @@ import 'package:recommend_restaurant/user/repository/firebase_auth_remote_reposi
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'common/const/const_data.dart';
+import 'common/provider/app_version_provider.dart';
 import 'home/provider/home_provider.dart';
 import 'restaurant/provider/restaurant_add_provider.dart';
 
@@ -55,6 +56,9 @@ class MyApp extends StatelessWidget {
             return dio;
           },
         ),
+        Provider<FirebaseRepository>(
+          create: (_) => FirebaseRepository(prefs: prefs),
+        ),
         ProxyProvider<Dio, KakaoAddressRepository>(
           update: (context, dio, previous) {
             if (previous == null) {
@@ -79,14 +83,16 @@ class MyApp extends StatelessWidget {
             }
           },
         ),
-        ChangeNotifierProxyProvider<FirebaseAuthRemoteRepository,
-            AuthProvider?>(
+        ChangeNotifierProxyProvider2<FirebaseAuthRemoteRepository,
+            FirebaseRepository, AuthProvider?>(
           create: (_) => null,
-          update: (context, repository, previous) {
+          update:
+              (context, authRemoteRepository, firebaseRepository, previous) {
             if (previous == null) {
               return AuthProvider(
                 prefs: prefs,
-                firebaseAuthRemoteRepository: repository,
+                firebaseAuthRemoteRepository: authRemoteRepository,
+                firebaseRepository: firebaseRepository,
               );
             } else {
               return previous;
@@ -103,9 +109,6 @@ class MyApp extends StatelessWidget {
               return previous;
             }
           },
-        ),
-        Provider<FirebaseRepository>(
-          create: (_) => FirebaseRepository(prefs: prefs),
         ),
         ChangeNotifierProvider(
           create: (_) => HomeProvider(),
@@ -139,6 +142,9 @@ class MyApp extends StatelessWidget {
               return previous;
             }
           },
+        ),
+        ChangeNotifierProvider<AppVersionProvider>(
+          create: (_) => AppVersionProvider(),
         ),
       ],
       child: Builder(

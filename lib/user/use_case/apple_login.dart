@@ -29,8 +29,7 @@ class AppleLogin implements SocialLogin {
   }
 
   @override
-  Future<bool> withdrawal() {
-    // TODO: implement withdrawal
-    throw UnimplementedError();
+  Future<bool> withdrawal() async {
+    return true;
   }
 }

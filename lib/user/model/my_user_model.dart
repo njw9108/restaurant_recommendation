@@ -20,4 +20,18 @@ class MyUserModel {
       _$MyUserModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$MyUserModelToJson(this);
+
+  MyUserModel copyWith({
+    String? id,
+    String? photoUrl,
+    String? nickname,
+    String? email,
+  }) {
+    return MyUserModel(
+      id: id ?? this.id,
+      photoUrl: photoUrl ?? this.photoUrl,
+      nickname: nickname ?? this.nickname,
+      email: email ?? this.email,
+    );
+  }
 }

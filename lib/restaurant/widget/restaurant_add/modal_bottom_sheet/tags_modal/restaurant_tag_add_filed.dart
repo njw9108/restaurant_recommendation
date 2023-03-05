@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
 
 import '../../../../../common/const/color.dart';
 import '../../../../../common/const/const_data.dart';

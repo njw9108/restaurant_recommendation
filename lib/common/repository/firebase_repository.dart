@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:recommend_restaurant/user/model/my_user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -77,12 +79,12 @@ class FirebaseRepository {
   }) async {
     final uid = prefs.getString(FirestoreUserConstants.uid);
     //delete image from firebase storage
-    for (int i = 0; i < imageIdList.length; i++) {
-      await deleteImageFromStorage(
-        restaurantId: restaurantId,
-        imageId: imageIdList[i],
-      );
-    }
+    // for (int i = 0; i < imageIdList.length; i++) {
+    //   await deleteImageFromStorage(
+    //     restaurantId: restaurantId,
+    //     imageId: imageIdList[i],
+    //   );
+    // }
 
     //delete data from firebase store
     await firebaseFirestore
@@ -217,5 +219,63 @@ class FirebaseRepository {
         )
         .limit(limit)
         .snapshots();
+  }
+
+  Future<void> saveUserToFirebase({required MyUserModel userModel}) async {
+    await firebaseFirestore
+        .collection(FirestoreUserConstants.pathUserCollection)
+        .doc(userModel.id)
+        .set(
+      {
+        FirestoreUserConstants.uid: userModel.id,
+        FirestoreUserConstants.nickname: userModel.nickname,
+        FirestoreUserConstants.email: userModel.email,
+        FirestoreUserConstants.photoUrl: userModel.photoUrl,
+        FirestoreUserConstants.createdAt:
+            DateTime.now().millisecondsSinceEpoch.toString(),
+      },
+    );
+  }
+
+  Future<void> updateUserToFirebase({required MyUserModel userModel}) async {
+    await firebaseFirestore
+        .collection(FirestoreUserConstants.pathUserCollection)
+        .doc(userModel.id)
+        .update(
+      {
+        FirestoreUserConstants.uid: userModel.id,
+        FirestoreUserConstants.nickname: userModel.nickname,
+        FirestoreUserConstants.email: userModel.email,
+        FirestoreUserConstants.photoUrl: userModel.photoUrl,
+      },
+    );
+  }
+
+  Future<Map<String, dynamic>?> getUserModelFromFirebase({required String uid}) async {
+    final result = await firebaseFirestore
+        .collection(FirestoreUserConstants.pathUserCollection)
+        .doc(uid)
+        .get();
+    return result.data();
+  }
+
+  Future<void> deleteUserDB() async {
+    final uid = prefs.getString(FirestoreUserConstants.uid);
+
+    //restaurant 정보 삭제
+    HttpsCallable callable =
+        FirebaseFunctions.instanceFor(region: 'asia-northeast3')
+            .httpsCallable('recursiveDelete');
+    try {
+      final resp = callable({'path': '/restaurant/$uid'});
+    } catch (e) {
+      print(e);
+    }
+
+    // //user 정보 삭제
+    await firebaseFirestore
+        .collection(FirestoreUserConstants.pathUserCollection)
+        .doc(uid)
+        .delete();
   }
 }

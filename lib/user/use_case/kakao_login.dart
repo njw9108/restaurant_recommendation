@@ -18,7 +18,7 @@ class KakaoLogin implements SocialLogin {
     try {
       if (await isKakaoTalkInstalled()) {
         try {
-          OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
+          final OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
           // print('카카오톡으로 로그인 성공');
           final user = await UserApi.instance.me();
 
