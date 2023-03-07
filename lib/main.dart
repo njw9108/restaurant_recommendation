@@ -12,7 +12,7 @@ import 'package:recommend_restaurant/restaurant/repository/kakao_address_reposit
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/user/repository/firebase_auth_remote_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'common/const/const_data.dart';
 import 'common/provider/app_version_provider.dart';
@@ -33,14 +33,14 @@ void main() async {
     nativeAppKey: appkey,
   );
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  runApp(MyApp(prefs: prefs));
+  const FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  runApp(const MyApp(secureStorage: secureStorage));
 }
 
 class MyApp extends StatelessWidget {
-  final SharedPreferences prefs;
+  final FlutterSecureStorage secureStorage;
 
-  const MyApp({super.key, required this.prefs});
+  const MyApp({super.key, required this.secureStorage});
 
   // This widget is the root of your application.
   @override
@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
           },
         ),
         Provider<FirebaseRepository>(
-          create: (_) => FirebaseRepository(prefs: prefs),
+          create: (_) => FirebaseRepository(secureStorage: secureStorage),
         ),
         ProxyProvider<Dio, KakaoAddressRepository>(
           update: (context, dio, previous) {
@@ -90,7 +90,7 @@ class MyApp extends StatelessWidget {
               (context, authRemoteRepository, firebaseRepository, previous) {
             if (previous == null) {
               return AuthProvider(
-                prefs: prefs,
+                secureStorage: secureStorage,
                 firebaseAuthRemoteRepository: authRemoteRepository,
                 firebaseRepository: firebaseRepository,
               );
@@ -121,6 +121,7 @@ class MyApp extends StatelessWidget {
               final provider = RestaurantProvider(
                 firebaseRepository: firebase,
                 authProvider: auth,
+                secureStorage: secureStorage,
               );
               return provider;
             } else {
