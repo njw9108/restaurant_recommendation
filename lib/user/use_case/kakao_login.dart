@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:recommend_restaurant/user/repository/firebase_auth_remote_repository.dart';
 
+import '../../common/const/const_data.dart';
 import '../model/login_result.dart';
 import 'social_login.dart';
 
@@ -13,20 +15,22 @@ class KakaoLogin implements SocialLogin {
     required this.repository,
   });
 
+
+
   @override
   Future<LoginResultBase> login() async {
     try {
       if (await isKakaoTalkInstalled()) {
         try {
-          final OAuthToken token = await UserApi.instance.loginWithKakaoTalk();
-          // print('카카오톡으로 로그인 성공');
+          await UserApi.instance.loginWithKakaoTalk();
+          final profileImage = dotenv.env[defaultProfileImage];
           final user = await UserApi.instance.me();
 
           final customToken = await repository.createCustomToken({
             'uid': user.id.toString(),
-            'displayName': user.kakaoAccount?.profile?.nickname ?? '',
-            'email': user.kakaoAccount?.email ?? '',
-            'photoURL': user.kakaoAccount?.profile?.profileImageUrl ?? '',
+            'displayName': user.kakaoAccount?.profile?.nickname ?? '익명유저',
+            'email': user.kakaoAccount?.email,
+            'photoURL': user.kakaoAccount?.profile?.profileImageUrl ?? profileImage,
           });
 
           return LoginResult(accessToken: '', idToken: customToken);
@@ -45,10 +49,18 @@ class KakaoLogin implements SocialLogin {
 
           // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
           try {
-            OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-            // print('카카오계정으로 로그인 성공');
-            return LoginResult(
-                accessToken: token.accessToken, idToken: token.idToken ?? '');
+            await UserApi.instance.loginWithKakaoAccount();
+            final profileImage = dotenv.env[defaultProfileImage];
+            final user = await UserApi.instance.me();
+
+            final customToken = await repository.createCustomToken({
+              'uid': user.id.toString(),
+              'displayName': user.kakaoAccount?.profile?.nickname ?? '익명유저',
+              'email': user.kakaoAccount?.email,
+              'photoURL': user.kakaoAccount?.profile?.profileImageUrl ?? profileImage,
+            });
+
+            return LoginResult(accessToken: '', idToken: customToken);
           } catch (error) {
             // print('카카오계정으로 로그인 실패 $error');
             return LoginError(message: error.toString());
@@ -56,10 +68,18 @@ class KakaoLogin implements SocialLogin {
         }
       } else {
         try {
-          OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
-          // print('카카오계정으로 로그인 성공');
-          return LoginResult(
-              accessToken: token.accessToken, idToken: token.idToken ?? '');
+          await UserApi.instance.loginWithKakaoAccount();
+          final profileImage = dotenv.env[defaultProfileImage];
+          final user = await UserApi.instance.me();
+
+          final customToken = await repository.createCustomToken({
+            'uid': user.id.toString(),
+            'displayName': user.kakaoAccount?.profile?.nickname ?? '익명유저',
+            'email': user.kakaoAccount?.email,
+            'photoURL': user.kakaoAccount?.profile?.profileImageUrl ?? profileImage,
+          });
+
+          return LoginResult(accessToken: '', idToken: customToken);
         } catch (error) {
           // print('카카오계정으로 로그인 실패 $error');
           return LoginError(message: error.toString());
