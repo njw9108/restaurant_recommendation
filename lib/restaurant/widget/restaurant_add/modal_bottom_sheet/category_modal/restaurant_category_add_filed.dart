@@ -72,6 +72,8 @@ class RestaurantCategoryAddFiled extends StatelessWidget {
                             onPressed: () {
                               Navigator.pop(context);
                             },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: PRIMARY_COLOR),
                             child: const Text('확인'),
                           ),
                         ],

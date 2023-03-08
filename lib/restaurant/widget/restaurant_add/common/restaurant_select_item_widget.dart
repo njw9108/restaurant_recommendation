@@ -45,6 +45,7 @@ class RestaurantSelectItemWidget extends StatelessWidget {
               FocusManager.instance.primaryFocus?.unfocus();
               showModalBottomSheet(
                 context: context,
+                isScrollControlled: true,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(20).r,
@@ -52,7 +53,20 @@ class RestaurantSelectItemWidget extends StatelessWidget {
                   ),
                 ),
                 builder: (_) {
-                  return bottomSheet;
+                  return DraggableScrollableSheet(
+                    expand: false,
+                    initialChildSize: 0.6,
+                    maxChildSize: 0.8,
+                    builder: (BuildContext context,
+                            ScrollController scrollController) =>
+                        SingleChildScrollView(
+                      controller: scrollController,
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: bottomSheet,
+                    ),
+                  );
                 },
               );
             },
