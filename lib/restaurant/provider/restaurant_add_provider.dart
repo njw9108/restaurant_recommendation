@@ -285,8 +285,6 @@ class RestaurantAddProvider
     final pickedFile = await _imagePicker.pickImage(
       source: source,
       imageQuality: 40,
-      maxWidth: 500,
-      maxHeight: 500,
     );
     if (pickedFile != null) {
       File picked = File(pickedFile.path);
