@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 
 class OverlayLoader {
@@ -127,20 +128,20 @@ class _FullPhotoOverlayWidgetState extends State<FullPhotoOverlayWidget> {
               children: _buildImages(),
             ),
             Positioned(
-              right: 20,
-              top: 50,
+              right: 20.w,
+              top: 50.h,
               child: GestureDetector(
                 onTap: () {
                   widget.onRemove();
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(1),
+                  padding: REdgeInsets.all(1),
                   decoration: BoxDecoration(
                       color: PRIMARY_COLOR,
-                      borderRadius: BorderRadius.circular(30)),
-                  child: const Icon(
+                      borderRadius: BorderRadius.circular(30).r),
+                  child: Icon(
                     Icons.close,
-                    size: 30,
+                    size: 30.sp,
                   ),
                 ),
               ),
@@ -152,8 +153,8 @@ class _FullPhotoOverlayWidgetState extends State<FullPhotoOverlayWidget> {
                   color: Colors.transparent,
                   child: Text(
                     '${curPage + 1}/$totalLength',
-                    style: const TextStyle(
-                      fontSize: 24,
+                    style: TextStyle(
+                      fontSize: 24.sp,
                       color: Colors.white,
                     ),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
 
@@ -28,31 +29,30 @@ class _RestaurantCategoryModalBottomSheetState
 
   @override
   Widget build(BuildContext context) {
-    final totalCategoryList =
-        context.watch<RestaurantProvider>().categoryList;
+    final totalCategoryList = context.watch<RestaurantProvider>().categoryList;
 
     return GestureDetector(
       onTap: FocusScope.of(context).unfocus,
       child: Padding(
-        padding: const EdgeInsets.all(25.0),
+        padding: REdgeInsets.all(25.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               '카테고리',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 20.sp,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(
-              height: 16,
+            SizedBox(
+              height: 16.h,
             ),
             RestaurantCategoryAddFiled(
               textController: textController,
             ),
-            const SizedBox(
-              height: 16,
+            SizedBox(
+              height: 16.h,
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -64,13 +64,13 @@ class _RestaurantCategoryModalBottomSheetState
                     children: [
                       Text(
                         '카테고리 목록 (${totalCategoryList.length}/$maxTotalCategoryListCount)',
-                        style: const TextStyle(
-                          fontSize: 18,
+                        style: TextStyle(
+                          fontSize: 18.sp,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      const SizedBox(
-                        height: 8,
+                      SizedBox(
+                        height: 8.h,
                       ),
                       ...totalCategoryList
                           .map(
@@ -79,11 +79,11 @@ class _RestaurantCategoryModalBottomSheetState
                               background: Container(
                                 color: Colors.red.shade400,
                                 alignment: Alignment.centerRight,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 10),
-                                child: const Icon(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w, vertical: 10.h),
+                                child: Icon(
                                   Icons.delete_forever,
-                                  size: 25,
+                                  size: 25.sp,
                                 ),
                               ),
                               direction: DismissDirection.endToStart,
@@ -105,8 +105,8 @@ class _RestaurantCategoryModalBottomSheetState
                                             ),
                                             child: const Text('삭제'),
                                           ),
-                                          const SizedBox(
-                                            width: 8,
+                                          SizedBox(
+                                            width: 8.w,
                                           ),
                                           ElevatedButton(
                                             onPressed: () {
@@ -139,8 +139,8 @@ class _RestaurantCategoryModalBottomSheetState
                                             Icons.check,
                                             color: PRIMARY_COLOR,
                                           ),
-                                          const SizedBox(
-                                            width: 8,
+                                          SizedBox(
+                                            width: 8.w,
                                           ),
                                           Text(
                                             e,

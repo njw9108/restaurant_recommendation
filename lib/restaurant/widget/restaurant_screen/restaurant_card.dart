@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/widget/star_rating.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
-import 'package:collection/collection.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_provider.dart';
 
 class RestaurantCard extends StatelessWidget {
@@ -22,10 +22,10 @@ class RestaurantCard extends StatelessWidget {
       background: Container(
         color: Colors.red.shade400,
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: const Icon(
+        padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 10.w),
+        child: Icon(
           Icons.delete_forever,
-          size: 30,
+          size: 30.sp,
         ),
       ),
       direction: DismissDirection.endToStart,
@@ -47,8 +47,8 @@ class RestaurantCard extends StatelessWidget {
                     ),
                     child: const Text('삭제'),
                   ),
-                  const SizedBox(
-                    width: 8,
+                  SizedBox(
+                    width: 8.w,
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -71,31 +71,31 @@ class RestaurantCard extends StatelessWidget {
             );
       },
       child: SizedBox(
-        height: 110,
+        height: 110.h,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 95,
+              height: 95.h,
               child: _Thumbnail(
                 thumbnail: restaurantModel.thumbnail,
                 id: restaurantModel.id!,
               ),
             ),
-            const SizedBox(
-              width: 16,
+            SizedBox(
+              width: 16.w,
             ),
             Expanded(
               child: SizedBox(
-                height: 95,
+                height: 95.h,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxWidth: 100,
+                      constraints: BoxConstraints(
+                        maxWidth: 100.w,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -103,19 +103,19 @@ class RestaurantCard extends StatelessWidget {
                           Text(
                             restaurantModel.category,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 13,
+                            style: TextStyle(
+                              fontSize: 13.sp,
                               fontWeight: FontWeight.w300,
                             ),
                           ),
-                          const SizedBox(
-                            height: 3,
+                          SizedBox(
+                            height: 3.h,
                           ),
                           Text(
                             restaurantModel.name,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 17,
+                            style: TextStyle(
+                              fontSize: 17.sp,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -129,8 +129,8 @@ class RestaurantCard extends StatelessWidget {
                       restaurantModel.address,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 15,
+                      style: TextStyle(
+                        fontSize: 11.sp,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -167,29 +167,30 @@ class _Thumbnail extends StatelessWidget {
       return Hero(
         tag: id,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10).r,
           child: CachedNetworkImage(
-            width: 95,
-            height: 95,
+            width: 95.w,
+            height: 95.h,
             fit: BoxFit.cover,
             imageUrl: thumbnail,
             placeholder: (context, url) => Container(
-              width: 95,
-              height: 95,
+              width: 50.w,
+              height: 50.h,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20).r,
               ),
+              alignment: Alignment.center,
               child: const CircularProgressIndicator.adaptive(),
             ),
             errorWidget: (context, url, error) => Container(
-              width: 95,
-              height: 95,
+              width: 95.w,
+              height: 95.h,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20).r,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.error,
-                size: 25,
+                size: 25.sp,
                 color: PRIMARY_COLOR,
               ),
             ),
@@ -200,93 +201,18 @@ class _Thumbnail extends StatelessWidget {
       return Hero(
         tag: id,
         child: Container(
-          width: 95,
-          height: 95,
+          width: 95.w,
+          height: 95.h,
           decoration: BoxDecoration(
             color: PRIMARY_COLOR,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20).r,
           ),
-          child: const Icon(
+          child: Icon(
             Icons.restaurant_menu,
-            size: 25,
+            size: 25.sp,
           ),
         ),
       );
     }
-  }
-}
-
-class _Category extends StatelessWidget {
-  final String category;
-
-  const _Category({
-    Key? key,
-    required this.category,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 60,
-      height: 28,
-      padding: const EdgeInsets.symmetric(
-        vertical: 5,
-        horizontal: 5,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: TAG_COLOR,
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        category,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
-          fontSize: 13,
-        ),
-      ),
-    );
-  }
-}
-
-class _Tags extends StatelessWidget {
-  final List<String> tags;
-  final int _maxCategoryCount = 3;
-
-  const _Tags({
-    Key? key,
-    required this.tags,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ...tags.mapIndexed(
-          (index, e) {
-            if (index < _maxCategoryCount) {
-              return Padding(
-                padding: index == tags.length - 1
-                    ? EdgeInsets.zero
-                    : const EdgeInsets.only(right: 8.0),
-                child: _Category(
-                  category: e,
-                ),
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          },
-        ).toList(),
-        if (tags.length > _maxCategoryCount)
-          const Text(
-            '···',
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-      ],
-    );
   }
 }

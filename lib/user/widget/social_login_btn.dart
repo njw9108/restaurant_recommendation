@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/widget/overlay_loader.dart';
@@ -39,9 +40,9 @@ class SocialLoginBtn extends StatelessWidget {
           : null,
       child: Container(
         height: 50,
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 20.w),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8).r,
           border: border,
           color: backGroundColor,
         ),
@@ -52,7 +53,7 @@ class SocialLoginBtn extends StatelessWidget {
                 alignment: Alignment.topLeft,
                 child: Image.asset(
                   imagePath,
-                  height: 32,
+                  height: 32.h,
                 ),
               ),
             ),
@@ -63,7 +64,7 @@ class SocialLoginBtn extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: fontColor,
-                  fontSize: 18,
+                  fontSize: 18.sp,
                 ),
               ),
             ),

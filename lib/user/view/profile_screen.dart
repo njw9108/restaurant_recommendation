@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
@@ -41,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return DefaultLayout(
       title: '프로필',
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(vertical: 16.0.h, horizontal: 16.0.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -50,10 +51,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20.r),
+                      topRight: Radius.circular(20.r),
                     ),
                   ),
                   builder: (_) {
@@ -67,12 +68,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 isUpdatable: true,
               ),
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(
-                top: 5,
-                bottom: 10.0,
+                top: 5.h,
+                bottom: 10.0.h,
               ),
-              child: Divider(
+              child: const Divider(
                 thickness: 1,
               ),
             ),
@@ -80,12 +81,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               label: '버전',
               content: context.watch<AppVersionProvider>().appVersion,
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(
-                top: 5,
-                bottom: 10.0,
+                top: 5.h,
+                bottom: 10.0.h,
               ),
-              child: Divider(
+              child: const Divider(
                 thickness: 1,
               ),
             ),
@@ -98,17 +99,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: ListTile(
                 title: const Text('로그아웃'),
-                trailing: const Icon(
+                trailing: Icon(
                   Icons.arrow_forward_ios,
-                  size: 18,
+                  size: 18.sp,
                 ),
                 onTap: () {
                   context.read<AuthProvider>().signOut();
                 },
               ),
             ),
-            const SizedBox(
-              height: 20,
+            SizedBox(
+              height: 20.h,
             ),
             Container(
               decoration: const BoxDecoration(
@@ -118,9 +119,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: ListTile(
                 title: const Text('회원탈퇴'),
-                trailing: const Icon(
+                trailing: Icon(
                   Icons.arrow_forward_ios,
-                  size: 18,
+                  size: 18.sp,
                 ),
                 onTap: () async {
                   await showDialog(
@@ -128,27 +129,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     builder: (context) {
                       return AlertDialog(
                         content: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: REdgeInsets.all(8.0),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              const Text(
+                              Text(
                                 '정말 탈퇴하시겠습니까?',
                                 style: TextStyle(
-                                  fontSize: 22,
+                                  fontSize: 22.sp,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
-                              const SizedBox(
-                                height: 20,
+                              SizedBox(
+                                height: 20.h,
                               ),
                               const Text(
                                 '계정삭제시 모든 정보가 삭제됩니다.',
                                 style: TextStyle(),
                               ),
-                              const SizedBox(
-                                height: 20,
+                              SizedBox(
+                                height: 20.h,
                               ),
                               ElevatedButton(
                                 onPressed: () {
@@ -157,9 +158,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: PRIMARY_COLOR,
                                 ),
-                                child: const Text(
+                                child: Text(
                                   '다시 생각해볼게요',
-                                  style: TextStyle(fontSize: 16),
+                                  style: TextStyle(fontSize: 16.sp),
                                 ),
                               ),
                               ElevatedButton(
@@ -183,8 +184,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
             ),
-            const SizedBox(
-              height: 20,
+            SizedBox(
+              height: 20.h,
             ),
           ],
         ),
@@ -210,23 +211,23 @@ class _LabelTextWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label),
-        const SizedBox(
-          height: 5,
+        SizedBox(
+          height: 5.h,
         ),
         Row(
           children: [
             Text(
               content,
-              style: const TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 20.sp),
             ),
-            const SizedBox(
-              width: 5,
+            SizedBox(
+              width: 5.w,
             ),
             if (isUpdatable)
-              const Icon(
+              Icon(
                 Icons.edit,
                 color: GRAY_COLOR,
-                size: 15,
+                size: 15.sp,
               ),
           ],
         ),
@@ -255,17 +256,17 @@ class _NameUpdateWidgetState extends State<_NameUpdateWidget> {
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.symmetric(vertical: 16.0.h, horizontal: 16.0.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: 20.h,
               ),
               const Text('이름'),
-              const SizedBox(
-                height: 10,
+              SizedBox(
+                height: 10.h,
               ),
               CustomTextFormField(
                 onChanged: (String value) {
@@ -275,8 +276,8 @@ class _NameUpdateWidgetState extends State<_NameUpdateWidget> {
                 },
                 maxLength: 10,
               ),
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: 20.h,
               ),
               ElevatedButton(
                 onPressed: () {
@@ -288,8 +289,8 @@ class _NameUpdateWidgetState extends State<_NameUpdateWidget> {
                 ),
                 child: const Text('수정'),
               ),
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: 20.h,
               ),
             ],
           ),
@@ -306,13 +307,13 @@ class EmptyImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    return SizedBox(
       width: imageSize,
       height: imageSize,
       child: Icon(
         Icons.account_circle,
         color: SECONDARY_COLOR,
-        size: imageSize,
+        size: imageSize.sp,
       ),
     );
   }

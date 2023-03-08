@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:recommend_restaurant/user/view/login_screen.dart';
 
 import '../../user/provider/auth_provider.dart';
 import '../const/color.dart';
@@ -24,21 +23,21 @@ class WithdrawalScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.all(52.0),
+                padding: REdgeInsets.all(52.0),
                 child: Image.asset(
                   'assets/image/main_logo.png',
                 ),
               ),
-              const Text(
+              Text(
                 "그동안 마이슐랭을 이용해주셔서\n감사합니다.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 25,
+                  fontSize: 25.sp,
                   fontWeight: FontWeight.w700,
                   height: 1.5,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               ElevatedButton(
                 onPressed: () {
                   context.read<AuthProvider>().statusInit();

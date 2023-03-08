@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../common/const/color.dart';
 
@@ -22,12 +23,12 @@ class RestaurantSelectItemWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+          padding: EdgeInsets.symmetric(horizontal: 5.0.w),
           child: Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               color: GRAY_COLOR,
-              fontSize: 12,
+              fontSize: 12.sp,
             ),
           ),
         ),
@@ -44,10 +45,10 @@ class RestaurantSelectItemWidget extends StatelessWidget {
               FocusManager.instance.primaryFocus?.unfocus();
               showModalBottomSheet(
                 context: context,
-                shape: const RoundedRectangleBorder(
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+                    topLeft: const Radius.circular(20).r,
+                    topRight: const Radius.circular(20).r,
                   ),
                 ),
                 builder: (_) {
@@ -55,19 +56,19 @@ class RestaurantSelectItemWidget extends StatelessWidget {
                 },
               );
             },
-            contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+            contentPadding: EdgeInsets.symmetric(horizontal: 5.w),
             title: content.trim().isEmpty
                 ? Text(
                     emptyText,
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: TextStyle(
+                      fontSize: 16.sp,
                       color: GRAY_COLOR,
                     ),
                   )
                 : Text(
                     content,
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: TextStyle(
+                      fontSize: 16.sp,
                     ),
                   ),
             trailing: const Icon(Icons.keyboard_arrow_right_sharp),

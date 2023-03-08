@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -64,30 +65,30 @@ class _FavoriteRestaurantListWidgetState
           builder: (context, snapshot) {
             restaurantList = snapshot.data?.docs ?? [];
             return Container(
-              padding: const EdgeInsets.all(16),
+              padding: REdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
+                  Text(
                     '내가 좋아하는 식당',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
-                      fontSize: 23,
+                      fontSize: 23.sp,
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
+                  SizedBox(
+                    height: 20.h,
                   ),
                   if (restaurantList.isEmpty)
-                    const Center(
+                    Center(
                       child: Padding(
-                        padding: EdgeInsets.all(16.0),
+                        padding: REdgeInsets.all(16.0),
                         child: Text('좋아하는 식당을 추가해주세요!'),
                       ),
                     ),
                   if (restaurantList.isNotEmpty)
                     SizedBox(
-                      height: 250,
+                      height: 250.h,
                       child: snapshot.hasData
                           ? ListView.separated(
                               physics: const AlwaysScrollableScrollPhysics(),
@@ -109,9 +110,9 @@ class _FavoriteRestaurantListWidgetState
                               itemCount: restaurantList.length,
                               separatorBuilder:
                                   (BuildContext context, int index) {
-                                return const SizedBox(
-                                  width: 10,
-                                  height: 10,
+                                return SizedBox(
+                                  width: 10.w,
+                                  height: 10.h,
                                 );
                               },
                             )

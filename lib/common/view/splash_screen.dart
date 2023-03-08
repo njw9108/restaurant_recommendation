@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
@@ -43,15 +44,15 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Padding(
-              padding: const EdgeInsets.all(52.0),
+              padding: REdgeInsets.all(52.0),
               child: Image.asset(
                 'assets/image/main_logo.png',
               ),
             ),
-            const LinearProgressIndicator(
-              backgroundColor: Color(0xffc5c5c5),
+            LinearProgressIndicator(
+              backgroundColor: const Color(0xffc5c5c5),
               color: PRIMARY_COLOR,
-              minHeight: 8,
+              minHeight: 8.h,
             ),
           ],
         ),

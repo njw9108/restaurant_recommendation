@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../../common/const/color.dart';
@@ -60,8 +61,8 @@ class _RestaurantNameAddressWidgetState
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
+      padding: EdgeInsets.symmetric(
+        horizontal: 16.w,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,13 +75,13 @@ class _RestaurantNameAddressWidgetState
                   isInput: isInput,
                 ),
               ),
-              const SizedBox(
-                width: 20,
+              SizedBox(
+                width: 20.w,
               ),
-              const Text(
+              Text(
                 '직접입력',
                 textAlign: TextAlign.end,
-                style: TextStyle(fontSize: 13),
+                style: TextStyle(fontSize: 13.sp),
               ),
               Checkbox(
                 value: isInput,
@@ -98,8 +99,8 @@ class _RestaurantNameAddressWidgetState
               ),
             ],
           ),
-          const SizedBox(
-            height: 16,
+          SizedBox(
+            height: 16.h,
           ),
           CustomTextFormField(
             hintText: '식당 이름',
@@ -118,8 +119,8 @@ class _RestaurantNameAddressWidgetState
               return null;
             },
           ),
-          const SizedBox(
-            height: 16,
+          SizedBox(
+            height: 16.h,
           ),
           CustomTextFormField(
             hintText: '주소',
@@ -128,7 +129,7 @@ class _RestaurantNameAddressWidgetState
             counterText: '',
             readOnly: !isInput,
             controller: addressController,
-            verticalPadding: 16,
+            verticalPadding: 16.h,
             onChanged: (value) {
               context.read<RestaurantAddProvider>().address = value;
             },
@@ -154,20 +155,20 @@ class _RestaurantSearchBtn extends StatelessWidget {
           : () {
               showModalBottomSheet(
                 context: context,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
+                shape: RoundedRectangleBorder(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
-                  ),
+                  ).r,
                 ),
                 builder: (context) {
                   return GestureDetector(
                     onTap: () {
                       FocusManager.instance.primaryFocus?.unfocus();
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.all(25.0),
-                      child: RestaurantSearchModalBottomSheet(),
+                    child: Padding(
+                      padding: REdgeInsets.all(25.0),
+                      child: const RestaurantSearchModalBottomSheet(),
                     ),
                   );
                 },

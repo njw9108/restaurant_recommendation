@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 
 class CustomTextFormField extends StatelessWidget {
@@ -58,14 +59,14 @@ class CustomTextFormField extends StatelessWidget {
       maxLength: maxLength,
       decoration: InputDecoration(
         contentPadding:
-            EdgeInsets.symmetric(vertical: verticalPadding, horizontal: 5),
+            EdgeInsets.symmetric(vertical: verticalPadding, horizontal: 5.w),
         alignLabelWithHint: true,
         counterText: counterText,
         hintText: hintText,
         errorText: errorText,
-        hintStyle: const TextStyle(
+        hintStyle: TextStyle(
           color: GRAY_COLOR,
-          fontSize: 14,
+          fontSize: 14.sp,
           height: 2,
         ),
         fillColor: INPUT_BG_COLOR,

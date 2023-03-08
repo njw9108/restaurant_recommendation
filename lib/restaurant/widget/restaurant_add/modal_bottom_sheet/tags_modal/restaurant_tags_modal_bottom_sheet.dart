@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
 
@@ -34,25 +35,25 @@ class _RestaurantTagsModalBottomSheetState
     return GestureDetector(
       onTap: FocusScope.of(context).unfocus,
       child: Padding(
-        padding: const EdgeInsets.all(25.0),
+        padding: REdgeInsets.all(25.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               '태그를 선택해주세요 ${tags.length}/$maxTagsCount',
-              style: const TextStyle(
-                fontSize: 20,
+              style: TextStyle(
+                fontSize: 20.sp,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(
-              height: 16,
+            SizedBox(
+              height: 16.h,
             ),
             RestaurantTagAddFiled(
               textController: textController,
             ),
-            const SizedBox(
-              height: 16,
+            SizedBox(
+              height: 16.h,
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -64,13 +65,13 @@ class _RestaurantTagsModalBottomSheetState
                   children: [
                     Text(
                       '태그 목록 (${totalTagList.length}/$maxTotalTagListCount)',
-                      style: const TextStyle(
-                        fontSize: 18,
+                      style: TextStyle(
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(
-                      height: 8,
+                    SizedBox(
+                      height: 8.h,
                     ),
                     ...totalTagList
                         .map(
@@ -79,11 +80,11 @@ class _RestaurantTagsModalBottomSheetState
                             background: Container(
                               color: Colors.red.shade400,
                               alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 10),
-                              child: const Icon(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 10.h),
+                              child: Icon(
                                 Icons.delete_forever,
-                                size: 25,
+                                size: 25.sp,
                               ),
                             ),
                             direction: DismissDirection.endToStart,
@@ -105,8 +106,8 @@ class _RestaurantTagsModalBottomSheetState
                                           ),
                                           child: const Text('삭제'),
                                         ),
-                                        const SizedBox(
-                                          width: 8,
+                                        SizedBox(
+                                          width: 8.w,
                                         ),
                                         ElevatedButton(
                                           onPressed: () {
@@ -136,8 +137,8 @@ class _RestaurantTagsModalBottomSheetState
                                           Icons.check,
                                           color: PRIMARY_COLOR,
                                         ),
-                                        const SizedBox(
-                                          width: 8,
+                                        SizedBox(
+                                          width: 8.w,
                                         ),
                                         Text(
                                           e,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BottomSheetListItem extends StatelessWidget {
   final String title;
@@ -28,8 +29,8 @@ class BottomSheetListItem extends StatelessWidget {
           minVerticalPadding: 0,
           trailing: const Icon(Icons.drag_indicator),
         ),
-        const Divider(
-          height: 1,
+        Divider(
+          height: 1.h,
         ),
       ],
     );

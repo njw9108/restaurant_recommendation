@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'restaurant_search_bar.dart';
 import 'restaurant_search_pagination_widget.dart';
 
@@ -28,12 +29,12 @@ class _RestaurantSearchModalBottomSheetState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         //타이틀
-        const Padding(
-          padding: EdgeInsets.only(bottom: 8.0),
+        Padding(
+          padding: EdgeInsets.only(bottom: 8.0.h),
           child: Text(
             '식당 검색',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 20.sp,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -42,8 +43,8 @@ class _RestaurantSearchModalBottomSheetState
         RestaurantSearchBar(
           textController: textController,
         ),
-        const SizedBox(
-          height: 32,
+        SizedBox(
+          height: 32.h,
         ),
         //검색 결과 리스트
         const RestaurantSearchPaginationWidget(),

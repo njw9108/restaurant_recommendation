@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ExpandableTagList extends StatelessWidget {
   final ScrollController tagController;
@@ -21,13 +22,13 @@ class ExpandableTagList extends StatelessWidget {
     return ExpansionTile(
       title: Text(
         title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
       ),
       textColor: Colors.black,
       iconColor: Colors.black,
       children: [
         SizedBox(
-          height: 200,
+          height: 200.h,
           child: Scrollbar(
             thumbVisibility: true,
             controller: tagController,
@@ -46,27 +47,13 @@ class ExpandableTagList extends StatelessWidget {
                     value: isChecked,
                     onChanged: (value) {
                       onChanged(value!, index);
-                    }
-                    // onChanged: (bool? value) {
-                    //   final temp = context.read<HomeProvider>().selectedTagList;
-                    //
-                    //   if (!value!) {
-                    //     temp.remove(tagList[index]);
-                    //   } else {
-                    //     if (temp.length < 10) {
-                    //       temp.add(tagList[index]);
-                    //     }
-                    //   }
-                    //   context.read<HomeProvider>().selectedTagList =
-                    //       List.from(temp.toSet());
-                    // },
-                    );
+                    });
               },
             ),
           ),
         ),
-        const SizedBox(
-          height: 20,
+        SizedBox(
+          height: 20.h,
         ),
       ],
     );

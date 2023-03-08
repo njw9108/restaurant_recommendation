@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../common/const/color.dart';
@@ -20,7 +21,7 @@ class RestaurantCategoryAddFiled extends StatelessWidget {
       children: [
         Expanded(
           child: SizedBox(
-            height: 60,
+            height: 60.h,
             child: TextField(
               maxLength: 20,
               controller: textController,
@@ -28,7 +29,7 @@ class RestaurantCategoryAddFiled extends StatelessWidget {
                 filled: true,
                 fillColor: const Color(0xfffcf4e4),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8).r,
                   borderSide: BorderSide.none,
                 ),
                 counterText: '',
@@ -38,11 +39,11 @@ class RestaurantCategoryAddFiled extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(
-          width: 20,
+        SizedBox(
+          width: 20.w,
         ),
         SizedBox(
-          height: 40,
+          height: 40.h,
           child: ElevatedButton(
             onPressed: () {
               if (textController.text.trim().isEmpty) {
