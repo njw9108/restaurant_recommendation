@@ -335,16 +335,17 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 5,
-                                crossAxisSpacing: 20,
-                                childAspectRatio: 1.7),
+                                crossAxisSpacing: 15,
+                                childAspectRatio: 1.3),
                         itemBuilder: (_, index) {
                           return Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 10.w, vertical: 5.h),
+                                horizontal: 5.w, vertical: 5.h),
                             decoration: const BoxDecoration(color: TAG_COLOR),
                             alignment: Alignment.center,
                             child: Text(
                               widget.model.tags[index],
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                   color: Colors.black, fontSize: 10.sp),
                             ),
