@@ -11,7 +11,11 @@ buildscript {
         classpath 'com.google.gms:google-services:4.3.10'
         // END: FlutterFire Configuration
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        //firebase crashlytics
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
+        //firebase performance
+        classpath 'com.google.firebase:perf-plugin:1.4.2'
+
     }
 }
 
