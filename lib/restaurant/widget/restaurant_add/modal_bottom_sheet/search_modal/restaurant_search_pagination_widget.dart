@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../common/const/color.dart';
@@ -69,8 +70,8 @@ class _RestaurantSearchPaginationWidgetState
             pState.message,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(
-            height: 16,
+          SizedBox(
+            height: 16.h,
           ),
           const Text('검색이 실패했습니다. 다시 시도해주세요.'),
         ],
@@ -87,8 +88,8 @@ class _RestaurantSearchPaginationWidgetState
         itemBuilder: (_, index) {
           if (index == cp.documents.length) {
             return Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8,
+              padding: EdgeInsets.symmetric(
+                vertical: 8.h,
               ),
               child: Center(
                 child: cp is PaginationFetchingMore
@@ -109,7 +110,7 @@ class _RestaurantSearchPaginationWidgetState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('${index + 1}.'),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 _RestaurantSearchResultWidget(info: info),
               ],
             ),
@@ -117,9 +118,9 @@ class _RestaurantSearchPaginationWidgetState
         },
         itemCount: cp.documents.length + 1,
         separatorBuilder: (_, index) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: Divider(
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0.h),
+            child: const Divider(
               color: GRAY_COLOR,
             ),
           );
@@ -147,37 +148,37 @@ class _RestaurantSearchResultWidget extends StatelessWidget {
           children: [
             Text(
               info.place ?? '',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
             ),
-            const SizedBox(
-              width: 10,
+            SizedBox(
+              width: 10.w,
             ),
             Text(
               info.categoryName ?? '',
-              style: const TextStyle(
-                fontSize: 15,
+              style: TextStyle(
+                fontSize: 15.sp,
                 color: GRAY_COLOR,
               ),
             ),
           ],
         ),
-        const SizedBox(
-          height: 5,
+        SizedBox(
+          height: 5.h,
         ),
         Text(
           info.roadAddressName ?? '',
-          style: const TextStyle(
-            fontSize: 15,
+          style: TextStyle(
+            fontSize: 15.sp,
             color: GRAY_COLOR,
           ),
         ),
-        const SizedBox(
-          height: 5,
+        SizedBox(
+          height: 5.h,
         ),
         Text(
           "(지번) ${info.address ?? ''}",
-          style: const TextStyle(
-            fontSize: 15,
+          style: TextStyle(
+            fontSize: 15.sp,
             color: GRAY_COLOR,
           ),
         ),

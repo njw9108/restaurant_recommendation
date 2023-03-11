@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
 import 'package:recommend_restaurant/user/model/my_user_model.dart';
 import 'package:recommend_restaurant/user/use_case/apple_login.dart';
 import 'package:recommend_restaurant/user/use_case/google_login.dart';
 import 'package:recommend_restaurant/user/use_case/social_login.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/repository/firebase_repository.dart';
 import '../model/login_result.dart';
@@ -32,7 +32,7 @@ enum SignInType {
 }
 
 class AuthProvider with ChangeNotifier {
-  final SharedPreferences prefs;
+  final FlutterSecureStorage secureStorage;
   final FirebaseAuthRemoteRepository firebaseAuthRemoteRepository;
   final FirebaseRepository firebaseRepository;
 
@@ -49,7 +49,7 @@ class AuthProvider with ChangeNotifier {
   late SocialLogin _kakaoLoginUseCase;
 
   AuthProvider({
-    required this.prefs,
+    required this.secureStorage,
     required this.firebaseAuthRemoteRepository,
     required this.firebaseRepository,
   }) {
@@ -65,17 +65,16 @@ class AuthProvider with ChangeNotifier {
   Stream<LoginStatus> get authStream =>
       _authStreamController.stream.asBroadcastStream();
 
-  String? getUserFirebaseId() {
-    return prefs.getString(FirestoreUserConstants.uid);
-  }
-
   Future<void> checkLogin() async {
     _status = LoginStatus.uninitialized;
 
     final String? accessToken =
-        prefs.getString(FirestoreUserConstants.accessToken);
-    final String? idToken = prefs.getString(FirestoreUserConstants.idToken);
-    final int? loginType = prefs.getInt(FirestoreUserConstants.loginType);
+        await secureStorage.read(key: FirestoreUserConstants.accessToken);
+    final String? idToken =
+        await secureStorage.read(key: FirestoreUserConstants.idToken);
+    final temp =
+        await secureStorage.read(key: FirestoreUserConstants.loginType);
+    final int? loginType = temp == null ? null : int.parse(temp);
 
     if (accessToken == null || idToken == null || loginType == null) {
       notifyListeners();
@@ -188,9 +187,13 @@ class AuthProvider with ChangeNotifier {
       }
 
       if (firebaseUser != null) {
-        await prefs.setString(FirestoreUserConstants.accessToken, accessToken);
-        await prefs.setString(FirestoreUserConstants.idToken, idToken);
-        await prefs.setInt(FirestoreUserConstants.loginType, type.index);
+        await secureStorage.write(
+            key: FirestoreUserConstants.accessToken, value: accessToken);
+        await secureStorage.write(
+            key: FirestoreUserConstants.idToken, value: idToken);
+        await secureStorage.write(
+            key: FirestoreUserConstants.loginType,
+            value: type.index.toString());
       }
 
       return firebaseUser;
@@ -223,12 +226,14 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> _saveUserToLocal(MyUserModel userModel) async {
     try {
-      await prefs.setString(FirestoreUserConstants.uid, userModel.id);
-      await prefs.setString(
-          FirestoreUserConstants.nickname, userModel.nickname);
-      await prefs.setString(FirestoreUserConstants.email, userModel.email);
-      await prefs.setString(
-          FirestoreUserConstants.photoUrl, userModel.photoUrl);
+      await secureStorage.write(
+          key: FirestoreUserConstants.uid, value: userModel.id);
+      await secureStorage.write(
+          key: FirestoreUserConstants.nickname, value: userModel.nickname);
+      await secureStorage.write(
+          key: FirestoreUserConstants.email, value: userModel.email);
+      await secureStorage.write(
+          key: FirestoreUserConstants.photoUrl, value: userModel.photoUrl);
     } catch (e) {
       rethrow;
     }
@@ -266,9 +271,9 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> signOut() async {
     _status = LoginStatus.uninitialized;
-    await prefs.remove(FirestoreUserConstants.accessToken);
-    await prefs.remove(FirestoreUserConstants.idToken);
-    await prefs.remove(FirestoreUserConstants.loginType);
+    await secureStorage.delete(key: FirestoreUserConstants.accessToken);
+    await secureStorage.delete(key: FirestoreUserConstants.idToken);
+    await secureStorage.delete(key: FirestoreUserConstants.loginType);
 
     await _appleLoginUseCase.logout();
     await _kakaoLoginUseCase.logout();
@@ -291,7 +296,9 @@ class AuthProvider with ChangeNotifier {
 
     await FirebaseAuth.instance.currentUser?.delete();
 
-    final int? loginType = prefs.getInt(FirestoreUserConstants.loginType);
+    final temp =
+        await secureStorage.read(key: FirestoreUserConstants.loginType);
+    final int? loginType = temp == null ? null : int.parse(temp);
     if (loginType != null) {
       switch (SignInType.values[loginType]) {
         case SignInType.google:
@@ -307,9 +314,9 @@ class AuthProvider with ChangeNotifier {
     }
 
     await Future.wait([
-      prefs.remove(FirestoreUserConstants.accessToken),
-      prefs.remove(FirestoreUserConstants.idToken),
-      prefs.remove(FirestoreUserConstants.loginType),
+      secureStorage.delete(key: FirestoreUserConstants.accessToken),
+      secureStorage.delete(key: FirestoreUserConstants.idToken),
+      secureStorage.delete(key: FirestoreUserConstants.loginType),
     ]);
 
     notifyListeners();

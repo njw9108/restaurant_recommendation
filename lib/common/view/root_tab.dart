@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 import 'package:recommend_restaurant/home/view/home_screen.dart';
@@ -50,8 +51,8 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return DefaultLayout(
       bottomNavigationBar: BottomNavigationBar(
-        selectedFontSize: 10,
-        unselectedFontSize: 10,
+        selectedFontSize: 10.sp,
+        unselectedFontSize: 10.sp,
         type: BottomNavigationBarType.fixed,
         onTap: (int index) {
           controller.animateTo(index);
@@ -60,25 +61,25 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
         unselectedItemColor: GRAY_COLOR,
         selectedItemColor: Colors.white,
         currentIndex: index,
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(
               Icons.home_outlined,
-              size: 26,
+              size: 26.sp,
             ),
             label: '홈',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.restaurant,
-              size: 26,
+              size: 26.sp,
             ),
             label: '식당',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.person_outline,
-              size: 26,
+              size: 26.sp,
             ),
             label: '프로필',
           ),

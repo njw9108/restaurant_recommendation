@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/restaurant/provider/restaurant_add_provider.dart';
 
@@ -16,13 +17,13 @@ class RestaurantRatingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('평점'),
-          const SizedBox(
-            height: 8,
+          SizedBox(
+            height: 8.h,
           ),
           RatingBar.builder(
             initialRating: initRating,
@@ -31,7 +32,7 @@ class RestaurantRatingWidget extends StatelessWidget {
             allowHalfRating: true,
             glowColor: Colors.limeAccent,
             itemCount: 5,
-            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+            itemPadding: EdgeInsets.symmetric(horizontal: 4.0.w),
             itemBuilder: (context, _) => const Icon(
               Icons.star,
               color: PRIMARY_COLOR,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../common/const/color.dart';
@@ -19,14 +20,14 @@ class RestaurantSearchBar extends StatelessWidget {
       children: [
         Expanded(
           child: SizedBox(
-            height: 60,
+            height: 60.h,
             child: TextField(
               controller: textController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xfffcf4e4),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8).r,
                   borderSide: BorderSide.none,
                 ),
                 hintText: '장소, 주소 검색',
@@ -35,11 +36,11 @@ class RestaurantSearchBar extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(
-          width: 20,
+        SizedBox(
+          width: 20.w,
         ),
         SizedBox(
-          height: 40,
+          height: 40.w,
           child: ElevatedButton(
             onPressed: () {
               FocusManager.instance.primaryFocus?.unfocus();

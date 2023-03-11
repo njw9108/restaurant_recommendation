@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/const/const_data.dart';
@@ -19,11 +20,11 @@ class RestaurantImageWidget extends StatelessWidget {
     final totalLength = provider.networkImage.length + provider.images.length;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 18.0),
+      padding: EdgeInsets.symmetric(vertical: 18.0.h),
       child: SizedBox(
-        height: 70,
+        height: 70.h,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemBuilder: (_, index) {
@@ -59,31 +60,32 @@ class RestaurantImageWidget extends StatelessWidget {
                   children: [
                     provider.networkImage.length > index - 1
                         ? SizedBox(
-                            width: 70,
-                            height: 70,
+                            width: 70.w,
+                            height: 70.h,
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10).r,
                               child: CachedNetworkImage(
                                 imageUrl: provider.networkImage[index - 1].url,
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) => Container(
-                                  width: 95,
-                                  height: 95,
+                                  width: 50.w,
+                                  height: 50.h,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(20).r,
                                   ),
+                                  alignment: Alignment.center,
                                   child: const CircularProgressIndicator
                                       .adaptive(),
                                 ),
                                 errorWidget: (context, url, error) => Container(
-                                  width: 95,
-                                  height: 95,
+                                  width: 70.w,
+                                  height: 70.h,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(20).r,
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.error,
-                                    size: 25,
+                                    size: 25.sp,
                                     color: PRIMARY_COLOR,
                                   ),
                                 ),
@@ -91,10 +93,10 @@ class RestaurantImageWidget extends StatelessWidget {
                             ),
                           )
                         : SizedBox(
-                            width: 70,
-                            height: 70,
+                            width: 70.w,
+                            height: 70.h,
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10).r,
                               child: Image.file(
                                 provider.images[
                                     index - provider.networkImage.length - 1],
@@ -118,13 +120,13 @@ class RestaurantImageWidget extends StatelessWidget {
                           }
                         },
                         child: Container(
-                          padding: const EdgeInsets.all(1),
+                          padding: REdgeInsets.all(1),
                           decoration: BoxDecoration(
                               color: PRIMARY_COLOR,
-                              borderRadius: BorderRadius.circular(20)),
-                          child: const Icon(
+                              borderRadius: BorderRadius.circular(20).r),
+                          child: Icon(
                             Icons.close,
-                            size: 23,
+                            size: 23.sp,
                           ),
                         ),
                       ),
@@ -133,20 +135,21 @@ class RestaurantImageWidget extends StatelessWidget {
                       Positioned(
                         bottom: 0,
                         child: Container(
-                          width: 70,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 5, vertical: 3),
+                          width: 70.w,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 5.w, vertical: 3.h),
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.8),
                             borderRadius: const BorderRadius.only(
-                                bottomRight: Radius.circular(10),
-                                bottomLeft: Radius.circular(10)),
+                                    bottomRight: Radius.circular(10),
+                                    bottomLeft: Radius.circular(10))
+                                .r,
                           ),
-                          child: const Text(
+                          child: Text(
                             '대표 사진',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 11.sp,
                               color: Colors.white,
                             ),
                           ),
@@ -157,8 +160,8 @@ class RestaurantImageWidget extends StatelessWidget {
               );
             },
             separatorBuilder: (_, index) {
-              return const SizedBox(
-                width: 16,
+              return SizedBox(
+                width: 16.w,
               );
             },
             itemCount: totalLength + 1,
@@ -179,13 +182,13 @@ class _CameraIconWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 70,
-      height: 70,
+      width: 70.w,
+      height: 70.h,
       decoration: BoxDecoration(
           border: Border.all(
             color: GRAY_COLOR,
           ),
-          borderRadius: BorderRadius.circular(10)),
+          borderRadius: BorderRadius.circular(10).r),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -193,8 +196,8 @@ class _CameraIconWidget extends StatelessWidget {
             Icons.camera_alt,
             color: GRAY_COLOR,
           ),
-          const SizedBox(
-            height: 5,
+          SizedBox(
+            height: 5.h,
           ),
           Text('$imageLength/$maxImagesCount'),
         ],

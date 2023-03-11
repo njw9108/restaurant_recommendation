@@ -1,7 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:recommend_restaurant/common/dio/custom_interceptor.dart';
 import 'package:recommend_restaurant/common/provider/go_router_provider.dart';
@@ -12,7 +16,7 @@ import 'package:recommend_restaurant/restaurant/repository/kakao_address_reposit
 import 'package:recommend_restaurant/user/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/user/repository/firebase_auth_remote_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'common/const/const_data.dart';
 import 'common/provider/app_version_provider.dart';
@@ -21,11 +25,21 @@ import 'restaurant/provider/restaurant_add_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await Firebase.initializeApp(
     name: 'restaurant_recommendation',
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
   await dotenv.load();
   String appkey = dotenv.env[nativeAppKey] ?? '';
@@ -33,134 +47,146 @@ void main() async {
     nativeAppKey: appkey,
   );
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  runApp(MyApp(prefs: prefs));
+  const FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  runApp(const MyApp(secureStorage: secureStorage));
 }
 
 class MyApp extends StatelessWidget {
-  final SharedPreferences prefs;
+  final FlutterSecureStorage secureStorage;
 
-  const MyApp({super.key, required this.prefs});
+  const MyApp({super.key, required this.secureStorage});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<Dio>(
-          create: (context) {
-            final dio = Dio();
-            dio.interceptors.add(
-              CustomInterceptor(),
-            );
-            return dio;
-          },
-        ),
-        Provider<FirebaseRepository>(
-          create: (_) => FirebaseRepository(prefs: prefs),
-        ),
-        ProxyProvider<Dio, KakaoAddressRepository>(
-          update: (context, dio, previous) {
-            if (previous == null) {
-              final repository = KakaoAddressRepository(
-                dio: dio,
-              );
-              return repository;
-            } else {
-              return previous;
-            }
-          },
-        ),
-        ProxyProvider<Dio, FirebaseAuthRemoteRepository>(
-          update: (context, dio, previous) {
-            if (previous == null) {
-              final repository = FirebaseAuthRemoteRepository(
-                dio: dio,
-              );
-              return repository;
-            } else {
-              return previous;
-            }
-          },
-        ),
-        ChangeNotifierProxyProvider2<FirebaseAuthRemoteRepository,
-            FirebaseRepository, AuthProvider?>(
-          create: (_) => null,
-          update:
-              (context, authRemoteRepository, firebaseRepository, previous) {
-            if (previous == null) {
-              return AuthProvider(
-                prefs: prefs,
-                firebaseAuthRemoteRepository: authRemoteRepository,
-                firebaseRepository: firebaseRepository,
-              );
-            } else {
-              return previous;
-            }
-          },
-        ),
-        ProxyProvider<AuthProvider, GoRouterProvider>(
-          update: (BuildContext context, auth, GoRouterProvider? previous) {
-            if (previous == null) {
-              return GoRouterProvider(
-                provider: auth,
-              );
-            } else {
-              return previous;
-            }
-          },
-        ),
-        ChangeNotifierProvider(
-          create: (_) => HomeProvider(),
-        ),
-        ChangeNotifierProxyProvider2<FirebaseRepository, AuthProvider,
-            RestaurantProvider?>(
-          create: (_) => null,
-          update: (context, firebase, auth, previous) {
-            if (previous == null) {
-              final provider = RestaurantProvider(
-                firebaseRepository: firebase,
-                authProvider: auth,
-              );
-              return provider;
-            } else {
-              return previous;
-            }
-          },
-        ),
-        ChangeNotifierProxyProvider2<KakaoAddressRepository, FirebaseRepository,
-            RestaurantAddProvider?>(
-          create: (_) => null,
-          update: (context, repository, firebase, previous) {
-            if (previous == null) {
-              final provider = RestaurantAddProvider(
-                repository: repository,
-                firebaseRepository: firebase,
-              );
-              return provider;
-            } else {
-              return previous;
-            }
-          },
-        ),
-        ChangeNotifierProvider<AppVersionProvider>(
-          create: (_) => AppVersionProvider(),
-        ),
-      ],
-      child: Builder(
-        builder: (context) {
-          final goRouter = context.watch<GoRouterProvider>().router;
-          final restaurantProvider = context.read<RestaurantProvider>();
-
-          return MaterialApp.router(
-            title: 'recommend restaurants',
-            theme: ThemeData(
-              fontFamily: 'NanumGothic',
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      builder: (BuildContext context, Widget? child) {
+        return MultiProvider(
+          providers: [
+            Provider<Dio>(
+              create: (context) {
+                final dio = Dio();
+                dio.interceptors.add(
+                  CustomInterceptor(),
+                );
+                return dio;
+              },
             ),
-            routerConfig: goRouter,
-          );
-        },
-      ),
+            Provider<FirebaseRepository>(
+              create: (_) => FirebaseRepository(secureStorage: secureStorage),
+            ),
+            ProxyProvider<Dio, KakaoAddressRepository>(
+              update: (context, dio, previous) {
+                if (previous == null) {
+                  final repository = KakaoAddressRepository(
+                    dio: dio,
+                  );
+                  return repository;
+                } else {
+                  return previous;
+                }
+              },
+            ),
+            ProxyProvider<Dio, FirebaseAuthRemoteRepository>(
+              update: (context, dio, previous) {
+                if (previous == null) {
+                  final repository = FirebaseAuthRemoteRepository(
+                    dio: dio,
+                  );
+                  return repository;
+                } else {
+                  return previous;
+                }
+              },
+            ),
+            ChangeNotifierProxyProvider2<FirebaseAuthRemoteRepository,
+                FirebaseRepository, AuthProvider?>(
+              create: (_) => null,
+              update: (context, authRemoteRepository, firebaseRepository,
+                  previous) {
+                if (previous == null) {
+                  return AuthProvider(
+                    secureStorage: secureStorage,
+                    firebaseAuthRemoteRepository: authRemoteRepository,
+                    firebaseRepository: firebaseRepository,
+                  );
+                } else {
+                  return previous;
+                }
+              },
+            ),
+            ProxyProvider<AuthProvider, GoRouterProvider>(
+              update: (BuildContext context, auth, GoRouterProvider? previous) {
+                if (previous == null) {
+                  return GoRouterProvider(
+                    provider: auth,
+                  );
+                } else {
+                  return previous;
+                }
+              },
+            ),
+            ChangeNotifierProvider(
+              create: (_) => HomeProvider(),
+            ),
+            ChangeNotifierProxyProvider2<FirebaseRepository, AuthProvider,
+                RestaurantProvider?>(
+              create: (_) => null,
+              update: (context, firebase, auth, previous) {
+                if (previous == null) {
+                  final provider = RestaurantProvider(
+                    firebaseRepository: firebase,
+                    authProvider: auth,
+                    secureStorage: secureStorage,
+                  );
+                  return provider;
+                } else {
+                  return previous;
+                }
+              },
+            ),
+            ChangeNotifierProxyProvider2<KakaoAddressRepository,
+                FirebaseRepository, RestaurantAddProvider?>(
+              create: (_) => null,
+              update: (context, repository, firebase, previous) {
+                if (previous == null) {
+                  final provider = RestaurantAddProvider(
+                    repository: repository,
+                    firebaseRepository: firebase,
+                  );
+                  return provider;
+                } else {
+                  return previous;
+                }
+              },
+            ),
+            ChangeNotifierProvider<AppVersionProvider>(
+              create: (_) => AppVersionProvider(),
+            ),
+          ],
+          child: Builder(
+            builder: (context) {
+              final goRouter = context.watch<GoRouterProvider>().router;
+              final restaurantProvider = context.read<RestaurantProvider>();
+
+              return MaterialApp.router(
+                title: 'recommend restaurants',
+                theme: ThemeData(
+                  fontFamily: 'NanumGothic',
+                ),
+                builder: (context, child) {
+                  return MediaQuery(
+                      data:
+                          MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                      child: child!);
+                },
+                routerConfig: goRouter,
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

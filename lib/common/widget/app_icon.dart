@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppIcon extends StatelessWidget {
   final IconData icon;
@@ -22,7 +23,7 @@ class AppIcon extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(size / 2),
+        borderRadius: BorderRadius.circular(size / 2).r,
         color: backgroundColor,
       ),
       alignment: Alignment.center,

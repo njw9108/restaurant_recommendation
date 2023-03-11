@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -89,7 +90,7 @@ class _RestaurantAddScreenState extends State<RestaurantAddScreen> {
                     RestaurantRatingWidget(
                       initRating: widget.model?.rating ?? 1,
                     ),
-                    const SizedBox(height: 50),
+                    SizedBox(height: 50.h),
                   ],
                 ),
               ),
@@ -103,7 +104,7 @@ class _RestaurantAddScreenState extends State<RestaurantAddScreen> {
   List<Widget> _buildAppbarActions() {
     return [
       Padding(
-        padding: const EdgeInsets.only(right: 16.0),
+        padding: EdgeInsets.only(right: 16.0.w),
         child: PopupMenuButton(
           //initialValue: selectedMenu,
           child: const Icon(
@@ -157,8 +158,8 @@ class _RestaurantAddScreenState extends State<RestaurantAddScreen> {
                           Navigator.pop(context, index);
                         },
                         child: SizedBox(
-                          width: 70,
-                          height: 70,
+                          width: 70.w,
+                          height: 70.h,
                           child: e,
                         ),
                       );
@@ -202,8 +203,8 @@ class _BottomNavBar extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Padding(
-          padding:
-              const EdgeInsets.only(left: 20.0, right: 20, bottom: 25, top: 5),
+          padding: EdgeInsets.only(
+              left: 20.0.w, right: 20.w, bottom: 25.h, top: 5.h),
           child: ElevatedButton(
             onPressed: () async {
               if (_formKey.currentState!.validate()) {

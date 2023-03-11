@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:recommend_restaurant/home/widget/common/restaurant_card.dart';
 
@@ -19,7 +20,7 @@ class RestaurantResultWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 250,
+      height: 250.h,
       child: restaurantList.isNotEmpty
           ? ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -42,8 +43,8 @@ class RestaurantResultWidget extends StatelessWidget {
               },
               itemCount: restaurantList.length,
               separatorBuilder: (BuildContext context, int index) {
-                return const SizedBox(
-                  width: 10,
+                return SizedBox(
+                  width: 10.w,
                 );
               },
             )

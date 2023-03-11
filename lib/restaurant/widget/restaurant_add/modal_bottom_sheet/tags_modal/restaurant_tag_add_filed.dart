@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../common/const/color.dart';
@@ -20,7 +21,7 @@ class RestaurantTagAddFiled extends StatelessWidget {
       children: [
         Expanded(
           child: SizedBox(
-            height: 60,
+            height: 60.h,
             child: TextField(
               maxLength: 8,
               controller: textController,
@@ -28,7 +29,7 @@ class RestaurantTagAddFiled extends StatelessWidget {
                 filled: true,
                 fillColor: const Color(0xfffcf4e4),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8).r,
                   borderSide: BorderSide.none,
                 ),
                 counterText: '',
@@ -38,13 +39,15 @@ class RestaurantTagAddFiled extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(
-          width: 20,
+        SizedBox(
+          width: 20.w,
         ),
         SizedBox(
-          height: 40,
+          height: 40.h,
           child: ElevatedButton(
             onPressed: () {
+              FocusScope.of(context).unfocus();
+
               if (textController.text.trim().isEmpty) {
                 return;
               }
@@ -64,13 +67,13 @@ class RestaurantTagAddFiled extends StatelessWidget {
                     context: context,
                     builder: (_) {
                       return AlertDialog(
-                        content: Text('태그 목록이 가득 찼습니다.'),
+                        content: const Text('태그 목록이 가득 찼습니다.'),
                         actions: [
                           ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: Text('확인'),
+                            child: const Text('확인'),
                           ),
                         ],
                       );

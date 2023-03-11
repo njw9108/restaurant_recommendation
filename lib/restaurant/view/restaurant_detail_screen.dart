@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
@@ -83,12 +84,12 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: PRIMARY_COLOR,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(20).r,
                         ),
                         alignment: Alignment.center,
-                        child: const Icon(
+                        child: Icon(
                           Icons.restaurant_menu,
-                          size: 30,
+                          size: 30.sp,
                         ),
                       ),
                     )
@@ -128,9 +129,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
             ),
           ),
           Positioned(
-            top: 45,
-            left: 20,
-            right: 20,
+            top: 45.h,
+            left: 20.w,
+            right: 20.w,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -142,8 +143,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     icon: Icons.arrow_back_ios_new_sharp,
                     backgroundColor: Colors.black.withOpacity(0.5),
                     iconColor: Colors.white,
-                    size: 35,
-                    iconSize: 20,
+                    size: 35.sp,
+                    iconSize: 20.sp,
                   ),
                 ),
                 PopupMenuButton<SelectedMenuItem>(
@@ -152,8 +153,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     icon: Icons.more_vert_outlined,
                     backgroundColor: Colors.black.withOpacity(0.5),
                     iconColor: Colors.white,
-                    size: 35,
-                    iconSize: 20,
+                    size: 35.sp,
+                    iconSize: 20.sp,
                   ),
                   onSelected: (item) async {
                     if (item == SelectedMenuItem.update) {
@@ -181,8 +182,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                 ),
                                 child: const Text('삭제'),
                               ),
-                              const SizedBox(
-                                width: 8,
+                              SizedBox(
+                                width: 8.w,
                               ),
                               ElevatedButton(
                                 onPressed: () {
@@ -225,22 +226,22 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
           ),
           if (widget.model.images.isNotEmpty)
             Positioned(
-              top: imageHeight - 80,
-              left: 20,
-              right: 20,
+              top: imageHeight - 80.h,
+              left: 20.w,
+              right: 20.w,
               child: Align(
                 alignment: Alignment.topRight,
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+                      EdgeInsets.symmetric(vertical: 7.h, horizontal: 10.w),
                   decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(15)),
+                      borderRadius: BorderRadius.circular(15).r),
                   child: Text(
                     '${curPage + 1} / ${widget.model.images.length}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 11,
+                      fontSize: 11.sp,
                     ),
                   ),
                 ),
@@ -250,26 +251,26 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
             left: 0,
             right: 0,
             bottom: 0,
-            top: imageHeight - 20,
+            top: imageHeight - 20.h,
             child: Container(
-              padding: const EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 20,
+              padding: EdgeInsets.only(
+                left: 20.w,
+                right: 20.w,
+                top: 20.h,
               ),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
                   topRight: Radius.circular(20),
                   topLeft: Radius.circular(20),
-                ),
+                ).r,
                 color: Colors.white,
               ),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      height: 16,
+                    SizedBox(
+                      height: 16.h,
                     ),
                     Align(
                       alignment: Alignment.topRight,
@@ -288,8 +289,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                       widget.model.name,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 25,
+                      style: TextStyle(
+                        fontSize: 25.sp,
                         fontWeight: FontWeight.w900,
                         height: 1.5,
                       ),
@@ -298,35 +299,35 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                       alignment: Alignment.topRight,
                       child: Text(
                         widget.model.isVisited ? '방문' : '미방문',
-                        style: const TextStyle(
-                          fontSize: 15,
+                        style: TextStyle(
+                          fontSize: 15.sp,
                           color: GRAY_COLOR,
                           fontWeight: FontWeight.w300,
                           height: 1.5,
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 4,
+                    SizedBox(
+                      height: 4.h,
                     ),
                     StarRating(
                       rating: widget.model.rating,
-                      iconSize: 18,
+                      iconSize: 18.sp,
                     ),
-                    const SizedBox(
-                      height: 16,
+                    SizedBox(
+                      height: 16.h,
                     ),
                     Text(
                       widget.model.address,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 18,
+                      style: TextStyle(
+                        fontSize: 18.sp,
                         height: 1.5,
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      padding: EdgeInsets.symmetric(vertical: 8.0.h),
                       child: GridView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         padding: EdgeInsets.zero,
@@ -338,32 +339,32 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                 childAspectRatio: 1.7),
                         itemBuilder: (_, index) {
                           return Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.w, vertical: 5.h),
                             decoration: const BoxDecoration(color: TAG_COLOR),
                             alignment: Alignment.center,
                             child: Text(
                               widget.model.tags[index],
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 10),
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 10.sp),
                             ),
                           );
                         },
                         itemCount: widget.model.tags.length,
                       ),
                     ),
-                    const SizedBox(
-                      height: 8,
+                    SizedBox(
+                      height: 8.h,
                     ),
                     Text(
                       widget.model.comment,
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: 16.sp,
                         height: 1.6,
                       ),
                     ),
-                    const SizedBox(
-                      height: 100,
+                    SizedBox(
+                      height: 100.h,
                     ),
                   ],
                 ),
@@ -372,9 +373,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
           ),
           Positioned(
             //top: (MediaQuery.of(context).size.height / 2.4) - 20,
-            top: imageHeight - 40,
-            left: 20,
-            right: 20,
+            top: imageHeight - 40.h,
+            left: 20.w,
+            right: 20.w,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

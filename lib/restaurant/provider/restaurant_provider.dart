@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:recommend_restaurant/common/const/firestore_constants.dart';
 import 'package:recommend_restaurant/restaurant/model/restaurant_model.dart';
 
@@ -16,10 +17,12 @@ enum SortType {
 }
 
 class RestaurantProvider with ChangeNotifier {
+  final FlutterSecureStorage secureStorage;
   final FirebaseRepository firebaseRepository;
   final AuthProvider authProvider;
 
   RestaurantProvider({
+    required this.secureStorage,
     required this.firebaseRepository,
     required this.authProvider,
   }) {
@@ -114,6 +117,7 @@ class RestaurantProvider with ChangeNotifier {
       limit: limit,
       orderKey: orderKey,
       descending: descending,
+      uid: authProvider.userModel?.id ?? '',
     );
   }
 
@@ -124,6 +128,7 @@ class RestaurantProvider with ChangeNotifier {
       limit: limit,
       collection: 'isFavorite',
       isEqualTo: true,
+      uid: authProvider.userModel?.id ?? '',
     );
   }
 
@@ -134,6 +139,7 @@ class RestaurantProvider with ChangeNotifier {
       limit: limit,
       collection: 'isVisited',
       isEqualTo: false,
+      uid: authProvider.userModel?.id ?? '',
     );
   }
 
@@ -145,6 +151,7 @@ class RestaurantProvider with ChangeNotifier {
       limit: limit,
       collection: 'tags',
       query: tags,
+      uid: authProvider.userModel?.id ?? '',
     );
   }
 
@@ -156,6 +163,7 @@ class RestaurantProvider with ChangeNotifier {
       limit: limit,
       collection: 'category',
       query: categories,
+      uid: authProvider.userModel?.id ?? '',
     );
   }
 

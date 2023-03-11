@@ -3,19 +3,19 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:recommend_restaurant/user/model/my_user_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../restaurant/model/restaurant_model.dart';
 import '../const/firestore_constants.dart';
 
 class FirebaseRepository {
-  final SharedPreferences prefs;
+  final FlutterSecureStorage secureStorage;
   final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
   FirebaseRepository({
-    required this.prefs,
+    required this.secureStorage,
   });
 
   Future<void> saveRestaurantToFirebase({
@@ -24,7 +24,7 @@ class FirebaseRepository {
     required Map<String, dynamic> data,
   }) async {
     try {
-      final uid = prefs.getString(FirestoreUserConstants.uid);
+      final uid = await secureStorage.read(key: FirestoreUserConstants.uid);
       await firebaseFirestore
           .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
           .doc(uid)
@@ -41,7 +41,7 @@ class FirebaseRepository {
     required String docId,
   }) async {
     try {
-      final uid = prefs.getString(FirestoreUserConstants.uid);
+      final uid = await secureStorage.read(key: FirestoreUserConstants.uid);
       final data = await firebaseFirestore
           .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
           .doc(uid)
@@ -60,7 +60,7 @@ class FirebaseRepository {
     required Map<String, dynamic> data,
   }) async {
     try {
-      final uid = prefs.getString(FirestoreUserConstants.uid);
+      final uid = await secureStorage.read(key: FirestoreUserConstants.uid);
 
       await firebaseFirestore
           .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
@@ -77,7 +77,7 @@ class FirebaseRepository {
     required String restaurantId,
     required List<String> imageIdList,
   }) async {
-    final uid = prefs.getString(FirestoreUserConstants.uid);
+    final uid = await secureStorage.read(key: FirestoreUserConstants.uid);
     //delete image from firebase storage
     // for (int i = 0; i < imageIdList.length; i++) {
     //   await deleteImageFromStorage(
@@ -99,7 +99,7 @@ class FirebaseRepository {
     required String restaurantId,
     required File file,
   }) async {
-    final uid = prefs.getString(FirestoreUserConstants.uid);
+    final uid = await secureStorage.read(key: FirestoreUserConstants.uid);
     const uuid = Uuid();
 
     try {
@@ -124,7 +124,7 @@ class FirebaseRepository {
     required String restaurantId,
     required String imageId,
   }) async {
-    final uid = prefs.getString(FirestoreUserConstants.uid);
+    final uid = await secureStorage.read(key: FirestoreUserConstants.uid);
     final path =
         '${FirestoreRestaurantConstants.pathRestaurantCollection}/$uid/$restaurantId/$imageId';
     final storageReference = FirebaseStorage.instance.ref().child(path);
@@ -135,9 +135,8 @@ class FirebaseRepository {
     required int limit,
     required String orderKey,
     required bool descending,
+    required String uid,
   }) {
-    final uid = prefs.getString(FirestoreUserConstants.uid);
-
     return firebaseFirestore
         .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
         .doc(uid)
@@ -151,9 +150,8 @@ class FirebaseRepository {
     required int limit,
     required String collection,
     required bool isEqualTo,
+    required String uid,
   }) {
-    final uid = prefs.getString(FirestoreUserConstants.uid);
-
     return firebaseFirestore
         .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
         .doc(uid)
@@ -187,9 +185,8 @@ class FirebaseRepository {
     required int limit,
     required String collection,
     required List<String> query,
+    required String uid,
   }) {
-    final uid = prefs.getString(FirestoreUserConstants.uid);
-
     return firebaseFirestore
         .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
         .doc(uid)
@@ -206,9 +203,8 @@ class FirebaseRepository {
     required int limit,
     required String collection,
     required List<String> query,
+    required String uid,
   }) {
-    final uid = prefs.getString(FirestoreUserConstants.uid);
-
     return firebaseFirestore
         .collection(FirestoreRestaurantConstants.pathRestaurantCollection)
         .doc(uid)
@@ -251,7 +247,8 @@ class FirebaseRepository {
     );
   }
 
-  Future<Map<String, dynamic>?> getUserModelFromFirebase({required String uid}) async {
+  Future<Map<String, dynamic>?> getUserModelFromFirebase(
+      {required String uid}) async {
     final result = await firebaseFirestore
         .collection(FirestoreUserConstants.pathUserCollection)
         .doc(uid)
@@ -260,7 +257,7 @@ class FirebaseRepository {
   }
 
   Future<void> deleteUserDB() async {
-    final uid = prefs.getString(FirestoreUserConstants.uid);
+    final uid = await secureStorage.read(key: FirestoreUserConstants.uid);
 
     //restaurant 정보 삭제
     HttpsCallable callable =

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../const/color.dart';
 import '../layout/default_layout.dart';
@@ -14,36 +15,33 @@ class AppUpdateScreen extends StatelessWidget {
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: REdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.all(52.0),
+                padding: REdgeInsets.all(52.0),
                 child: Image.asset(
                   'assets/image/main_logo.png',
                 ),
               ),
-              const Text(
+              Text(
                 "새로운 업데이트가 있습니다",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 25,
+                  fontSize: 25.sp,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 20),
-              const Text(
+              SizedBox(height: 20.h),
+              Text(
                 "현재 버전은 더이상 지원하지 않습니다.\n새로워진 마이슐랭을 경험해보세요!",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                  height: 1.5
-                ),
+                    fontSize: 14.sp, color: Colors.black54, height: 1.5),
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: 30.h),
               ElevatedButton(
                 onPressed: () async {
                   // Platform.isAndroid

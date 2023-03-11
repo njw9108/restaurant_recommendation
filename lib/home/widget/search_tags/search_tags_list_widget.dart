@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/home/provider/home_provider.dart';
 
@@ -57,19 +58,19 @@ class _SearchTagsListWidgetState extends State<SearchTagsListWidget> {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: REdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
                 '태그로 검색 (${(context.watch<HomeProvider>().selectedTagList.length)}/ 10)',
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
-                  fontSize: 23,
+                  fontSize: 23.sp,
                 ),
               ),
-              const SizedBox(
-                height: 5,
+              SizedBox(
+                height: 5.h,
               ),
               Text(
                 '#${context.watch<HomeProvider>().selectedTagList.join(', #')}',
@@ -77,8 +78,8 @@ class _SearchTagsListWidgetState extends State<SearchTagsListWidget> {
                   color: GRAY_COLOR,
                 ),
               ),
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: 20.h,
               ),
               ExpandableTagList(
                 tagController: tagController,
@@ -99,14 +100,14 @@ class _SearchTagsListWidgetState extends State<SearchTagsListWidget> {
                       List.from(temp.toSet());
                 },
               ),
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: 20.h,
               ),
               if (context.watch<HomeProvider>().selectedTagList.isEmpty)
-                const Center(
+                Center(
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text('일치하는 식당이 없습니다.'),
+                    padding: REdgeInsets.all(16.0),
+                    child: const Text('일치하는 식당이 없습니다.'),
                   ),
                 ),
               if (context.watch<HomeProvider>().selectedTagList.isNotEmpty)
@@ -120,10 +121,10 @@ class _SearchTagsListWidgetState extends State<SearchTagsListWidget> {
                   builder: (context, snapshot) {
                     restaurantList = snapshot.data?.docs ?? [];
                     if (restaurantList.isEmpty) {
-                      return const Center(
+                      return Center(
                         child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text('일치하는 식당이 없습니다.'),
+                          padding: REdgeInsets.all(16.0),
+                          child: const Text('일치하는 식당이 없습니다.'),
                         ),
                       );
                     }

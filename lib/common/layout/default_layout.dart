@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../const/color.dart';
 
@@ -39,12 +40,12 @@ class DefaultLayout extends StatelessWidget {
         elevation: 0,
         backgroundColor: BACK_GROUND_COLOR,
         foregroundColor: Colors.black,
+        centerTitle: true,
         title: Text(
           title!,
-          style: const TextStyle(
-            fontSize: 16,
+          style: TextStyle(
+            fontSize: 16.sp,
             fontWeight: FontWeight.w700,
-            fontFamily: 'Paybooc',
           ),
         ),
         actions: appbarActions,

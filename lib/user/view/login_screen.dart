@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
 
@@ -19,30 +20,30 @@ class LoginScreen extends StatelessWidget {
       child: SafeArea(
         top: true,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50),
+          padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 50.h),
           child: Column(
             //crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 //crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: const [
-                  _Title(),
+                children: [
+                  const _Title(),
                   SizedBox(
-                    height: 8,
+                    height: 8.h,
                   ),
-                  _SubTitle(),
+                  const _SubTitle(),
                 ],
               ),
               Column(
                 children: [
                   const KakaoLoginBtn(),
-                  const SizedBox(
-                    height: 24,
+                  SizedBox(
+                    height: 24.h,
                   ),
                   const GoogleLoginBtn(),
-                  const SizedBox(
-                    height: 24,
+                  SizedBox(
+                    height: 24.h,
                   ),
                   if (Platform.isIOS) const AppleLoginBtn(),
                 ],
@@ -72,10 +73,10 @@ class _SubTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
+    return Text(
       'My Eating Table',
       style: TextStyle(
-        fontSize: 20,
+        fontSize: 20.sp,
         fontWeight: FontWeight.w500,
         color: GRAY_COLOR,
       ),

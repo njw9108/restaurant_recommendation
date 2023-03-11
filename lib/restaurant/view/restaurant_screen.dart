@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:recommend_restaurant/common/const/color.dart';
@@ -73,7 +74,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
       title: '식당 목록',
       appbarActions: [
         Padding(
-          padding: const EdgeInsets.only(right: 16.0),
+          padding: EdgeInsets.only(right: 16.0.w),
           child: IconButton(
             onPressed: () {
               _createOverlay();
@@ -108,7 +109,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                     if (restaurantList.isNotEmpty) {
                       return ListView.separated(
                         physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(10),
+                        padding: REdgeInsets.all(10),
                         itemBuilder: (_, index) {
                           DocumentSnapshot doc = restaurantList[index];
                           final model = RestaurantModel.fromDocument(doc);
@@ -126,11 +127,11 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                           );
                         },
                         separatorBuilder: (_, index) {
-                          return const Padding(
-                            padding: EdgeInsets.only(bottom: 16.0),
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: 16.0.h),
                             child: Divider(
                               color: GRAY_COLOR,
-                              height: 1,
+                              height: 1.h,
                             ),
                           );
                         },
@@ -185,8 +186,8 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                         ),
                       )
                       .toList(),
-                  const SizedBox(
-                    height: 16,
+                  SizedBox(
+                    height: 16.h,
                   ),
                 ]),
               ),
@@ -228,14 +229,14 @@ class _RestaurantSortItemWidget extends StatelessWidget {
       onTap: onTap,
       child: Container(
         color: Colors.transparent,
-        padding: const EdgeInsets.all(16),
+        padding: REdgeInsets.all(16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               title,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 18.sp,
                 fontWeight: isSelected ? FontWeight.w700 : null,
                 color: isSelected ? null : GRAY_COLOR,
               ),
