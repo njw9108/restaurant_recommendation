@@ -20,8 +20,7 @@ class AppVersionProvider with ChangeNotifier {
 
     final value = jsonDecode(config);
 
-    if (value['name'] == appVersion &&
-        value['version'].contains(int.tryParse(buildNumber))) {
+    if (value['name'] == appVersion) {
       notifyListeners();
       return true;
     } else {
