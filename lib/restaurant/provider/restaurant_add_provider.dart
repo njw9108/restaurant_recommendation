@@ -37,7 +37,7 @@ class RestaurantAddProvider
   int _thumbnailIndex = 0;
 
   bool _isFavorite = false;
-  bool _isVisited = false;
+  bool _isVisited = true;
 
   final List<String> _deletedNetworkImageList = [];
   List<ImageIdUrlData> _networkImage = [];
@@ -144,7 +144,7 @@ class RestaurantAddProvider
     query = '';
     _curAddressModel = null;
     _thumbnailIndex = 0;
-    _isVisited = false;
+    _isVisited = true;
     _isFavorite = false;
   }
 

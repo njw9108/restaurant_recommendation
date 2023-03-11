@@ -46,6 +46,8 @@ class RestaurantTagAddFiled extends StatelessWidget {
           height: 40.h,
           child: ElevatedButton(
             onPressed: () {
+              FocusScope.of(context).unfocus();
+
               if (textController.text.trim().isEmpty) {
                 return;
               }

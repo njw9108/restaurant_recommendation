@@ -31,18 +31,12 @@ class TagCategoryEditWidget extends StatelessWidget {
                   builder: (_) {
                     return DraggableScrollableSheet(
                       expand: false,
-                      initialChildSize: 0.6,
+                      initialChildSize: 0.8,
                       maxChildSize: 0.8,
                       builder: (BuildContext context,
                               ScrollController scrollController) =>
-                          SingleChildScrollView(
-                        controller: scrollController,
-                        keyboardDismissBehavior:
-                            ScrollViewKeyboardDismissBehavior.onDrag,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: const RestaurantCategoryModalBottomSheet(
-                          isHome: true,
-                        ),
+                          RestaurantCategoryModalBottomSheet(
+                        isHome: true,
                       ),
                     );
                   },
@@ -67,26 +61,20 @@ class TagCategoryEditWidget extends StatelessWidget {
                   builder: (_) {
                     return DraggableScrollableSheet(
                       expand: false,
-                      initialChildSize: 0.6,
+                      initialChildSize: 0.8,
                       maxChildSize: 0.8,
                       builder: (BuildContext context,
                               ScrollController scrollController) =>
-                          SingleChildScrollView(
-                        controller: scrollController,
-                        keyboardDismissBehavior:
-                            ScrollViewKeyboardDismissBehavior.onDrag,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: RestaurantTagsModalBottomSheet(
-                          title: Text(
-                            '태그',
-                            style: TextStyle(
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w700,
+                          RestaurantTagsModalBottomSheet(
+                            title: Text(
+                              '태그',
+                              style: TextStyle(
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
+                            isHome: true,
                           ),
-                          isHome: true,
-                        ),
-                      ),
                     );
                   },
                 );

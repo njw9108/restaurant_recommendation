@@ -46,6 +46,7 @@ class RestaurantSelectItemWidget extends StatelessWidget {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
+                isDismissible: false,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(20).r,
@@ -55,17 +56,11 @@ class RestaurantSelectItemWidget extends StatelessWidget {
                 builder: (_) {
                   return DraggableScrollableSheet(
                     expand: false,
-                    initialChildSize: 0.6,
+                    initialChildSize: 0.8,
                     maxChildSize: 0.8,
                     builder: (BuildContext context,
                             ScrollController scrollController) =>
-                        SingleChildScrollView(
-                      controller: scrollController,
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: bottomSheet,
-                    ),
+                        bottomSheet,
                   );
                 },
               );
