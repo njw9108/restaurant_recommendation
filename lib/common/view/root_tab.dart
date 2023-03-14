@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:recommend_restaurant/common/const/color.dart';
 import 'package:recommend_restaurant/common/layout/default_layout.dart';
+import 'package:recommend_restaurant/home/view/home_screen.dart';
+import 'package:recommend_restaurant/restaurant/view/restaurant_screen.dart';
+import 'package:recommend_restaurant/user/view/profile_screen.dart';
 
 class RootTab extends StatefulWidget {
+  static String routeName = 'home';
+
   const RootTab({Key? key}) : super(key: key);
 
   @override
@@ -12,9 +19,9 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   late TabController controller;
 
   List<Widget> screenList = [
-    const Center(child: Text('홈')),
-    const Center(child: Text('식당')),
-    const Center(child: Text('프로필')),
+    const HomeScreen(),
+    const RestaurantScreen(),
+    const ProfileScreen(),
   ];
 
   int index = 0;
@@ -22,6 +29,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    //context.read<RestaurantProvider>().precacheFireStoreImage(context);
     controller = TabController(length: screenList.length, vsync: this);
 
     controller.addListener(tabListener);
@@ -42,28 +50,37 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
-      title: '식당 추천',
       bottomNavigationBar: BottomNavigationBar(
-        // selectedItemColor: PRIMARY_COLOR,
-        // unselectedItemColor: BODY_TEXT_COLOR,
-        selectedFontSize: 10,
-        unselectedFontSize: 10,
+        selectedFontSize: 10.sp,
+        unselectedFontSize: 10.sp,
         type: BottomNavigationBarType.fixed,
         onTap: (int index) {
           controller.animateTo(index);
         },
+        backgroundColor: SECONDARY_COLOR,
+        unselectedItemColor: GRAY_COLOR,
+        selectedItemColor: Colors.white,
         currentIndex: index,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
+            icon: Icon(
+              Icons.home_outlined,
+              size: 26.sp,
+            ),
             label: '홈',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.restaurant),
+            icon: Icon(
+              Icons.restaurant,
+              size: 26.sp,
+            ),
             label: '식당',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
+            icon: Icon(
+              Icons.person_outline,
+              size: 26.sp,
+            ),
             label: '프로필',
           ),
         ],
