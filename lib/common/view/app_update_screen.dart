@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../const/color.dart';
 import '../layout/default_layout.dart';
@@ -44,14 +47,14 @@ class AppUpdateScreen extends StatelessWidget {
               SizedBox(height: 30.h),
               ElevatedButton(
                 onPressed: () async {
-                  // Platform.isAndroid
-                  //     ? await launchUrl(
-                  //         Uri.parse(
-                  //             "https://play.google.com/store/apps/details?id=com.beside04.haruNyang"),
-                  //       )
-                  //     : await launchUrl(
-                  //         Uri.parse("https://apps.apple.com/app/id6444657575"),
-                  //       );
+                  Platform.isAndroid
+                      ? await launchUrl(
+                          Uri.parse(
+                              "https://play.google.com/store/apps/details?id=com.njw9108.recommend_restaurant"),
+                        )
+                      : await launchUrl(
+                          Uri.parse("https://apps.apple.com/us/app/%EB%A7%88%EC%9D%B4%EC%8A%90%EB%9E%AD/id6446059984"),
+                        );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: PRIMARY_COLOR,
